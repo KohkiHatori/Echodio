@@ -50,7 +50,7 @@ async function generateAndDownload() {
       const pollResult = await pollResponse.json();
       console.log("Polling:", pollResult?.data?.status);
 
-      if (pollResult?.data?.status === "completed`") {
+      if (pollResult?.data?.status === "completed") {
         const imageUrl = pollResult?.data?.output?.image_url;
         if (!imageUrl) throw new Error("Image URL not found");
 
