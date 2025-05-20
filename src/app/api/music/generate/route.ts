@@ -43,7 +43,7 @@ export async function POST(request: Request) {
         }
 
         const result = await response.json();
-        return NextResponse.json(result);
+        return NextResponse.json({ task_id: result.task_id });
 
     } catch (error) {
         console.error('Error in /api/music:', error);
