@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const headers = {
-  "x-api-key": "",
+  "x-api-key": "1d4085f5bdc617135d90296478db644f22a3d42b52300888c194b6ec6ebb33c4",
   "Content-Type": "application/json"
 };
 
