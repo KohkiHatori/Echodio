@@ -61,7 +61,10 @@ In .env.local, insert your API key for OpenWeather.
 ```bash
 WEATHER_API_KEY=your_openweathermap_api_key
 ```
-
+In .env.local, insert your API key for GoAPI.
+```bash
+GO_API_KEY=your_openweathermap_api_key
+```
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
