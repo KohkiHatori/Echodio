@@ -16,8 +16,9 @@ export default function MusicDemoPage() {
       {generatedTaskId && <MusicRetriever taskId={generatedTaskId} />}
 
     {/* テスト用として手打ちでtask-idを入れています、現状taskIdがうまく反映されていない */}
-    <h1 className="text-2xl font-bold text-center">🎧 Retrieve a Known Track</h1>
       <MusicRetriever taskId="03ff5b05-4ccf-4562-a809-59cbd794418f" />
+      <MusicRetriever taskId="47c32e02-fccc-46a6-b0a1-cd1da3678221" />
+      <MusicRetriever taskId="4badac92-80c0-4b98-ad79-a9ccb984374e" />
     </div>
 
   );
