@@ -10,7 +10,7 @@ export default function UserLocationAndTime() {
   // Collect time once
   useEffect(() => {
     const now = new Date();
-    setTime(now.toLocaleTimeString());
+    setTime(now.toISOString());
   }, []);
 
   // Attempt to get geolocation (runs only once)
@@ -38,6 +38,7 @@ export default function UserLocationAndTime() {
   // Send to API once time is ready and location permission was handled
   useEffect(() => {
     if (time && locationChecked) {
+      console.log(time);
       fetch('http://localhost:3000/api/generate-content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
