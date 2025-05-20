@@ -44,7 +44,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-ターミナルで npm install を実行してから...
+ターミナルで npm install next を実行してから...
 
 First, run the development server:
 
@@ -56,6 +56,10 @@ yarn dev
 pnpm dev
 # or
 bun dev
+```
+In .env.local, insert your API key for OpenWeather.
+```bash
+WEATHER_API_KEY=your_openweathermap_api_key
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
