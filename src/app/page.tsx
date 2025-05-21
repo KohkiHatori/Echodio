@@ -8,17 +8,16 @@ import {
   PlayIcon,
   PauseIcon,
   Bars3Icon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showUI, setShowUI] = useState(true);
-
-  // keep a ref to the idle timer
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // reset the timer—and make UI visible
   const resetIdle = () => {
     setShowUI(true);
     if (idleTimer.current) clearTimeout(idleTimer.current);
@@ -26,22 +25,26 @@ export default function Home() {
   };
 
   useEffect(() => {
-    // on any of these events, reset the idle timer
     const events = ["mousemove", "mousedown", "touchstart", "wheel"];
     events.forEach((e) => window.addEventListener(e, resetIdle));
-
-    // start the first timer
     resetIdle();
-
     return () => {
       events.forEach((e) => window.removeEventListener(e, resetIdle));
       if (idleTimer.current) clearTimeout(idleTimer.current);
     };
   }, []);
 
+  const handleSkipBack = () => {
+    // TODO: implement skip back logic
+  };
+  const handleSkipForward = () => {
+    // TODO: implement skip forward logic
+  };
+  const togglePlay = () => setIsPlaying((p) => !p);
+
   return (
     <div className="relative h-screen w-screen overflow-hidden">
-      {/* — Fullscreen background — */}
+      {/* Fullscreen background */}
       <Image
         src="/forest-bg.png"
         alt="Background"
@@ -50,22 +53,21 @@ export default function Home() {
         className="absolute inset-0 -z-10 object-cover"
       />
 
-      {/* — Wrap all interactive UI in one fading container — */}
+      {/* All UI fades out on idle */}
       <div
         className={`
           ${showUI ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
           transition-opacity duration-500
         `}
       >
-        {/* — Sidebar (push‐aside) — */}
+        {/* Sidebar (push‐aside) */}
         <aside
           className={`
             fixed top-0 left-0 h-full w-64 bg-gray-900 text-white
-            transform transition-transform duration-300
+            transform transition-transform duration-500 ease-in-out
             ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
           `}
         >
-          {/* Hamburger inside sidebar to close */}
           <button
             className="absolute top-4 left-4 p-2"
             onClick={() => setSidebarOpen(false)}
@@ -94,7 +96,7 @@ export default function Home() {
           </div>
         </aside>
 
-        {/* — Hamburger to open sidebar — */}
+        {/* Open button */}
         {!sidebarOpen && (
           <button
             className="fixed top-4 left-4 z-50 p-2 bg-black/50 rounded-full"
@@ -104,7 +106,7 @@ export default function Home() {
           </button>
         )}
 
-        {/* — Top‐right user + spinner pill — */}
+        {/* Top‐right user + spinner pill */}
         <header className="fixed top-4 right-4 z-50">
           <div className="bg-black/60 backdrop-blur-sm rounded-2xl p-3 flex flex-col items-center space-y-2">
             <Image
@@ -118,26 +120,37 @@ export default function Home() {
           </div>
         </header>
 
-        {/* — Media controls at bottom — */}
+        {/* Media controls */}
         <footer
-          className="fixed bottom-4 z-50 w-[95%] max-w-4xl"
+          className="fixed bottom-4 z-50 w-[95%] max-w-4xl transition-all duration-500 ease-in-out"
           style={{
             left: sidebarOpen ? "calc(50vw + 8rem)" : "50vw",
             transform: "translateX(-50%)",
           }}
         >
           <div className="bg-black/60 backdrop-blur-sm rounded-full px-6 py-4 flex flex-col space-y-3">
+            {/* top row: time – skip back – play/pause – skip forward – duration */}
             <div className="flex items-center justify-between">
               <span className="text-white text-sm">0:12</span>
-              <button onClick={() => setIsPlaying((p) => !p)}>
-                {isPlaying ? (
-                  <PauseIcon className="w-8 h-8 text-white" />
-                ) : (
-                  <PlayIcon className="w-8 h-8 text-white" />
-                )}
-              </button>
+              <div className="flex items-center space-x-4">
+                <button onClick={handleSkipBack}>
+                  <ChevronLeftIcon className="w-6 h-6 text-white" />
+                </button>
+                <button onClick={togglePlay}>
+                  {isPlaying ? (
+                    <PauseIcon className="w-8 h-8 text-white" />
+                  ) : (
+                    <PlayIcon className="w-8 h-8 text-white" />
+                  )}
+                </button>
+                <button onClick={handleSkipForward}>
+                  <ChevronRightIcon className="w-6 h-6 text-white" />
+                </button>
+              </div>
               <span className="text-white text-sm">2:00</span>
             </div>
+
+            {/* progress bar */}
             <div className="h-1 bg-white/30 rounded-full overflow-hidden w-full">
               <div
                 className="h-full bg-white"
