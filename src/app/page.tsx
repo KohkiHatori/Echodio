@@ -1,6 +1,6 @@
 // src/app/page.tsx
 "use client";
-
+import UserLocationAndTime from "@/components/UserLocationAndTime";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Spinner } from "@/components/Spinner";
@@ -17,6 +17,7 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showUI, setShowUI] = useState(true);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  <UserLocationAndTime/>
 
   const resetIdle = () => {
     setShowUI(true);
