@@ -1,16 +1,17 @@
 // src/app/page.tsx
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import { Spinner } from "@/components/Spinner";
+import UserLocationAndTime from "@/components/UserLocationAndTime";
 import {
-  PlayIcon,
-  PauseIcon,
   Bars3Icon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  PauseIcon,
+  PlayIcon,
 } from "@heroicons/react/24/outline";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -52,6 +53,7 @@ export default function Home() {
         priority
         className="absolute inset-0 -z-10 object-cover"
       />
+      <UserLocationAndTime></UserLocationAndTime>
 
       {/* All UI fades out on idle */}
       <div
