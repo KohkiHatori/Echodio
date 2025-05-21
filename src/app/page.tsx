@@ -79,7 +79,7 @@ export default function Home() {
           <div className="pt-16 px-6 space-y-6">
             <label className="flex items-center space-x-2">
               <input type="checkbox" className="form-toggle" />
-              <span>インストゥルメンタル</span>
+              <span>インストラメンタル</span>
             </label>
 
             <div>
