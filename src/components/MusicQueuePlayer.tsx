@@ -69,6 +69,24 @@ useEffect(() => {
       <h2 className="font-semibold text-lg">🎶 Music Queue Player</h2>
       <p className="text-sm">Task ID: <code>{currentTaskId}</code></p>
 
+    <div className="flex space-x-4">
+      <button
+        onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
+        disabled={currentIndex === 0}
+        className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
+      >
+        ⬅ Prev
+      </button>
+
+      <button
+        onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, taskIds.length - 1))}
+        disabled={currentIndex === taskIds.length - 1}
+        className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
+      >
+        Next ➡
+      </button>
+    </div>
+
       {loading && <p className="text-gray-500">Retrieving song...</p>}
 
       {song && (
