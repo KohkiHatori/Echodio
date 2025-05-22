@@ -1,7 +1,7 @@
 // src/app/page.tsx
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, use } from "react";
 import UserLocationAndTime from "@/components/UserLocationAndTime";
 import Image from "next/image";
 import { Spinner } from "@/components/Spinner";
@@ -21,6 +21,7 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showUI, setShowUI] = useState(true);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [backgroundUrl, setBackgroundUrl] = useState<string | null>(null);
 
   // Idle‐hide logic (unchanged)
   const resetIdle = () => {
@@ -48,13 +49,17 @@ export default function Home() {
   }, []);
 
   // Skip / play handlers
-  const handleSkipBack = () => {/* … */};
-  const handleSkipForward = () => {/* … */};
+  const handleSkipBack = () => {/* … */ };
+  const handleSkipForward = () => {/* … */ };
   const togglePlay = () => setIsPlaying((p) => !p);
 
-  return ( 
+  useEffect(() => {
+    console.log("Background URL:", backgroundUrl);
+  }, [backgroundUrl]);
+
+  return (
     <>
-      <UserLocationAndTime/>
+      <UserLocationAndTime onContentLoaded={(data) => setBackgroundUrl(data.imageUrl)} />
       {/* ─── SPLASH OVERLAY ─── */}
       <div
         className={`
@@ -85,7 +90,7 @@ export default function Home() {
       >
         {/* Fullscreen background */}
         <Image
-          src="/forest-bg.png"
+          src={backgroundUrl || "/forest-bg.png"}
           alt="Background"
           fill
           priority

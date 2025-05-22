@@ -1,8 +1,13 @@
+//src/components/UserLocationAndTime.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
 
-export default function UserLocationAndTime() {
+interface Props {
+  onContentLoaded?: (data: any) => void;
+}
+
+export default function UserLocationAndTime({ onContentLoaded }: Props) {
   const [location, setLocation] = useState<null | { lat: number; lon: number }>(null);
   const [time, setTime] = useState<string | null>(null);
   const [locationChecked, setLocationChecked] = useState(false); // to track attempt status
@@ -50,12 +55,13 @@ export default function UserLocationAndTime() {
         .then((res) => res.json())
         .then((data) => {
           console.log("Generated content response:", data);
+          if (onContentLoaded) onContentLoaded(data);
         })
         .catch((err) => {
           console.error("Failed to send content request:", err);
         });
     }
-  }, [time, location, locationChecked]);
+  }, [locationChecked]);
 
   return null; // No UI needed
 }

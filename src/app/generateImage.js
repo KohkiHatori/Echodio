@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const headers = {
-  "x-api-key": "1d4085f5bdc617135d90296478db644f22a3d42b52300888c194b6ec6ebb33c4",
+  "x-api-key": "",
   "Content-Type": "application/json"
 };
 
@@ -13,7 +13,7 @@ const body = JSON.stringify({
   model: "midjourney",
   task_type: "imagine",
   input: {
-    prompt: "a girl using a laptop on a desk inside a house, lofi, painting, chil, pop, midnight, rainy",
+    prompt: "a girl using a laptop on a desk inside a house, lofi, painting, chil, pop, midnight, with clear sky",
     aspect_ratio: "16:9",
     process_mode: "relax",
     skip_prompt_check: false,
