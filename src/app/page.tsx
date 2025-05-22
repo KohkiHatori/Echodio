@@ -23,6 +23,8 @@ export default function Home() {
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [backgroundUrl, setBackgroundUrl] = useState<string | null>(null);
 
+  // update logic:
+
   // Idle‐hide logic (unchanged)
   const resetIdle = () => {
     setShowUI(true);
@@ -53,10 +55,6 @@ export default function Home() {
   const handleSkipForward = () => {/* … */ };
   const togglePlay = () => setIsPlaying((p) => !p);
 
-  useEffect(() => {
-    console.log("Background URL:", backgroundUrl);
-  }, [backgroundUrl]);
-
   return (
     <>
       <UserLocationAndTime onContentLoaded={(data) => setBackgroundUrl(data.imageUrl)} />
@@ -70,7 +68,7 @@ export default function Home() {
         `}
       >
         <Image
-          src="/forest-bg.png"
+          src={"/forest-bg.png"}
           alt="Background"
           fill
           className="absolute inset-0 object-cover blur-md opacity-50 -z-10"
@@ -96,7 +94,6 @@ export default function Home() {
           priority
           className="absolute inset-0 -z-10 object-cover"
         />
-
         {/* All other UI (idle‐fade, sidebar, controls) */}
         <div
           className={`
