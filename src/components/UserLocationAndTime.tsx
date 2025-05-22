@@ -55,7 +55,7 @@ export default function UserLocationAndTime({ onContentLoaded }: Props) {
         .then((res) => res.json())
         .then((data) => {
           console.log("Generated content response:", data);
-          if (onContentLoaded) onContentLoaded(data);
+          if (onContentLoaded) onContentLoaded({ imageTaskId: data.imageTaskId });
         })
         .catch((err) => {
           console.error("Failed to send content request:", err);

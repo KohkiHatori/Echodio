@@ -1,6 +1,7 @@
 import { writeFile } from 'fs/promises';
 import path from 'path';
 import { NextResponse } from 'next/server';
+import { getTimePeriodLabel } from '@/lib/time';
 
 export async function POST(request: Request) {
   try {
@@ -28,13 +29,15 @@ export async function POST(request: Request) {
     }
 
     // 2. Always call image and music APIs, with or without weather
+    const timeLabel = getTimePeriodLabel(time, weather);
+    const weatherDescription = weather?.weather?.[0]?.description || 'clear sky';
     const requestBody = {
-      time,
-      ...(location && { location }),
-      ...(weather && { weather }),
+      timeLabel,
+      weatherDescription
     };
 
-    const imageRes = await fetch('http://localhost:3000/api/image/', {
+    //IMAGE
+    const imageRes = await fetch('http://localhost:3000/api/image/start', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody),
@@ -42,10 +45,10 @@ export async function POST(request: Request) {
     if (!imageRes.ok) {
       throw new Error('Background API failed');
     }
-    const imageUrl = await imageRes.json();
-    console.log("Image response:", imageUrl);
+    const imageTaskId = await imageRes.json();
+    console.log("Image taskId:", imageTaskId);
 
-    return NextResponse.json({ imageUrl });
+    return NextResponse.json({ imageTaskId });
   } catch (err) {
     console.error("generate-content error:", err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

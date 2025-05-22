@@ -12,6 +12,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
+import { usePollImage } from "@/hooks/usePollImage";
 
 export default function Home() {
   // 1) Splash loader state
@@ -21,7 +22,10 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showUI, setShowUI] = useState(true);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [backgroundUrl, setBackgroundUrl] = useState<string | null>(null);
+  const [imageTaskId, setImageTaskId] = useState<string | null>(null);
+  const [currentBg, setCurrentBg] = useState("/forest-bg.png");
+  const [nextBg, setNextBg] = useState<string | null>(null);
+  const [isNextLoaded, setIsNextLoaded] = useState(false);
 
   // update logic:
 
@@ -55,9 +59,31 @@ export default function Home() {
   const handleSkipForward = () => {/* … */ };
   const togglePlay = () => setIsPlaying((p) => !p);
 
+  // This hook will poll the server every 3 seconds until the image is ready
+  usePollImage(imageTaskId, setNextBg);
+
+
+  useEffect(() => {
+    if (isNextLoaded && nextBg) {
+      const timeout = setTimeout(() => {
+        setCurrentBg(nextBg);
+        setNextBg(null);
+        setIsNextLoaded(false);
+      }, 2000); // match transition duration
+      return () => clearTimeout(timeout);
+    }
+  }, [isNextLoaded, nextBg]);
+
+
   return (
     <>
-      <UserLocationAndTime onContentLoaded={(data) => setBackgroundUrl(data.imageUrl)} />
+      <UserLocationAndTime
+        onContentLoaded={(data) => {
+          if (data.imageTaskId) {
+            setImageTaskId(data.imageTaskId)
+          }
+        }}
+      />
       {/* ─── SPLASH OVERLAY ─── */}
       <div
         className={`
@@ -68,7 +94,7 @@ export default function Home() {
         `}
       >
         <Image
-          src={"/forest-bg.png"}
+          src={currentBg}
           alt="Background"
           fill
           className="absolute inset-0 object-cover blur-md opacity-50 -z-10"
@@ -87,13 +113,34 @@ export default function Home() {
         `}
       >
         {/* Fullscreen background */}
-        <Image
-          src={backgroundUrl || "/forest-bg.png"}
+        {/* <Image
+          src={backgroundUrl}
           alt="Background"
           fill
           priority
           className="absolute inset-0 -z-10 object-cover"
+        /> */}
+        {/* Visible background image */}
+        <Image
+          src={currentBg}
+          alt="Current Background"
+          fill
+          priority
+          className="absolute inset-0 -z-20 object-cover transition-opacity duration-500 opacity-100"
         />
+
+        {/* Fading-in next image */}
+        {nextBg && (
+          <Image
+            src={nextBg}
+            alt="Next Background"
+            fill
+            priority
+            onLoad={() => setIsNextLoaded(true)}
+            className={`absolute inset-0 -z-10 object-cover transition-opacity duration-[2000ms] ${isNextLoaded ? "opacity-100" : "opacity-0"
+              }`}
+          />
+        )}
         {/* All other UI (idle‐fade, sidebar, controls) */}
         <div
           className={`
