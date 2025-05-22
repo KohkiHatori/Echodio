@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function MusicRetriever({ taskId }: { taskId: string }) {
   const [loading, setLoading] = useState(false);
@@ -8,7 +8,10 @@ export default function MusicRetriever({ taskId }: { taskId: string }) {
   const [title, setTitle] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
   const handleRetrieve = async () => {
+    if (!taskId) return;
     setLoading(true);
     setError(null);
     setSongUrl(null);
@@ -34,22 +37,42 @@ export default function MusicRetriever({ taskId }: { taskId: string }) {
     }
   };
 
+  useEffect(() => {
+    if (taskId) {
+      handleRetrieve();
+    }
+  }, [taskId]);
+
+    useEffect(() => {
+    if (songUrl && audioRef.current) {
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(err => {
+          console.warn('Autoplay prevented:', err);
+        });
+      }
+    }
+  }, [songUrl]);
+
   return (
     <div className="p-4 border rounded space-y-3">
       <h2 className="font-semibold text-lg">🔍 Retrieve Music</h2>
       <p className="text-sm">Task ID: <code>{taskId}</code></p>
-      <button
-        onClick={handleRetrieve}
-        disabled={loading}
-        className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-      >
-        {loading ? 'Retrieving...' : 'Retrieve Song'}
-      </button>
+      {loading && (
+        <div className="flex items-center space-x-2 text-gray-500">
+          <svg className="w-5 h-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+          </svg>
+          <span>Retrieving song...</span>
+        </div>
+      )}
+
 
       {songUrl && (
         <div className="pt-2">
           <p>🎵 {title}</p>
-          <audio controls src={songUrl} className="mt-2 w-full" />
+          <audio controls autoPlay src={songUrl} className="mt-2 w-full" />
           <p className="text-sm break-all">{songUrl}</p>
         </div>
       )}
