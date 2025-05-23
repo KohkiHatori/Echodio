@@ -26,7 +26,7 @@ export function useMusicGenerator() {
       return data.task_id; 
     } catch (err: any) {
       const error = err as { message?: string };
-      setError(err.message || 'Unknown error');
+      setError(error.message || 'Unknown error');
       return null;
     } finally {
       setLoading(false);

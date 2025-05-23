@@ -2,11 +2,11 @@
 import { NextResponse } from 'next/server';
 
 
-const GENERATION_MODE = "relax";
+// const GENERATION_MODE = "relax";
 
 export async function POST(request: Request) {
   try {
-    const { timeLabel, weatherDescription } = await request.json();
+    // const { timeLabel, weatherDescription } = await request.json();
 
     const apiKey = process.env.GO_API_KEY;
 

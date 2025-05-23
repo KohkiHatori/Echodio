@@ -1,4 +1,14 @@
-export function getTimePeriodLabel(currentTime: string, weather: any): string {
+interface WeatherSys {
+  sunrise?: number;
+  sunset?: number;
+}
+
+interface WeatherData {
+  timezone?: number;
+  sys?: WeatherSys;
+}
+
+export function getTimePeriodLabel(currentTime: string, weather: WeatherData): string {
   const currentDate = new Date(currentTime); // UTC current time
   const timezoneOffsetSec = weather?.timezone || 0;
   const sunriseUnix = weather?.sys?.sunrise; // UTC Unix timestamp
