@@ -3,6 +3,7 @@
 
 import { Spinner } from "@/components/Spinner";
 import UserLocationAndTime from "@/components/UserLocationAndTime";
+// import MusicQueuePlayer from "@/components/MusicQueuePlayer";
 import { usePollImage } from "@/hooks/usePollImage";
 import { usePollMusic } from "@/hooks/usePollMusic";
 import {
@@ -34,7 +35,8 @@ export default function Home() {
   const [currentBg, setCurrentBg] = useState("/forest-bg.png");
   const [nextBg, setNextBg] = useState<string | null>(null);
   const [isNextLoaded, setIsNextLoaded] = useState(false);
-  const [musicQueue, setMusicQueue] = useState<Song[]>([]);
+  const [, setMusicQueue] = useState<Song[]>([]);
+    // const [musicQueue, setMusicQueue] = useState<Song[]>([]);
 
 
 
@@ -210,7 +212,7 @@ export default function Home() {
             </div>
           </header>
 
-          {/* <MusicQueuePlayer songs={musicQueue} /> */}
+          {/* <MusicQueuePlayer songs={_musicQueue} /> */}
 
           {/* Bottom media controls */}
           <footer
