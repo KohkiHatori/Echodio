@@ -15,7 +15,7 @@ export async function POST(request: Request) {
             task_type: "generate_music",
             input: {
                 gpt_description_prompt: prompt,
-                negative_tags: "",
+                negative_tags: negativeTags,
                 lyrics_type: lyricsType,
                 seed: -1,
             },
