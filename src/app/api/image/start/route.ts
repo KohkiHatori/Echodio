@@ -4,15 +4,15 @@ import { NextResponse } from 'next/server';
 
 // const GENERATION_MODE = "relax";
 
-export async function POST(request: Request) {
+export async function POST(_request: Request) {
   try {
     // const { timeLabel, weatherDescription } = await request.json();
 
-    const apiKey = process.env.GO_API_KEY;
+    // const apiKey = process.env.GO_API_KEY;
 
-    if (!apiKey) {
-      return NextResponse.json({ error: 'Missing API key' }, { status: 500 });
-    }
+    // if (!apiKey) {
+    //   return NextResponse.json({ error: 'Missing API key' }, { status: 500 });
+    // }
 
     // const headers = {
     //   "x-api-key": apiKey,
