@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, use } from "react";
 import UserLocationAndTime from "@/components/UserLocationAndTime";
 import Image from "next/image";
 import { Spinner } from "@/components/Spinner";
+import Link from "next/link";
 import {
   PlayIcon,
   PauseIcon,
@@ -180,13 +181,15 @@ export default function Home() {
           {/* Top-right avatar + spinner pill */}
           <header className="fixed top-4 right-4 z-50">
             <div className="bg-black/60 backdrop-blur-sm rounded-2xl p-3 flex flex-col items-center space-y-2">
-              <Image
-                src="/avatar.png"
-                alt="User Avatar"
-                width={40}
-                height={40}
-                className="rounded-full ring-2 ring-white"
-              />
+              <Link href="/auth">
+                <Image
+                  src="/avatar.png"
+                  alt="User Avatar"
+                  width={40}
+                  height={40}
+                  className="rounded-full ring-2 ring-white cursor-pointer"
+                />
+              </Link>
               <Spinner />
             </div>
           </header>
