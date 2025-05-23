@@ -30,7 +30,7 @@ export default function MusicRetriever({ taskId }: { taskId: string }) {
 
       setSongUrl(url);
       setTitle(song?.title || null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       const error = err as { message?: string };
       setError(error.message || 'Unknown error');
     } finally {

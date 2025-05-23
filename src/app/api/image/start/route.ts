@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 
 // const GENERATION_MODE = "relax";
 
-export async function POST(_request: Request) {
+export async function POST(request: Request) {
   try {
     // const { timeLabel, weatherDescription } = await request.json();
 
