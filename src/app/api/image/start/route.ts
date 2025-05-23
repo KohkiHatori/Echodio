@@ -14,32 +14,32 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing API key' }, { status: 500 });
     }
 
-    const headers = {
-      "x-api-key": apiKey,
-      "Content-Type": "application/json"
-    };
+    // const headers = {
+    //   "x-api-key": apiKey,
+    //   "Content-Type": "application/json"
+    // };
 
-    const prompt = `a half naked middle aged fat man using a laptop on a desk lofi, painting, chil, pop, ${timeLabel}, with ${weatherDescription}.`;
+    // const prompt = `a half naked middle aged fat man using a laptop on a desk lofi, painting, chil, pop, ${timeLabel}, with ${weatherDescription}.`;
 
 
-    const payload = {
-      model: "midjourney",
-      task_type: "imagine",
-      input: {
-        prompt,
-        aspect_ratio: "16:9",
-        process_mode: GENERATION_MODE,
-        skip_prompt_check: false,
-        bot_id: 0
-      },
-      config: {
-        service_mode: "",
-        webhook_config: {
-          endpoint: "",
-          secret: ""
-        }
-      }
-    };
+    // const payload = {
+    //   model: "midjourney",
+    //   task_type: "imagine",
+    //   input: {
+    //     prompt,
+    //     aspect_ratio: "16:9",
+    //     process_mode: GENERATION_MODE,
+    //     skip_prompt_check: false,
+    //     bot_id: 0
+    //   },
+    //   config: {
+    //     service_mode: "",
+    //     webhook_config: {
+    //       endpoint: "",
+    //       secret: ""
+    //     }
+    //   }
+    // };
 
     // const response = await fetch("https://api.goapi.ai/api/v1/task", {
     //   method: "POST",

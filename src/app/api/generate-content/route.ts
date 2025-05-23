@@ -1,7 +1,5 @@
-import { writeFile } from 'fs/promises';
-import path from 'path';
-import { NextResponse } from 'next/server';
 import { getTimePeriodLabel } from '@/lib/time';
+import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
