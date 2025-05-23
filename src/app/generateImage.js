@@ -1,8 +1,8 @@
 
 
-const fetch = require('node-fetch');
-const fs = require('fs');
-const path = require('path');
+import fs from "fs";
+import fetch from "node-fetch";
+import path from "path";
 
 const headers = {
   "x-api-key": "",
