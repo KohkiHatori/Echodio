@@ -23,8 +23,9 @@ export function useMusicGenerator() {
       if (!res.ok) throw new Error(data.error || 'Failed to generate music');
 
       setTaskId(data.task_id);
-      return data.task_id; // ✅ return it immediately
+      return data.task_id; 
     } catch (err: any) {
+      const error = err as { message?: string };
       setError(err.message || 'Unknown error');
       return null;
     } finally {

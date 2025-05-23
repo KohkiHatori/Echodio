@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 
 interface Props {
-  onContentLoaded?: (data: any) => void;
+   onContentLoaded?: (data: { imageTaskId: string }) => void;
 }
 
 export default function UserLocationAndTime({ onContentLoaded }: Props) {
