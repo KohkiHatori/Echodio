@@ -4,11 +4,9 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { prompt, lyricsType = 'generate', negativeTags = '' } = body;
+        const { timeLabel, weatherDescription, lyricsType = 'generate', negativeTags = '' } = body;
 
-        if (!prompt) {
-            return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
-        }
+        const prompt = `chil, pop, ${timeLabel}, with ${weatherDescription}`;
 
         const payload = {
             model: "music-u",

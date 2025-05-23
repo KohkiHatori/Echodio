@@ -46,6 +46,14 @@ export async function POST(request: Request) {
     const imageTaskId = await imageRes.json();
     console.log("Image taskId:", imageTaskId);
 
+
+    const lyricsType = 'instrumental'
+    const musicRes = await fetch('/api/music/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestBody, lyricsType })
+      });
+
     return NextResponse.json({ imageTaskId });
   } catch (err) {
     console.error("generate-content error:", err);
