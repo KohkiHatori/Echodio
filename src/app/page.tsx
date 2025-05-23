@@ -4,6 +4,7 @@
 import { Spinner } from "@/components/Spinner";
 import UserLocationAndTime from "@/components/UserLocationAndTime";
 import { usePollImage } from "@/hooks/usePollImage";
+import { usePollMusic } from "@/hooks/usePollMusic";
 import {
   Bars3Icon,
   ChevronLeftIcon,
@@ -15,6 +16,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
+interface Song {
+  url: string;
+  title: string | null;
+}
+
 export default function Home() {
   // 1) Splash loader state
   const [appLoading, setAppLoading] = useState(true);
@@ -24,10 +30,13 @@ export default function Home() {
   const [showUI, setShowUI] = useState(true);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [imageTaskId, setImageTaskId] = useState<string | null>(null);
-  const [_musicTaskId, setMusicTaskId] = useState<string | null>(null);
+  const [musicTaskId, setMusicTaskId] = useState<string | null>(null);
   const [currentBg, setCurrentBg] = useState("/forest-bg.png");
   const [nextBg, setNextBg] = useState<string | null>(null);
   const [isNextLoaded, setIsNextLoaded] = useState(false);
+  const [musicQueue, setMusicQueue] = useState<Song[]>([]);
+
+
 
   // update logic:
 
@@ -63,7 +72,10 @@ export default function Home() {
 
   // This hook will poll the server every 3 seconds until the image is ready
   usePollImage(imageTaskId, setNextBg);
-
+  usePollMusic(musicTaskId, (url, title) => {
+    const newSong = { url, title };
+    setMusicQueue((prev) => [...prev, newSong]);
+  });
 
   useEffect(() => {
     if (isNextLoaded && nextBg) {
@@ -85,7 +97,7 @@ export default function Home() {
             setImageTaskId(data.imageTaskId)
           }
           if (data.musicTaskId) {
-            setMusicTaskId(data.imageTaskId)
+            setMusicTaskId(data.musicTaskId)
           }
         }}
       />
@@ -197,6 +209,8 @@ export default function Home() {
               <Spinner />
             </div>
           </header>
+
+          {/* <MusicQueuePlayer songs={musicQueue} /> */}
 
           {/* Bottom media controls */}
           <footer
