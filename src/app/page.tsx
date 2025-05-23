@@ -1,19 +1,19 @@
 // src/app/page.tsx
 "use client";
 
-import { useState, useEffect, useRef, use } from "react";
-import UserLocationAndTime from "@/components/UserLocationAndTime";
-import Image from "next/image";
 import { Spinner } from "@/components/Spinner";
-import Link from "next/link";
+import UserLocationAndTime from "@/components/UserLocationAndTime";
+import { usePollImage } from "@/hooks/usePollImage";
 import {
-  PlayIcon,
-  PauseIcon,
   Bars3Icon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  PauseIcon,
+  PlayIcon,
 } from "@heroicons/react/24/outline";
-import { usePollImage } from "@/hooks/usePollImage";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
   // 1) Splash loader state
