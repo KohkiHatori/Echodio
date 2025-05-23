@@ -1,16 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-import {
-  GoogleAuthProvider,
-  GithubAuthProvider,
-  signInWithPopup,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword
-} from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import {
+  createUserWithEmailAndPassword,
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup
+} from 'firebase/auth';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -26,9 +26,9 @@ export default function Login() {
       const result = await signInWithPopup(auth, new GoogleAuthProvider());
       console.log("Google user:", result.user);
       router.push('/');
-    } catch (err: any) {
-      if (err.code === 'auth/popup-closed-by-user') {
-        console.warn("Popup closed by user.");
+    } catch (err) {
+       const error = err as { code?: string; message?: string };
+      if (error.code === 'auth/popup-closed-by-user') {
       } else {
         console.error("Google login error:", err);
       }
@@ -45,8 +45,9 @@ export default function Login() {
       const result = await signInWithPopup(auth, new GithubAuthProvider());
       console.log("GitHub user:", result.user);
       router.push('/');
-    } catch (err: any) {
-      if (err.code === 'auth/popup-closed-by-user') {
+    } catch (err) {
+       const error = err as { code?: string; message?: string };
+      if (error.code === 'auth/popup-closed-by-user') {
         console.warn("Popup closed by user.");
       } else {
         console.error("GitHub login error:", err);
