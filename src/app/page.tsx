@@ -24,6 +24,7 @@ export default function Home() {
   const [showUI, setShowUI] = useState(true);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [imageTaskId, setImageTaskId] = useState<string | null>(null);
+  const [musicTaskId, setMusicTaskId] = useState<string | null>(null);
   const [currentBg, setCurrentBg] = useState("/forest-bg.png");
   const [nextBg, setNextBg] = useState<string | null>(null);
   const [isNextLoaded, setIsNextLoaded] = useState(false);
@@ -82,6 +83,9 @@ export default function Home() {
         onContentLoaded={(data) => {
           if (data.imageTaskId) {
             setImageTaskId(data.imageTaskId)
+          }
+          if (data.musicTaskId) {
+            setMusicTaskId(data.imageTaskId)
           }
         }}
       />

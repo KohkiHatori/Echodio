@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 
 interface Props {
-   onContentLoaded?: (data: { imageTaskId: string }) => void;
+   onContentLoaded?: (data: { imageTaskId: string; musicTaskId: string  }) => void;
 }
 
 export default function UserLocationAndTime({ onContentLoaded }: Props) {
@@ -55,7 +55,7 @@ export default function UserLocationAndTime({ onContentLoaded }: Props) {
         .then((res) => res.json())
         .then((data) => {
           console.log("Generated content response:", data);
-          if (onContentLoaded) onContentLoaded({ imageTaskId: data.imageTaskId });
+          if (onContentLoaded) onContentLoaded({ imageTaskId: data.imageTaskId, musicTaskId: data.musicTaskId });
         })
         .catch((err) => {
           console.error("Failed to send content request:", err);
