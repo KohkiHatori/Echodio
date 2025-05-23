@@ -21,7 +21,7 @@ export default function MusicQueuePlayer({ taskIds }: { taskIds: string[] }) {
       if (!currentTaskId) return;
       setLoading(true);
       try {
-        const res = await fetch(`/api/music/retrieve?task_id=${currentTaskId}`);
+        const res = await fetch(`/api/music/result?task_id=${currentTaskId}`);
         const data = await res.json();
         const fetched = data?.data?.output?.songs?.[0];
         if (fetched?.song_path) {
