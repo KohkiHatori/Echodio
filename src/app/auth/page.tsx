@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import {
   GoogleAuthProvider,
+  GithubAuthProvider,
   signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword
@@ -30,6 +31,25 @@ export default function Login() {
         console.warn("Popup closed by user.");
       } else {
         console.error("Google login error:", err);
+      }
+    } finally {
+      setIsPopupOpen(false);
+    }
+  };
+
+  const loginWithGithub = async () => {
+    if (isPopupOpen) return;
+    setIsPopupOpen(true);
+
+    try {
+      const result = await signInWithPopup(auth, new GithubAuthProvider());
+      console.log("GitHub user:", result.user);
+      router.push('/');
+    } catch (err: any) {
+      if (err.code === 'auth/popup-closed-by-user') {
+        console.warn("Popup closed by user.");
+      } else {
+        console.error("GitHub login error:", err);
       }
     } finally {
       setIsPopupOpen(false);
@@ -77,13 +97,13 @@ export default function Login() {
         />
         <button
           onClick={loginWithEmail}
-          className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+          className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition cursor-pointer"
         >
           Login with Email
         </button>
         <button
           onClick={registerWithEmail}
-          className="w-full py-2 px-4 bg-gray-300 text-black rounded hover:bg-gray-400 transition"
+          className="w-full py-2 px-4 bg-gray-300 text-black rounded hover:bg-gray-400 transition cursor-pointer"
         >
           Register
         </button>
@@ -99,10 +119,19 @@ export default function Login() {
         <button
           onClick={loginWithGoogle}
           disabled={isPopupOpen}
-          className="flex items-center justify-center w-full py-2 px-4 bg-white text-gray-800 border border-gray-300 rounded hover:shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center justify-center w-full py-2 px-4 bg-white text-gray-800 border border-gray-300 rounded hover:shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           <Image src="/google.svg" alt="Google" width={20} height={20} className="mr-2" />
           Sign in with Google
+        </button>
+
+        <button
+          onClick={loginWithGithub}
+          disabled={isPopupOpen}
+          className="flex items-center justify-center w-full py-2 px-4 bg-gray-800 text-white rounded hover:bg-gray-900 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+        >
+          <Image src="/github.svg" alt="GitHub" width={20} height={20} className="mr-2 invert" />
+          Sign in with GitHub
         </button>
       </div>
     </div>
