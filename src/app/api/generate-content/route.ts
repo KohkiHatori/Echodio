@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     };
 
     //IMAGE
-    const imageRes = await fetch('http://localhost:3000/api/image/generate', {
+    const imageRes = await fetch('api/image/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody),

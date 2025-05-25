@@ -1,7 +1,6 @@
 // src/app/page.tsx
 "use client";
 
-import LoadPage from "./load/page";
 import { Spinner } from "@/components/Spinner";
 import UserLocationAndTime from "@/components/UserLocationAndTime";
 import { usePollImage } from "@/hooks/usePollImage";
@@ -16,6 +15,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import LoadPage from "./load/page";
 
 interface Song {
   url: string;
