@@ -54,7 +54,7 @@ export async function POST(_request: Request) {
     const taskId = "9497f855-c7eb-477d-9eb9-1cf1c5138747";
     //
 
-    return NextResponse.json(taskId);
+    return NextResponse.json({ taskId });
   } catch (err) {
     console.error("Image API error:", err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

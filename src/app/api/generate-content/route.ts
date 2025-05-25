@@ -43,25 +43,26 @@ export async function POST(request: Request) {
     if (!imageRes.ok) {
       throw new Error('Background API failed');
     }
-    const imageTaskId = await imageRes.json();
+    const imageData = await imageRes.json();
+    const imageTaskId = imageData.taskId;
     console.log("Image taskId:", imageTaskId);
 
 
     const lyricsType = 'instrumental'
     const musicRes = await fetch('/api/music/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestBody, lyricsType })
-      });
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ requestBody, lyricsType })
+    });
     if (!musicRes.ok) {
       throw new Error('Background API failed');
     }
-    
+
     const data = await musicRes.json()
     const musicTaskId = data.taskId;
     console.log("Music taskId:", musicTaskId);
 
-    return NextResponse.json({ imageTaskId,musicTaskId });
+    return NextResponse.json({ imageTaskId, musicTaskId });
   } catch (err) {
     console.error("generate-content error:", err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
