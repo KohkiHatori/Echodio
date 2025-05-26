@@ -81,20 +81,34 @@ export default function Home() {
   }, [isNextLoaded, nextBg]);
 
 
+// In page.tsx (or wherever you define the test queue)
 const TestQueue: { url: string; title: string | null }[] = [
   {
-    url: "https://cdn.pixabay.com/audio/2023/03/20/audio_96e14e7e07.mp3",
-    title: "Calm Lo-fi Beat",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    title: "SoundHelix Song 1",
   },
   {
-    url: "https://cdn.pixabay.com/audio/2022/10/24/audio_6e27c4ef34.mp3",
-    title: "Acoustic Ambient Loop",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    title: "SoundHelix Song 2",
   },
   {
-    url: "https://cdn.pixabay.com/audio/2022/03/01/audio_b4c74b2694.mp3",
-    title: "Soft Chillhop Piano",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    title: "SoundHelix Song 3",
+  },
+  {
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    title: "SoundHelix Song 4",
+  },
+  {
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+    title: "SoundHelix Song 5",
+  },
+  {
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
+    title: "SoundHelix Song 6",
   },
 ];
+
 
   return (
     <>
