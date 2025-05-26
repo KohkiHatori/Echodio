@@ -1,22 +1,20 @@
 // src/app/page.tsx
 "use client";
 
-import LoadPage from "./load/page";
+import FullScreenMusicPlayer from "@/components/FullMusicPlyaer";
+import SpectralAnalyzer from "@/components/SpectralAnalyzer";
 import { Spinner } from "@/components/Spinner";
 import UserLocationAndTime from "@/components/UserLocationAndTime";
-import SpectralAnalyzer from "@/components/SpectralAnalyzer";
 import { usePollImage } from "@/hooks/usePollImage";
 import { usePollMusic } from "@/hooks/usePollMusic";
 import {
-  Bars3Icon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  PauseIcon,
-  PlayIcon,
+  Bars3Icon
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import LoadPage from "./load/page";
+
 
 interface Song {
   url: string;
@@ -28,8 +26,6 @@ export default function Home() {
   const [appLoading, setAppLoading] = useState(true);
   // Player/UI states
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [overlayIcon, setOverlayIcon] = useState<"play" | "pause" | null>(null);
   const [showUI, setShowUI] = useState(true);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -65,38 +61,6 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Skip / play handlers
-  const handleSkipBack = () => {
-    // TODO: implement skip back logic
-  };
-  const handleSkipForward = () => {
-    // TODO: implement skip forward logic
-  };
-  const togglePlay = () => {
-    if (!audioRef.current) return;
-    const next = !isPlaying;
-    if (next) {
-      audioRef.current.play().catch(err => console.error("Playback failed:", err));
-    } else {
-      audioRef.current.pause();
-    }
-    setIsPlaying(next);
-    setOverlayIcon(next ? "play" : "pause");
-    setTimeout(() => setOverlayIcon(null), 1000);
-  };
-
-  // Space key toggles play/pause
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.code === "Space") {
-        e.preventDefault();
-        togglePlay();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [isPlaying]);
-
   // Polling hooks
   usePollImage(imageTaskId, setNextBg);
   usePollMusic(musicTaskId, (url, title) => {
@@ -115,6 +79,22 @@ export default function Home() {
     }
   }, [isNextLoaded, nextBg]);
 
+
+const TestQueue: { url: string; title: string | null }[] = [
+  {
+    url: "https://cdn.pixabay.com/audio/2023/03/20/audio_96e14e7e07.mp3",
+    title: "Calm Lo-fi Beat",
+  },
+  {
+    url: "https://cdn.pixabay.com/audio/2022/10/24/audio_6e27c4ef34.mp3",
+    title: "Acoustic Ambient Loop",
+  },
+  {
+    url: "https://cdn.pixabay.com/audio/2022/03/01/audio_b4c74b2694.mp3",
+    title: "Soft Chillhop Piano",
+  },
+];
+
   return (
     <>
       {/* Loader Overlay */}
@@ -127,6 +107,9 @@ export default function Home() {
       >
         <LoadPage />
       </div>
+{!appLoading &&  (
+  <FullScreenMusicPlayer songs={TestQueue} />
+)}
 
       {/* Main UI Container */}
       <div
@@ -135,7 +118,7 @@ export default function Home() {
             appLoading ? "opacity-0 pointer-events-none" : "opacity-100"
           }`
         }
-        onClick={togglePlay}
+        // onClick={togglePlay}
       >
         <audio
           ref={audioRef}
@@ -234,28 +217,7 @@ export default function Home() {
             </div>
           </header>
 
-          {/* Left arrow */}
-          <button
-            className="fixed top-1/2 transform -translate-y-1/2 z-50 p-2 bg-black/50 rounded-full transition-all duration-500 ease-in-out"
-            style={{ left: sidebarOpen ? "calc(16rem + 1rem)" : "1rem" }}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleSkipBack();
-            }}
-          >
-            <ChevronLeftIcon className="w-8 h-8 text-white" />
-          </button>
-
-          {/* Right arrow */}
-          <button
-            className="fixed top-1/2 transform -translate-y-1/2 right-4 z-50 p-2 bg-black/50 rounded-full transition-all duration-500 ease-in-out"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleSkipForward();
-            }}
-          >
-            <ChevronRightIcon className="w-8 h-8 text-white" />
-          </button>
+    
         </div>
 
         <SpectralAnalyzer
@@ -265,16 +227,7 @@ export default function Home() {
           barCount={128}
         />
 
-        {/* Play/Pause Overlay */}
-        {overlayIcon && (
-          <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
-            {overlayIcon === "play" ? (
-              <PlayIcon className="w-16 h-16 text-white animate-pulse" />
-            ) : (
-              <PauseIcon className="w-16 h-16 text-white animate-pulse" />
-            )}
-          </div>
-        )}
+      
       </div>
     </>
   );
