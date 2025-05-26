@@ -6,24 +6,24 @@ import {
   PauseIcon,
   PlayIcon,
 } from '@heroicons/react/24/outline';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface Song { url: string; title: string | null }
 interface Props {
+  audioRef: React.RefObject<HTMLAudioElement | null>;
   songs: Song[];
   isPlaying: boolean;
   setIsPlaying: (v: boolean) => void;
 }
 
 export default function FullScreenMusicPlayer({
+  audioRef,
   songs,
   isPlaying,
   setIsPlaying,
 }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [overlayIcon, setOverlayIcon] = useState<'play' | 'pause' | null>(null);
-
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const currentSong = songs[currentIndex];
 

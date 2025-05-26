@@ -123,7 +123,9 @@ const TestQueue: { url: string; title: string | null }[] = [
         <LoadPage />
       </div>
 {!appLoading &&  (
-  <FullScreenMusicPlayer songs={TestQueue}
+  <FullScreenMusicPlayer 
+  audioRef={audioRef}
+  songs={TestQueue}
           isPlaying={isPlaying}
         setIsPlaying={setIsPlaying} />
   
@@ -140,7 +142,7 @@ const TestQueue: { url: string; title: string | null }[] = [
       >
         <audio
           ref={audioRef}
-          src={musicQueue[0]?.url || undefined}
+          src={TestQueue[0]?.url || undefined}
           preload="auto"
           className="hidden"
         />
