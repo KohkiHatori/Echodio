@@ -4,6 +4,7 @@
 import LoadPage from "./load/page";
 import { Spinner } from "@/components/Spinner";
 import UserLocationAndTime from "@/components/UserLocationAndTime";
+import SpectralAnalyzer from "@/components/SpectralAnalyzer";
 import { usePollImage } from "@/hooks/usePollImage";
 import { usePollMusic } from "@/hooks/usePollMusic";
 import {
@@ -31,12 +32,13 @@ export default function Home() {
   const [overlayIcon, setOverlayIcon] = useState<"play" | "pause" | null>(null);
   const [showUI, setShowUI] = useState(true);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [imageTaskId, setImageTaskId] = useState<string | null>(null);
   const [musicTaskId, setMusicTaskId] = useState<string | null>(null);
   const [currentBg, setCurrentBg] = useState("/forest-bg.png");
   const [nextBg, setNextBg] = useState<string | null>(null);
   const [isNextLoaded, setIsNextLoaded] = useState(false);
-  const [, setMusicQueue] = useState<Song[]>([]);
+  const [musicQueue, setMusicQueue] = useState<Song[]>([]);
 
   // Idle-hide UI
   useEffect(() => {
@@ -71,7 +73,13 @@ export default function Home() {
     // TODO: implement skip forward logic
   };
   const togglePlay = () => {
+    if (!audioRef.current) return;
     const next = !isPlaying;
+    if (next) {
+      audioRef.current.play().catch(err => console.error("Playback failed:", err));
+    } else {
+      audioRef.current.pause();
+    }
     setIsPlaying(next);
     setOverlayIcon(next ? "play" : "pause");
     setTimeout(() => setOverlayIcon(null), 1000);
@@ -129,6 +137,12 @@ export default function Home() {
         }
         onClick={togglePlay}
       >
+        <audio
+          ref={audioRef}
+          src={musicQueue[0]?.url || undefined}
+          preload="auto"
+          className="hidden"
+        />
         <UserLocationAndTime
           onContentLoaded={(data) => {
             if (data.imageTaskId) setImageTaskId(data.imageTaskId);
@@ -255,6 +269,12 @@ export default function Home() {
           </div>
         )}
       </div>
+      <SpectralAnalyzer
+        audioRef={audioRef}
+        isPlaying={isPlaying}
+        height={128}
+        barCount={128}
+      />
     </>
   );
 }

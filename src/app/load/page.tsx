@@ -123,19 +123,19 @@ export default function LoadingScreen() {
           margin-top: -26px;
         }
         @keyframes drop {
-  0% {
-    opacity: 0;
-    transform: translateY(-20px) scale(0);
-  }
-  60% {
-    opacity: 0.8;
-    transform: translateY(5px) scale(1.2);
-  }
-  100% {
-    opacity: 0.9;
-    transform: translateY(0) scale(1);
-  }
-}
+        0% {
+          opacity: 0;
+          transform: translateY(-20px) scale(0);
+        }
+        60% {
+          opacity: 0.8;
+          transform: translateY(5px) scale(1.2);
+        }
+        100% {
+          opacity: 0.9;
+          transform: translateY(0) scale(1);
+        }   
+      }
 
         /* Ink Styles */
         @keyframes load {
