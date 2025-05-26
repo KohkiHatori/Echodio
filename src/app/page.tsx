@@ -258,6 +258,13 @@ export default function Home() {
           </button>
         </div>
 
+        <SpectralAnalyzer
+          audioRef={audioRef}
+          isPlaying={isPlaying}
+          height={128}
+          barCount={128}
+        />
+
         {/* Play/Pause Overlay */}
         {overlayIcon && (
           <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
@@ -269,12 +276,6 @@ export default function Home() {
           </div>
         )}
       </div>
-      <SpectralAnalyzer
-        audioRef={audioRef}
-        isPlaying={isPlaying}
-        height={128}
-        barCount={128}
-      />
     </>
   );
 }

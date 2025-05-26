@@ -10,13 +10,16 @@ interface SpectralAnalyzerProps {
   height?: number;
   /** How many bars to draw */
   barCount?: number;
+  /** Minimum bar height (in px) so each bar remains visible */
+  minHeight?: number;
 }
 
 export default function SpectralAnalyzer({
   audioRef,
   isPlaying,
   height = 128,
-  barCount = 128,
+  barCount = 64,
+  minHeight = 5,
 }: SpectralAnalyzerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -62,7 +65,7 @@ export default function SpectralAnalyzer({
   // 2) Draw loop whenever playback is active
   useEffect(() => {
     function draw() {
-      if (!isPlaying) return;
+      animationRef.current = requestAnimationFrame(draw);
 
       const analyser = analyserRef?.current;
       const canvas = canvasRef?.current;
@@ -74,21 +77,20 @@ export default function SpectralAnalyzer({
       const bufferLength = analyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
 
-      animationRef.current = requestAnimationFrame(draw);
-
       analyser.getByteFrequencyData(dataArray);
       ctx.clearRect(0, 0, canvasWidth, height);
 
       const barWidth = canvasWidth / barCount;
+      ctx.lineWidth = Math.max(1, barWidth * 0.1);
+      ctx.strokeStyle = "#fff";
       for (let i = 0; i < barCount; i++) {
-        const barHeight = dataArray[i];
-        ctx.fillStyle = "rgba(255,255,255,0.8)";
-        ctx.fillRect(
-          i * barWidth,
-          height - barHeight,
-          barWidth - 2,
-          barHeight
-        );
+        const raw = dataArray[i];
+        const barHeight = Math.max(raw, minHeight);
+        const x = i * barWidth + barWidth / 2;
+        ctx.beginPath();
+        ctx.moveTo(x, height);
+        ctx.lineTo(x, height - barHeight);
+        ctx.stroke();
       }
     }
 
@@ -99,7 +101,7 @@ export default function SpectralAnalyzer({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isPlaying, canvasWidth, height, barCount]);
+  }, [isPlaying, canvasWidth, height, barCount, minHeight]);
 
   // 3) Render the canvas fixed at bottom
   return (
@@ -107,7 +109,7 @@ export default function SpectralAnalyzer({
       ref={canvasRef}
       width={canvasWidth}
       height={height}
-      className="fixed bottom-0 left-0 w-full pointer-events-none"
+      className="fixed bottom-0 left-0 w-full pointer-events-none z-0"
     />
   );
 }
