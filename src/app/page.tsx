@@ -1,6 +1,7 @@
 // src/app/page.tsx
 "use client";
 
+import LoadPage from "./load/page";
 import { Spinner } from "@/components/Spinner";
 import UserLocationAndTime from "@/components/UserLocationAndTime";
 import { usePollImage } from "@/hooks/usePollImage";
@@ -15,7 +16,6 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import LoadPage from "./load/page";
 
 interface Song {
   url: string;
@@ -45,7 +45,6 @@ export default function Home() {
       if (idleTimer.current) clearTimeout(idleTimer.current);
       idleTimer.current = setTimeout(() => setShowUI(false), 5000);
     };
-
     ["mousemove", "mousedown", "touchstart", "wheel"].forEach((e) =>
       window.addEventListener(e, resetIdle)
     );
@@ -60,7 +59,7 @@ export default function Home() {
 
   // Automatically hide loader after 5 seconds
   useEffect(() => {
-    const timer = setTimeout(() => setAppLoading(false), 6000);
+    const timer = setTimeout(() => setAppLoading(false), 5000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -221,9 +220,10 @@ export default function Home() {
             </div>
           </header>
 
-          {/* Navigation Arrows */}
+          {/* Left arrow */}
           <button
-            className="fixed top-1/2 transform -translate-y-1/2 left-4 z-50 p-2 bg-black/50 rounded-full transition-all duration-500 ease-in-out"
+            className="fixed top-1/2 transform -translate-y-1/2 z-50 p-2 bg-black/50 rounded-full transition-all duration-500 ease-in-out"
+            style={{ left: sidebarOpen ? "calc(16rem + 1rem)" : "1rem" }}
             onClick={(e) => {
               e.stopPropagation();
               handleSkipBack();
@@ -231,6 +231,8 @@ export default function Home() {
           >
             <ChevronLeftIcon className="w-8 h-8 text-white" />
           </button>
+
+          {/* Right arrow */}
           <button
             className="fixed top-1/2 transform -translate-y-1/2 right-4 z-50 p-2 bg-black/50 rounded-full transition-all duration-500 ease-in-out"
             onClick={(e) => {
