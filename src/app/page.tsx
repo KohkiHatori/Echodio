@@ -35,6 +35,7 @@ export default function Home() {
   const [nextBg, setNextBg] = useState<string | null>(null);
   const [isNextLoaded, setIsNextLoaded] = useState(false);
   const [musicQueue, setMusicQueue] = useState<Song[]>([]);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // Idle-hide UI
   useEffect(() => {
@@ -108,7 +109,10 @@ const TestQueue: { url: string; title: string | null }[] = [
         <LoadPage />
       </div>
 {!appLoading &&  (
-  <FullScreenMusicPlayer songs={TestQueue} />
+  <FullScreenMusicPlayer songs={TestQueue}
+          isPlaying={isPlaying}
+        setIsPlaying={setIsPlaying} />
+  
 )}
 
       {/* Main UI Container */}
