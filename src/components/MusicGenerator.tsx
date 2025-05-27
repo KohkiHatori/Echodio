@@ -3,14 +3,14 @@
 import { useMusicGenerator } from '@/hooks/useMusicGenerator';
 import { useState } from 'react';
 
-export default function MusicGenerator({ onGenerated }: { onGenerated: (taskId: string) => void }) {
-  const { generate, taskId, loading, error } = useMusicGenerator();
+export default function MusicGenerator({ onGenerated }: { onGenerated: (task_id: string) => void }) {
+  const { generate, task_id, loading, error } = useMusicGenerator();
   const [prompt, setPrompt] = useState('lofi jazz');
 
   const handleGenerate = async () => {
     const newTaskId = await generate(prompt, 'instrumental');
-    if (taskId) {
-       console.log('✅ Generated Task ID:', newTaskId); 
+    if (task_id) {
+      console.log('✅ Generated Task ID:', newTaskId);
       onGenerated(newTaskId);
     }
   };
@@ -31,7 +31,7 @@ export default function MusicGenerator({ onGenerated }: { onGenerated: (taskId: 
       >
         {loading ? 'Generating...' : 'Generate Music'}
       </button>
-      {taskId && <p>✅ Created Task ID: <code>{taskId}</code></p>}
+      {task_id && <p>✅ Created Task ID: <code>{task_id}</code></p>}
       {error && <p className="text-red-600">❌ {error}</p>}
     </div>
   );

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-export default function MusicRetriever({ taskId }: { taskId: string }) {
+export default function MusicRetriever({ task_id }: { task_id: string }) {
   const [loading, setLoading] = useState(false);
   const [songUrl, setSongUrl] = useState<string | null>(null);
   const [title, setTitle] = useState<string | null>(null);
@@ -11,14 +11,14 @@ export default function MusicRetriever({ taskId }: { taskId: string }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const handleRetrieve = async () => {
-    if (!taskId) return;
+    if (!task_id) return;
     setLoading(true);
     setError(null);
     setSongUrl(null);
     setTitle(null);
 
     try {
-      const res = await fetch(`/api/music/retrieve?task_id=${taskId}`);
+      const res = await fetch(`/api/music/retrieve?task_id=${task_id}`);
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.error || 'Failed to retrieve music');
@@ -39,12 +39,12 @@ export default function MusicRetriever({ taskId }: { taskId: string }) {
   };
 
   useEffect(() => {
-    if (taskId) {
+    if (task_id) {
       handleRetrieve();
     }
-  }, [taskId]);
+  }, [task_id]);
 
-    useEffect(() => {
+  useEffect(() => {
     if (songUrl && audioRef.current) {
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
@@ -58,7 +58,7 @@ export default function MusicRetriever({ taskId }: { taskId: string }) {
   return (
     <div className="p-4 border rounded space-y-3">
       <h2 className="font-semibold text-lg">🔍 Retrieve Music</h2>
-      <p className="text-sm">Task ID: <code>{taskId}</code></p>
+      <p className="text-sm">Task ID: <code>{task_id}</code></p>
       {loading && (
         <div className="flex items-center space-x-2 text-gray-500">
           <svg className="w-5 h-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

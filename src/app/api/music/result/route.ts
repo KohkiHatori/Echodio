@@ -1,20 +1,22 @@
 import { NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
   const { searchParams } = new URL(request.url);
-  const taskId = searchParams.get('task_id');
+  const task_id = searchParams.get('task_id');
 
-  if (!taskId) {
+  if (!task_id) {
     return NextResponse.json({ error: 'Missing task_id' }, { status: 400 });
   }
 
   try {
-    const response = await fetch(`https://api.goapi.ai/api/v1/task/${taskId}`, {
+    const response = await fetch(`https://api.goapi.ai/api/v1/task/${task_id}`, {
       method: 'GET',
       headers: {
         'x-api-key': process.env.GO_API_KEY || '', // Your GoAPI key from .env
       },
     });
+
+    console.log(response);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -30,5 +32,3 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
-
-

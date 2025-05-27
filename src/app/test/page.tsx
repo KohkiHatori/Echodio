@@ -22,9 +22,9 @@ export default function MusicDemoPage() {
 
       <MusicGenerator onGenerated={setGeneratedTaskId} />
 
-      {generatedTaskId && <MusicRetriever taskId={generatedTaskId} />}
+      {generatedTaskId && <MusicRetriever task_id={generatedTaskId} />}
 
-     {/* <MusicQueuePlayer taskIds={taskIds} /> */}
+      {/* <MusicQueuePlayer taskIds={taskIds} /> */}
     </div>
 
   );

@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 
-export function usePollImage(taskId: string | null, onSuccess: (url: string) => void) {
+export function usePollImage(task_id: string | null, onSuccess: (url: string) => void) {
   useEffect(() => {
-    if (!taskId) return;
+    if (!task_id) return;
 
     let retries = 0;
     const maxRetries = 10;
@@ -12,8 +12,14 @@ export function usePollImage(taskId: string | null, onSuccess: (url: string) => 
         const res = await fetch("/api/image/result", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ taskId }),
+          body: JSON.stringify({ task_id }),
         });
+
+        if (res.status === 400 || res.status === 500) {
+          console.warn(`Polling stopped due to server error: ${res.status}`);
+          clearInterval(interval);
+          return;
+        }
 
         const result = await res.json();
         if (result.status === "completed" && result.imageUrl) {
@@ -29,5 +35,5 @@ export function usePollImage(taskId: string | null, onSuccess: (url: string) => 
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [taskId]);
+  }, [task_id]);
 }

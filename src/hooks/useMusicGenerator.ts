@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 export function useMusicGenerator() {
   const [loading, setLoading] = useState(false);
-  const [taskId, setTaskId] = useState<string | null>(null);
+  const [task_id, setTaskId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const generate = async (prompt: string, lyricsType: string = 'instrumental') => {
@@ -23,7 +23,7 @@ export function useMusicGenerator() {
       if (!res.ok) throw new Error(data.error || 'Failed to generate music');
 
       setTaskId(data.task_id);
-      return data.task_id; 
+      return data.task_id;
     } catch (err: unknown) {
       const error = err as { message?: string };
       setError(error.message || 'Unknown error');
@@ -33,7 +33,5 @@ export function useMusicGenerator() {
     }
   };
 
-  return { taskId, loading, error, generate };
+  return { task_id, loading, error, generate };
 }
-
-

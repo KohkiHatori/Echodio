@@ -1,12 +1,13 @@
 //src/app/api/image/result/route.ts
 import { NextResponse } from 'next/server';
+import { saveImageTask } from '@/services/firestore/imageTasks';
 
 
 // const GENERATION_MODE = "relax";
 
-export async function POST(_request: Request) {
+export async function POST(request: Request) {
   try {
-    // const { timeLabel, weatherDescription } = await request.json();
+    const { timeLabel, weatherDescription } = await request.json();
 
     // const apiKey = process.env.GO_API_KEY;
 
@@ -19,7 +20,7 @@ export async function POST(_request: Request) {
     //   "Content-Type": "application/json"
     // };
 
-    // const prompt = `a half naked middle aged fat man using a laptop on a desk lofi, painting, chil, pop, ${timeLabel}, with ${weatherDescription}.`;
+    const prompt = `a half naked middle aged fat man using a laptop on a desk lofi, painting, chil, pop, ${timeLabel}, with ${weatherDescription}.`;
 
 
     // const payload = {
@@ -48,13 +49,17 @@ export async function POST(_request: Request) {
     // });
 
     // const result = await response.json();
-    // const taskId = result?.data?.task_id;
+    // const task_id = result?.data?.task_id;
 
-    //TEMPORARILY USING A FIXED TASK ID
-    const taskId = "9497f855-c7eb-477d-9eb9-1cf1c5138747";
-    //
+    // TEMPRRARILY using a hard-coded task ID
+    const task_id = "9497f855-c7eb-477d-9eb9-1cf1c5138747";
 
-    return NextResponse.json({ taskId });
+    saveImageTask(task_id, { prompt: prompt });
+
+
+
+
+    return NextResponse.json({ task_id });
   } catch (err) {
     console.error("Image API error:", err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

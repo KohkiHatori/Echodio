@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-
+import { saveMusicTask } from '@/services/firestore/musicTasks';
 
 export async function POST(_request: Request) {
     try {
@@ -41,15 +41,18 @@ export async function POST(_request: Request) {
         // }
 
         // const result = await response.json();
+
+        // saveMusicTask(task_id, { prompt: prompt, lyricsType: lyricsType });
+
         // return NextResponse.json({ task_id: result.task_id });
 
         // TEMPORALILLY using hardcoded task ids to prevent external API calls
-        return NextResponse.json({ task_id: "XXXXXXXXX"});
+        return NextResponse.json({ task_id: "XXXXXXXXX" });
 
     } catch (error) {
         console.error('Error in /api/music:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 
-    
+
 }

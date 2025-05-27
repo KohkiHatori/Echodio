@@ -1,22 +1,28 @@
 import { useEffect } from "react";
 
 export function usePollMusic(
-  taskId: string | null,
+  task_id: string | null,
   onSuccess: (url: string, title: string | null) => void
 ) {
   useEffect(() => {
-    if (!taskId) return;
+    if (!task_id) return;
 
     let retries = 0;
     const maxRetries = 10;
 
     const interval = setInterval(async () => {
       try {
-        const res = await fetch("/api/music/retrieve", {
+        const res = await fetch("/api/music/result", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ taskId }),
+          body: JSON.stringify({ task_id }),
         });
+
+        if (res.status === 400 || res.status === 500) {
+          console.warn(`Polling stopped due to server error: ${res.status}`);
+          clearInterval(interval);
+          return;
+        }
 
         const result = await res.json();
 
@@ -37,5 +43,5 @@ export function usePollMusic(
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [taskId]);
+  }, [task_id]);
 }
