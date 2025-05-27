@@ -26,6 +26,7 @@ export default function Home() {
   const [appLoading, setAppLoading] = useState(true);
   // Player/UI states
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarFullyClosed, setSidebarFullyClosed] = useState(true);
   const [showUI, setShowUI] = useState(true);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -62,6 +63,13 @@ export default function Home() {
     const timer = setTimeout(() => setAppLoading(false), 5000);
     return () => clearTimeout(timer);
   }, []);
+
+  // manage sidebar closing
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+    setSidebarFullyClosed(false);
+    setTimeout(() => setSidebarFullyClosed(true), 500); // match the transition duration (500ms)
+  };
 
   // Polling hooks
   usePollImage(imageTaskId, setNextBg);
@@ -209,7 +217,7 @@ export default function Home() {
               className="absolute top-4 left-4 p-2"
               onClick={(e) => {
                 e.stopPropagation();
-                setSidebarOpen(false);
+                closeSidebar();
               }}
             >
               <Bars3Icon className="w-6 h-6" />
@@ -220,7 +228,7 @@ export default function Home() {
           </aside>
 
           {/* Open Sidebar Button */}
-          {!sidebarOpen && (
+          {!sidebarOpen && sidebarFullyClosed && (
             <button
               className="fixed top-4 left-4 z-50 p-2 bg-black/50 rounded-full"
               onClick={(e) => {
