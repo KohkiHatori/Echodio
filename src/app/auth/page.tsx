@@ -5,6 +5,7 @@ import {
   createUserWithEmailAndPassword,
   GithubAuthProvider,
   GoogleAuthProvider,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup
 } from 'firebase/auth';
@@ -27,7 +28,7 @@ export default function Login() {
       console.log("Google user:", result.user);
       router.push('/');
     } catch (err) {
-       const error = err as { code?: string; message?: string };
+      const error = err as { code?: string; message?: string };
       if (error.code === 'auth/popup-closed-by-user') {
       } else {
         console.error("Google login error:", err);
@@ -46,7 +47,7 @@ export default function Login() {
       console.log("GitHub user:", result.user);
       router.push('/');
     } catch (err) {
-       const error = err as { code?: string; message?: string };
+      const error = err as { code?: string; message?: string };
       if (error.code === 'auth/popup-closed-by-user') {
         console.warn("Popup closed by user.");
       } else {
@@ -57,23 +58,79 @@ export default function Login() {
     }
   };
 
+
   const loginWithEmail = async () => {
     try {
+      if (!email || !password) {
+        alert("Please enter both email and password.");
+        return;
+      }
+
       const result = await signInWithEmailAndPassword(auth, email, password);
       console.log("Email user:", result.user);
       router.push('/');
     } catch (err) {
-      console.error("Email login error:", err);
+      const error = err as { code?: string; message?: string };
+
+      switch (error.code) {
+        case 'auth/wrong-password':
+          alert("Incorrect password.");
+          break;
+        case 'auth/invalid-email':
+          alert("Invalid email format.");
+          break;
+        case 'auth/invalid-credential':
+          alert("Invalid credentials. Please check your email and password.");
+          break;
+        default:
+          console.error("Email login error:", error);
+          alert("Login failed. Please try again.");
+      }
     }
   };
 
   const registerWithEmail = async () => {
     try {
+      if (!email || !password) {
+        alert("Please enter both email and password.");
+        return;
+      }
+
       const result = await createUserWithEmailAndPassword(auth, email, password);
       console.log("Registered user:", result.user);
       router.push('/');
     } catch (err) {
-      console.error("Registration error:", err);
+      const error = err as { code?: string; message?: string };
+
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          alert("This email is already in use. Try logging in instead.");
+          break;
+        case 'auth/invalid-email':
+          alert("Invalid email format.");
+          break;
+        case 'auth/weak-password':
+          alert("Password should be at least 6 characters.");
+          break;
+        default:
+          console.error("Registration error:", error);
+          alert("Registration failed. Please try again.");
+      }
+    }
+  };
+
+  const resetPassword = async () => {
+    if (!email) {
+      alert("Please enter your email to reset your password.");
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      alert("Password reset email sent.");
+    } catch (err) {
+      console.error("Reset password error:", err);
+      alert("Failed to send password reset email.");
     }
   };
 
@@ -107,6 +164,12 @@ export default function Login() {
           className="w-full py-2 px-4 bg-gray-300 text-black rounded hover:bg-gray-400 transition cursor-pointer"
         >
           Register
+        </button>
+        <button
+          onClick={resetPassword}
+          className="w-full py-2 px-4 bg-yellow-400 text-black rounded hover:bg-yellow-500 transition cursor-pointer"
+        >
+          Reset Password
         </button>
       </div>
 
