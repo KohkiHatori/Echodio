@@ -35,7 +35,8 @@ export default function Home() {
   const [nextBg, setNextBg] = useState<string | null>(null);
   const [isNextLoaded, setIsNextLoaded] = useState(false);
   const [musicQueue, setMusicQueue] = useState<Song[]>([]);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [overlayIcon, setOverlayIcon] = useState<'play' | 'pause' | null>(null);
 
   // Idle-hide UI
   useEffect(() => {
@@ -81,33 +82,33 @@ export default function Home() {
   }, [isNextLoaded, nextBg]);
 
 
-// In page.tsx (or wherever you define the test queue)
-const TestQueue: { url: string; title: string | null }[] = [
-  {
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    title: "SoundHelix Song 1",
-  },
-  {
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-    title: "SoundHelix Song 2",
-  },
-  {
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-    title: "SoundHelix Song 3",
-  },
-  {
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
-    title: "SoundHelix Song 4",
-  },
-  {
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
-    title: "SoundHelix Song 5",
-  },
-  {
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
-    title: "SoundHelix Song 6",
-  },
-];
+  // In page.tsx (or wherever you define the test queue)
+  const TestQueue: { url: string; title: string | null }[] = [
+    {
+      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+      title: "SoundHelix Song 1",
+    },
+    {
+      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+      title: "SoundHelix Song 2",
+    },
+    {
+      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+      title: "SoundHelix Song 3",
+    },
+    {
+      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+      title: "SoundHelix Song 4",
+    },
+    {
+      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+      title: "SoundHelix Song 5",
+    },
+    {
+      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
+      title: "SoundHelix Song 6",
+    },
+  ];
 
 
   return (
@@ -115,30 +116,45 @@ const TestQueue: { url: string; title: string | null }[] = [
       {/* Loader Overlay */}
       <div
         className={
-          `fixed inset-0 z-50 transition-opacity duration-700 ease-out ${
-            appLoading ? "opacity-100" : "opacity-0 pointer-events-none"
+          `fixed inset-0 z-50 transition-opacity duration-700 ease-out ${appLoading ? "opacity-100" : "opacity-0 pointer-events-none"
           }`
         }
       >
         <LoadPage />
       </div>
-{!appLoading &&  (
-  <FullScreenMusicPlayer 
-  audioRef={audioRef}
-  songs={TestQueue}
+      {!appLoading && (
+        <FullScreenMusicPlayer
+          audioRef={audioRef}
+          songs={TestQueue}
           isPlaying={isPlaying}
-        setIsPlaying={setIsPlaying} />
-  
-)}
+          setIsPlaying={setIsPlaying}
+          overlayIcon={overlayIcon}
+          setOverlayIcon={setOverlayIcon}
+        />
+
+      )}
 
       {/* Main UI Container */}
       <div
         className={
-          `fixed inset-0 transition-opacity duration-700 ease-out ${
-            appLoading ? "opacity-0 pointer-events-none" : "opacity-100"
+          `fixed inset-0 transition-opacity duration-700 ease-out ${appLoading ? "opacity-0 pointer-events-none" : "opacity-100"
           }`
         }
         // onClick={togglePlay}
+        onClickCapture={(e) => {
+          const clickedElement = e.target as HTMLElement;
+          const isInteractive =
+            clickedElement.closest('button') ||
+            clickedElement.closest('a') ||
+            clickedElement.closest('input');
+
+          if (!isInteractive) {
+            const next = !isPlaying;
+            setIsPlaying(next);
+            setOverlayIcon(next ? 'play' : 'pause');
+            setTimeout(() => setOverlayIcon(null), 1000);
+          }
+        }}
       >
         <audio
           ref={audioRef}
@@ -159,7 +175,7 @@ const TestQueue: { url: string; title: string | null }[] = [
           alt="Background"
           fill
           priority
-          className="absolute inset-0 -z-20 object-cover transition-opacity duration-500 opacity-100"
+          className="absolute inset-0 z-0 object-cover transition-opacity duration-500 opacity-100"
         />
         {nextBg && (
           <Image
@@ -169,8 +185,7 @@ const TestQueue: { url: string; title: string | null }[] = [
             priority
             onLoad={() => setIsNextLoaded(true)}
             className={
-              `absolute inset-0 -z-10 object-cover transition-opacity duration-[2000ms] ${
-                isNextLoaded ? "opacity-100" : "opacity-0"
+              `absolute inset-0 z-0 object-cover transition-opacity duration-[2000ms] ${isNextLoaded ? "opacity-100" : "opacity-0"
               }`
             }
           />
@@ -179,14 +194,13 @@ const TestQueue: { url: string; title: string | null }[] = [
         {/* UI Elements (sidebar, controls, etc.) */}
         <div
           className={
-            `${showUI ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"} transition-opacity duration-500`
+            `${showUI ? "opacity-100 pointer-events-auto z-20" : "opacity-0 pointer-events-none"} transition-opacity duration-500`
           }
         >
           {/* Sidebar */}
           <aside
             className={
-              `fixed top-0 left-0 h-full w-64 bg-gray-900 text-white transform transition-transform duration-500 ease-in-out ${
-                sidebarOpen ? "translate-x-0" : "-translate-x-full"
+              `fixed top-0 left-0 h-full w-64 bg-gray-900 text-white transform transition-transform duration-500 ease-in-out ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
               }`
             }
             onClick={(e) => e.stopPropagation()}
@@ -237,7 +251,7 @@ const TestQueue: { url: string; title: string | null }[] = [
             </div>
           </header>
 
-    
+
         </div>
 
         <SpectralAnalyzer
@@ -247,7 +261,7 @@ const TestQueue: { url: string; title: string | null }[] = [
           barCount={128}
         />
 
-      
+
       </div>
     </>
   );

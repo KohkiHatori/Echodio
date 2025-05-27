@@ -6,14 +6,16 @@ import {
   PauseIcon,
   PlayIcon,
 } from '@heroicons/react/24/outline';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 interface Song { url: string; title: string | null }
 interface Props {
   audioRef: React.RefObject<HTMLAudioElement | null>;
   songs: Song[];
   isPlaying: boolean;
-  setIsPlaying: (v: boolean) => void;
+  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
+  overlayIcon: 'play' | 'pause' | null;
+  setOverlayIcon: (icon: 'play' | 'pause' | null) => void;
 }
 
 export default function FullScreenMusicPlayer({
@@ -21,10 +23,10 @@ export default function FullScreenMusicPlayer({
   songs,
   isPlaying,
   setIsPlaying,
+  overlayIcon,
+  setOverlayIcon,
 }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [overlayIcon, setOverlayIcon] = useState<'play' | 'pause' | null>(null);
-
   const currentSong = songs[currentIndex];
 
   // 1) Play / Pause effect
@@ -33,7 +35,7 @@ export default function FullScreenMusicPlayer({
     if (!audio) return;
 
     if (isPlaying) {
-      audio.play().catch(() => {});
+      audio.play().catch(() => { });
     } else {
       audio.pause();
     }
@@ -54,6 +56,16 @@ export default function FullScreenMusicPlayer({
   }, [currentIndex, songs.length]);
 
   // 3) Spacebar toggles play/pause
+
+  const togglePlay = useCallback(() => {
+    setIsPlaying((prev: boolean) => {
+      const next = !prev;
+      setOverlayIcon(next ? 'play' : 'pause');
+      setTimeout(() => setOverlayIcon(null), 1000);
+      return next;
+    });
+  }, [setOverlayIcon]);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
@@ -63,14 +75,8 @@ export default function FullScreenMusicPlayer({
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [isPlaying]);
+  }, [togglePlay]);
 
-  const togglePlay = () => {
-    const next = !isPlaying;
-    setIsPlaying(next);
-    setOverlayIcon(next ? 'play' : 'pause');
-    setTimeout(() => setOverlayIcon(null), 1000);
-  };
 
   const handleSkipBack = () =>
     currentIndex > 0 && setCurrentIndex((i) => i - 1);
@@ -83,10 +89,12 @@ export default function FullScreenMusicPlayer({
         <audio ref={audioRef} src={currentSong.url} autoPlay hidden />
       )}
 
-      <div className="fixed inset-0 z-50" onClick={togglePlay}>
+      <div className="fixed inset-0 z-10 pointer-events-none">
+
+        {/* Skip Back Button */}
         {currentIndex > 0 && (
           <button
-            className="fixed top-1/2 left-4 -translate-y-1/2 p-2 bg-black/50 rounded-full"
+            className="fixed top-1/2 left-4 -translate-y-1/2 p-2 bg-black/50 rounded-full pointer-events-auto"
             onClick={(e) => {
               e.stopPropagation();
               handleSkipBack();
@@ -96,9 +104,10 @@ export default function FullScreenMusicPlayer({
           </button>
         )}
 
+        {/* Skip Forward Button */}
         {currentIndex < songs.length - 1 && (
           <button
-            className="fixed top-1/2 right-4 -translate-y-1/2 p-2 bg-black/50 rounded-full"
+            className="fixed top-1/2 right-4 -translate-y-1/2 p-2 bg-black/50 rounded-full pointer-events-auto"
             onClick={(e) => {
               e.stopPropagation();
               handleSkipForward();
@@ -108,8 +117,9 @@ export default function FullScreenMusicPlayer({
           </button>
         )}
 
+        {/* Play/Pause Overlay Icon */}
         {overlayIcon && (
-          <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             {overlayIcon === 'play' ? (
               <PlayIcon className="w-16 h-16 text-white animate-pulse" />
             ) : (
@@ -118,7 +128,6 @@ export default function FullScreenMusicPlayer({
           </div>
         )}
       </div>
-
       {/* If you still want the analyzer here: */}
 
     </>

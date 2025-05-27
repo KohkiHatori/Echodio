@@ -58,7 +58,6 @@ export async function POST(request: Request) {
 
 
 
-
     return NextResponse.json({ task_id });
   } catch (err) {
     console.error("Image API error:", err);
