@@ -4,9 +4,9 @@
 // components
 import FullScreenMusicPlayer from "@/components/FullMusicPlyaer";
 import SpectralAnalyzer from "@/components/SpectralAnalyzer";
-import { Spinner } from "@/components/Spinner";
 import UserLocationAndTime from "@/components/UserLocationAndTime";
-import FavoriteButton from "@/components/FavoriteButton";
+import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 
 // hooks
 import { usePollImage } from "@/hooks/usePollImage";
@@ -211,68 +211,15 @@ export default function Home() {
             `${showUI ? "opacity-100 pointer-events-auto z-20" : "opacity-0 pointer-events-none"} transition-opacity duration-500`
           }
         >
-          {/* Sidebar */}
-          <aside
-            className={
-              `fixed top-0 left-0 h-full w-64 bg-gray-900 text-white transform transition-transform duration-500 ease-in-out ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
-              }`
-            }
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="absolute top-4 left-4 p-2"
-              onClick={(e) => {
-                e.stopPropagation();
-                closeSidebar();
-              }}
-            >
-              <Bars3Icon className="w-6 h-6" />
-            </button>
-            <div className="pt-16 px-6 space-y-6">
-              {/* Genre filters... */}
-            </div>
-          </aside>
+          <Sidebar />
 
-          {/* Open Sidebar Button */}
-          {!sidebarOpen && sidebarFullyClosed && (
-            <button
-              className="fixed top-4 left-4 z-50 p-2 bg-black/50 rounded-full"
-              onClick={(e) => {
-                e.stopPropagation();
-                setSidebarOpen(true);
-              }}
-            >
-              <Bars3Icon className="w-6 h-6 text-white" />
-            </button>
-          )}
-
-          {/* Header (Avatar + Spinner) */}
-          <header
-            className="fixed top-4 right-4 z-50"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="bg-black/60 backdrop-blur-sm rounded-2xl p-3 flex flex-col items-center space-y-2">
-              <Link href="/auth">
-                <Image
-                  src="/avatar.png"
-                  alt="User Avatar"
-                  width={40}
-                  height={40}
-                  className="rounded-full ring-2 ring-white cursor-pointer"
-                />
-              </Link>
-              <Spinner />
-              <FavoriteButton
-                userId={userId}
-                musicTaskId={musicTaskId}
-                imageTaskId={imageTaskId}
-              />
-            </div>
-          </header>
-
+          <Header
+            musicTaskId={musicTaskId}
+            imageTaskId={imageTaskId}
+          />
 
         </div>
-        <SpectralAnalyzer/>
+        <SpectralAnalyzer />
       </div>
     </>
   );
