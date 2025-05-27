@@ -5,6 +5,7 @@ import { Bars3Icon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import Link from 'next/link';
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,35 +48,41 @@ export default function Sidebar() {
             <Bars3Icon className="w-6 h-6 text-white" />
           </button>
 
-          {/* Logout Button (only if logged in) */}
-          {user && (
+          {/* Login/Logout Button */}
+          {user ? (
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                signOut(auth);
+                handleLogout();
               }}
               className="text-white underline text-sm cursor-pointer"
             >
               Logout
             </button>
+          ) : (
+            <Link
+              href="/auth"
+              className="text-white underline text-sm cursor-pointer"
+              onClick={(e) => e.stopPropagation()}
+            >
+              Login
+            </Link>
           )}
         </div>
-      </aside >
+      </aside>
 
       {/* Open Sidebar Button */}
-      {
-        !isOpen && fullyClosed && (
-          <button
-            className="fixed top-4 left-4 z-50 p-2 bg-black/50 rounded-full cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsOpen(true);
-            }}
-          >
-            <Bars3Icon className="w-6 h-6 text-white" />
-          </button>
-        )
-      }
+      {!isOpen && fullyClosed && (
+        <button
+          className="fixed top-4 left-4 z-50 p-2 bg-black/50 rounded-full cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen(true);
+          }}
+        >
+          <Bars3Icon className="w-6 h-6 text-white" />
+        </button>
+      )}
     </>
   );
 }

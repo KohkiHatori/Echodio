@@ -1,7 +1,6 @@
 // src/components/Header.tsx
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
 import { Spinner } from './Spinner';
 import FavoriteButton from './FavoriteButton';
@@ -20,15 +19,13 @@ export default function Header({ musicTaskId, imageTaskId }: HeaderProps) {
       onClick={(e) => e.stopPropagation()}
     >
       <div className="bg-black/60 backdrop-blur-sm rounded-2xl p-3 flex flex-col items-center space-y-2">
-        <Link href="/auth">
-          <Image
-            src="/avatar.png"
-            alt="User Avatar"
-            width={40}
-            height={40}
-            className="rounded-full ring-2 ring-white cursor-pointer"
-          />
-        </Link>
+        <Image
+          src="/avatar.png"
+          alt="User Avatar"
+          width={40}
+          height={40}
+          className="rounded-full ring-2 ring-white"
+        />
         <Spinner />
         <FavoriteButton
           userId={userId}
