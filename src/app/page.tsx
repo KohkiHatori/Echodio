@@ -1,10 +1,14 @@
 // src/app/page.tsx
 "use client";
 
+// components
 import FullScreenMusicPlayer from "@/components/FullMusicPlyaer";
 import SpectralAnalyzer from "@/components/SpectralAnalyzer";
 import { Spinner } from "@/components/Spinner";
 import UserLocationAndTime from "@/components/UserLocationAndTime";
+import FavoriteButton from "@/components/FavoriteButton";
+
+// hooks
 import { usePollImage } from "@/hooks/usePollImage";
 import { usePollMusic } from "@/hooks/usePollMusic";
 import {
@@ -14,7 +18,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import LoadPage from "./load/page";
-
+import { useAuth } from "@/context/AuthContext";
 
 interface Song {
   url: string;
@@ -38,6 +42,8 @@ export default function Home() {
   const [musicQueue, setMusicQueue] = useState<Song[]>([]);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [overlayIcon, setOverlayIcon] = useState<'play' | 'pause' | null>(null);
+
+  const { userId } = useAuth();
 
   // Idle-hide UI
   useEffect(() => {
@@ -256,6 +262,11 @@ export default function Home() {
                 />
               </Link>
               <Spinner />
+              <FavoriteButton
+                userId={userId}
+                musicTaskId={musicTaskId}
+                imageTaskId={imageTaskId}
+              />
             </div>
           </header>
 

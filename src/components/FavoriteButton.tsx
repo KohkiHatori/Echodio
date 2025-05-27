@@ -1,0 +1,71 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
+import { doc, getDoc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+
+interface FavoriteButtonProps {
+  userId: string | null;
+  musicTaskId: string | null;
+  imageTaskId: string | null;
+}
+
+export default function FavoriteButton({
+  userId,
+  musicTaskId,
+  imageTaskId,
+}: FavoriteButtonProps) {
+  const [isFavorited, setIsFavorited] = useState(false);
+
+  useEffect(() => {
+    const checkIfFavorited = async () => {
+      if (!userId || !musicTaskId) return;
+      const docRef = doc(db, 'users', userId, 'favorites', musicTaskId);
+      const snap = await getDoc(docRef);
+      setIsFavorited(snap.exists());
+    };
+    checkIfFavorited();
+  }, [userId, musicTaskId]);
+
+  const toggleFavorite = async () => {
+    if (!userId || !musicTaskId || !imageTaskId) return;
+
+    const docRef = doc(db, 'users', userId, 'favorites', musicTaskId);
+
+    const optimisticState = !isFavorited;
+    setIsFavorited(optimisticState); // Update UI immediately
+
+    try {
+      if (optimisticState) {
+        await setDoc(docRef, {
+          imageTaskId,
+          favoritedAt: serverTimestamp(),
+        });
+      } else {
+        await deleteDoc(docRef);
+      }
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
+      //  Rollback UI if error occurs
+      setIsFavorited(!optimisticState);
+    }
+  };
+
+  if (!userId) return null;
+
+  const Icon = isFavorited ? HeartSolid : HeartOutline;
+
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        toggleFavorite();
+      }}
+      className="hover:scale-110 transition-transform"
+    >
+      <Icon className={`w-6 h-6 ${isFavorited ? 'text-red-500' : 'text-white'}`} />
+    </button>
+  );
+}
