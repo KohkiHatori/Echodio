@@ -1,4 +1,3 @@
-// src/context/AuthContext.tsx
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
@@ -7,10 +6,15 @@ import { auth } from '@/lib/firebase';
 
 interface AuthContextType {
   user: User | null;
+  userId: string | null;
   loading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  userId: null,
+  loading: true,
+});
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -24,8 +28,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, []);
 
+  const userId = user?.uid || null;
+
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, userId, loading }}>
       {children}
     </AuthContext.Provider>
   );

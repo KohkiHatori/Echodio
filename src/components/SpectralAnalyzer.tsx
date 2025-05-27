@@ -40,7 +40,7 @@ export default function SpectralAnalyzer({
   // 1) Initialize Web Audio & AnalyserNode
   useEffect(() => {
     const audioEl = audioRef?.current;
-    if (!audioEl) return;
+    if (!audioEl || audioEl.dataset.analyzed === "true") return;
 
     const audioCtx = new AudioContext();
     const srcNode = audioCtx.createMediaElementSource(audioEl);
@@ -49,6 +49,8 @@ export default function SpectralAnalyzer({
 
     srcNode.connect(analyser);
     analyser.connect(audioCtx.destination);
+
+    audioEl.dataset.analyzed = "true"; // ✅ mark as connected
 
     audioCtxRef.current = audioCtx;
     analyserRef.current = analyser;
@@ -60,7 +62,7 @@ export default function SpectralAnalyzer({
       audioCtxRef.current?.close();
       audioCtxRef.current = null;
     };
-  }, [audioRef]);
+  }, []);
 
   // 2) Draw loop whenever playback is active
   useEffect(() => {
