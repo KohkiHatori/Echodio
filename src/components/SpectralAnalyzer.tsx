@@ -6,7 +6,6 @@ export default function SpectralAnalyzer() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const barCount = 128;
   const lastBarValuesRef = useRef(new Array(barCount).fill(0));
-  const intensityRef = useRef(0);
 
   useEffect(() => {
     if (!audioRef.current) return;
@@ -14,7 +13,7 @@ export default function SpectralAnalyzer() {
     // Set up AudioContext/Analyser
     const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
     const analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 256;
+    analyser.fftSize = 16384;
 
     const source = audioCtx.createMediaElementSource(audioRef.current);
     source.connect(analyser);
@@ -29,7 +28,7 @@ export default function SpectralAnalyzer() {
 
     function resizeCanvas() {
       canvas.width = window.innerWidth;
-      canvas.height = 600; // Bar height
+      canvas.height = 300; // Bar height
     }
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
@@ -39,46 +38,30 @@ export default function SpectralAnalyzer() {
       analyser.getByteFrequencyData(dataArray);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const totalGap = canvas.width - (barCount * 1);
-      const gap = barCount > 1 ? totalGap / (barCount - 1) : 0;
-
-      const usableBins = Math.floor(bufferLength * (2 / 3));
-      // Calculate audio progress ratio
       let progress = 0;
       if (audioRef.current && audioRef.current.duration > 0) {
         progress = audioRef.current.currentTime / audioRef.current.duration;
       }
-      const minBarHeight = 0;
 
+      const totalGap = canvas.width - (barCount * 1);
+      const gap = barCount > 1 ? totalGap / (barCount - 1) : 0;
+      const barWidth = 1;
+      // Temporal smoothing variables
       const lastBarValues = lastBarValuesRef.current;
-      const smoothingFactor = 0.7;
-
-      const isPlaying = audioRef.current && !audioRef.current.paused && !audioRef.current.ended;
-      const fadeSpeed = 0.01;
-      let target = isPlaying ? 1 : 0;
-      intensityRef.current += (target - intensityRef.current) * fadeSpeed;
-      const intensity = intensityRef.current;
-
+      const smoothingFactor = 0.9; // much more smoothing
+      // Only use the first barCount bins from dataArray
       for (let i = 0; i < barCount; i++) {
-        const dataIdx = Math.floor((i / barCount) * usableBins);
-        const rawValue = dataArray[dataIdx] / 255;
-        const scaledValue = Math.pow(rawValue, 0.5); // square root scaling
-        const rawHeight = scaledValue * canvas.height;
-        const barHeight = Math.max(minBarHeight, rawHeight);
-        const x = i * (1 + gap);
-
-        const blended = lastBarValues[i] * smoothingFactor + barHeight * (1 - smoothingFactor);
-        lastBarValues[i] = blended;
-
-        const fadedHeight = blended * intensity;
-
+        const rawValue = dataArray[i] / 255;
+        const scaledValue = Math.pow(rawValue, 0.5); // square root normalization
+        const barHeight = scaledValue * canvas.height;
+        const x = i * (barWidth + gap);
         const color = (i / barCount) < progress ? "#ff3232" : "#fff";
-        ctx.save();
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = color;
         ctx.fillStyle = color;
-        ctx.fillRect(x, canvas.height - fadedHeight, 1, fadedHeight);
-        ctx.restore();
+        // Blend with previous value for temporal smoothing
+        const shownHeight = barHeight;
+        const blended = lastBarValues[i] * smoothingFactor + shownHeight * (1 - smoothingFactor);
+        lastBarValues[i] = blended;
+        ctx.fillRect(x, canvas.height - blended, barWidth, blended);
       }
       rafId = requestAnimationFrame(draw);
     };
@@ -114,7 +97,7 @@ export default function SpectralAnalyzer() {
           pointerEvents: 'none', // Don't block clicks!
           background: 'transparent',
         }}
-        height={64}
+        height={200}
       />
     </>
   );
