@@ -1,117 +1,94 @@
-// components/SpectralAnalyzer.tsx
-"use client";
+'use client';
+import { useEffect, useRef } from "react";
 
-import React, { RefObject, useEffect, useRef, useState } from "react";
-
-interface SpectralAnalyzerProps {
-  audioRef: RefObject<HTMLAudioElement | null>;
-  isPlaying: boolean;
-  /** Height in pixels of the analyzer strip */
-  height?: number;
-  /** How many bars to draw */
-  barCount?: number;
-  /** Minimum bar height (in px) so each bar remains visible */
-  minHeight?: number;
-}
-
-export default function SpectralAnalyzer({
-  audioRef,
-  isPlaying,
-  height = 128,
-  barCount = 64,
-  minHeight = 5,
-}: SpectralAnalyzerProps) {
+export default function SpectralAnalyzer() {
+  const audioRef = useRef<HTMLAudioElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const animationRef = useRef<number | null>(null);
 
-  // Track the viewport width so we can size the canvas
-  const [canvasWidth, setCanvasWidth] = useState(0);
   useEffect(() => {
-    function onResize() {
-      setCanvasWidth(window.innerWidth);
-    }
-    onResize();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
+    if (!audioRef.current) return;
 
-  // 1) Initialize Web Audio & AnalyserNode
-  useEffect(() => {
-    const audioEl = audioRef?.current;
-    if (!audioEl || audioEl.dataset.analyzed === "true") return;
-
-    const audioCtx = new AudioContext();
-    const srcNode = audioCtx.createMediaElementSource(audioEl);
+    // Set up AudioContext/Analyser
+    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
     const analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 16384;
+    analyser.fftSize = 256;
 
-    srcNode.connect(analyser);
+    const source = audioCtx.createMediaElementSource(audioRef.current);
+    source.connect(analyser);
     analyser.connect(audioCtx.destination);
 
-    audioEl.dataset.analyzed = "true"; // ✅ mark as connected
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
 
-    audioCtxRef.current = audioCtx;
-    analyserRef.current = analyser;
+    let rafId: number;
+    const canvas = canvasRef.current!;
+    const ctx = canvas.getContext("2d")!;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = 100; // Bar height
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const draw = () => {
+      analyser.getByteFrequencyData(dataArray);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const barCount = 128;
+      const barWidth = 1; // Thin bars
+      const totalGap = canvas.width - (barCount * barWidth);
+      const gap = barCount > 1 ? totalGap / (barCount - 1) : 0;
+
+      const usableBins = Math.floor(bufferLength * (2 / 3));
+      for (let i = 0; i < barCount; i++) {
+        const dataIdx = Math.floor((i / barCount) * usableBins);
+        const barHeight = (dataArray[dataIdx] / 255) * canvas.height;
+        const x = i * (barWidth + gap);
+
+        ctx.save();
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = "#fff";
+        ctx.fillStyle = "white";
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+        ctx.restore();
+      }
+      rafId = requestAnimationFrame(draw);
+    };
+    draw();
+
+    function resumeAudioCtx() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+    audioRef.current.addEventListener('play', resumeAudioCtx);
 
     return () => {
-      if (srcNode) srcNode.disconnect();
-      if (analyser) analyser.disconnect();
-      analyserRef.current = null;
-      audioCtxRef.current?.close();
-      audioCtxRef.current = null;
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', resizeCanvas);
+      if (audioRef.current) audioRef.current.removeEventListener('play', resumeAudioCtx);
+      audioCtx.close();
     };
   }, []);
 
-  // 2) Draw loop whenever playback is active
-  useEffect(() => {
-    function draw() {
-      animationRef.current = requestAnimationFrame(draw);
-
-      const analyser = analyserRef?.current;
-      const canvas = canvasRef?.current;
-      if (!analyser || !canvas) return;
-
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
-
-      analyser.getByteFrequencyData(dataArray);
-      ctx.clearRect(0, 0, canvasWidth, height);
-
-      const barWidth = canvasWidth / barCount;
-      ctx.lineWidth = Math.max(1, barWidth * 0.1);
-      ctx.strokeStyle = "#fff";
-      for (let i = 0; i < barCount; i++) {
-        const raw = dataArray[i];
-        const barHeight = Math.max(raw, minHeight);
-        const x = i * barWidth + barWidth / 2;
-        ctx.beginPath();
-        ctx.moveTo(x, height);
-        ctx.lineTo(x, height - barHeight);
-        ctx.stroke();
-      }
-    }
-
-    draw();
-
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [isPlaying, canvasWidth, height, barCount, minHeight]);
-
-  // 3) Render the canvas fixed at bottom
+  // Render audio element with controls and canvas visualizer
   return (
-    <canvas
-      ref={canvasRef}
-      width={canvasWidth}
-      height={height}
-      className="fixed bottom-0 left-0 w-full pointer-events-none z-0"
-    />
+    <>
+      <audio ref={audioRef} src="/test.mp3" controls style={{ width: '100%' }} />
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: 'fixed',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 40,
+          width: '100vw',
+          height: '64px',
+          pointerEvents: 'none', // Don't block clicks!
+          background: 'transparent',
+        }}
+        height={64}
+      />
+    </>
   );
 }

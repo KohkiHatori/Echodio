@@ -272,15 +272,7 @@ export default function Home() {
 
 
         </div>
-
-        <SpectralAnalyzer
-          audioRef={audioRef}
-          isPlaying={isPlaying}
-          height={128}
-          barCount={128}
-        />
-
-
+        <SpectralAnalyzer/>
       </div>
     </>
   );
