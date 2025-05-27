@@ -7,6 +7,7 @@ import SpectralAnalyzer from "@/components/SpectralAnalyzer";
 import UserLocationAndTime from "@/components/UserLocationAndTime";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
+import DateWeatherHeader from "@/components/DateWeatherHeader";
 
 // hooks
 import { usePollImage } from "@/hooks/usePollImage";
@@ -213,10 +214,11 @@ export default function Home() {
         >
           <Sidebar />
 
-          <Header
+          {/* <Header
             musicTaskId={musicTaskId}
             imageTaskId={imageTaskId}
-          />
+          /> */}
+          <DateWeatherHeader/>
 
         </div>
         <SpectralAnalyzer />
