@@ -26,7 +26,7 @@ export default function SpectralAnalyzer() {
 
     function resizeCanvas() {
       canvas.width = window.innerWidth;
-      canvas.height = 100; // Bar height
+      canvas.height = 120; // Bar height
     }
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
@@ -41,15 +41,21 @@ export default function SpectralAnalyzer() {
       const gap = barCount > 1 ? totalGap / (barCount - 1) : 0;
 
       const usableBins = Math.floor(bufferLength * (2 / 3));
+      // Calculate audio progress ratio
+      let progress = 0;
+      if (audioRef.current && audioRef.current.duration > 0) {
+        progress = audioRef.current.currentTime / audioRef.current.duration;
+      }
       for (let i = 0; i < barCount; i++) {
         const dataIdx = Math.floor((i / barCount) * usableBins);
         const barHeight = (dataArray[dataIdx] / 255) * canvas.height;
         const x = i * (barWidth + gap);
 
+        const color = (i / barCount) < progress ? "#ff3232" : "#fff";
         ctx.save();
         ctx.shadowBlur = 8;
-        ctx.shadowColor = "#fff";
-        ctx.fillStyle = "white";
+        ctx.shadowColor = color;
+        ctx.fillStyle = color;
         ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
         ctx.restore();
       }
