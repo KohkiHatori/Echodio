@@ -2,24 +2,21 @@
 "use client";
 
 // components
+import DateWeatherHeader from "@/components/DateWeatherHeader";
 import FullScreenMusicPlayer from "@/components/FullMusicPlyaer";
+import Sidebar from "@/components/Sidebar";
 import SpectralAnalyzer from "@/components/SpectralAnalyzer";
 import UserLocationAndTime from "@/components/UserLocationAndTime";
-import Header from "@/components/Header";
-import Sidebar from "@/components/Sidebar";
-import DateWeatherHeader from "@/components/DateWeatherHeader";
 
 // hooks
+import { useAuth } from "@/context/AuthContext";
+import { useAppLoader } from "@/hooks/useAppLoader";
+import { useIdleHideUI } from "@/hooks/useIdleHidUI";
 import { usePollImage } from "@/hooks/usePollImage";
 import { usePollMusic } from "@/hooks/usePollMusic";
-import {
-  Bars3Icon
-} from "@heroicons/react/24/outline";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import LoadPage from "./load/page";
-import { useAuth } from "@/context/AuthContext";
 
 interface Song {
   url: string;
@@ -47,29 +44,10 @@ export default function Home() {
   const { userId } = useAuth();
 
   // Idle-hide UI
-  useEffect(() => {
-    const resetIdle = () => {
-      setShowUI(true);
-      if (idleTimer.current) clearTimeout(idleTimer.current);
-      idleTimer.current = setTimeout(() => setShowUI(false), 5000);
-    };
-    ["mousemove", "mousedown", "touchstart", "wheel"].forEach((e) =>
-      window.addEventListener(e, resetIdle)
-    );
-    resetIdle();
-    return () => {
-      ["mousemove", "mousedown", "touchstart", "wheel"].forEach((e) =>
-        window.removeEventListener(e, resetIdle)
-      );
-      if (idleTimer.current) clearTimeout(idleTimer.current);
-    };
-  }, []);
+  useIdleHideUI(setShowUI);
 
   // Automatically hide loader after 5 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => setAppLoading(false), 5000);
-    return () => clearTimeout(timer);
-  }, []);
+  useAppLoader(setAppLoading);
 
   // manage sidebar closing
   const closeSidebar = () => {
@@ -82,6 +60,7 @@ export default function Home() {
   usePollImage(imageTaskId, setNextBg);
   usePollMusic(musicTaskId, (url, title) => {
     setMusicQueue((prev) => [...prev, { url, title }]);
+    console.log("✅ Song added to queue:", { url, title });
   });
 
   // Background transition on new image
@@ -96,34 +75,9 @@ export default function Home() {
     }
   }, [isNextLoaded, nextBg]);
 
-
-  // In page.tsx (or wherever you define the test queue)
-  const TestQueue: { url: string; title: string | null }[] = [
-    {
-      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-      title: "SoundHelix Song 1",
-    },
-    {
-      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-      title: "SoundHelix Song 2",
-    },
-    {
-      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-      title: "SoundHelix Song 3",
-    },
-    {
-      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
-      title: "SoundHelix Song 4",
-    },
-    {
-      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
-      title: "SoundHelix Song 5",
-    },
-    {
-      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
-      title: "SoundHelix Song 6",
-    },
-  ];
+  useEffect(() => {
+  console.log("🎵 Updated musicQueue:", musicQueue);
+}, [musicQueue]);
 
 
   return (
@@ -140,7 +94,7 @@ export default function Home() {
       {!appLoading && (
         <FullScreenMusicPlayer
           audioRef={audioRef}
-          songs={TestQueue}
+          songs={musicQueue}
           isPlaying={isPlaying}
           setIsPlaying={setIsPlaying}
           overlayIcon={overlayIcon}
@@ -173,14 +127,16 @@ export default function Home() {
       >
         <audio
           ref={audioRef}
-          src={TestQueue[0]?.url || undefined}
+          src={musicQueue[0]?.url || undefined}
           preload="auto"
           className="hidden"
         />
         <UserLocationAndTime
           onContentLoaded={(data) => {
             if (data.imageTaskId) setImageTaskId(data.imageTaskId);
-            if (data.musicTaskId) setMusicTaskId(data.musicTaskId);
+              if (data.musicTaskId) {
+                setMusicTaskId(data.musicTaskId);  // This triggers usePollMusic again
+              }
           }}
         />
 

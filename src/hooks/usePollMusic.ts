@@ -8,7 +8,8 @@ export function usePollMusic(
     if (!task_id) return;
 
     let retries = 0;
-    const maxRetries = 10;
+    const maxRetries = 100;
+    // Increase maxRetries!
 
     const interval = setInterval(async () => {
       try {
