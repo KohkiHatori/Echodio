@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const task_id = searchParams.get('task_id');
+  const body = await request.json();
+  const task_id = body.task_id;
 
   if (!task_id) {
     return NextResponse.json({ error: 'Missing task_id' }, { status: 400 });
   }
+
+  console.log("🎧 Received task_id for polling:", task_id);
 
   try {
     const response = await fetch(`https://api.goapi.ai/api/v1/task/${task_id}`, {

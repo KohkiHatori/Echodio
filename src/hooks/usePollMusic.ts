@@ -26,6 +26,7 @@ export function usePollMusic(
         }
 
         const result = await res.json();
+        console.log("📩 Polling result:", result);
 
         const song = result?.data?.output?.songs?.[0];
         const url = song?.song_path;

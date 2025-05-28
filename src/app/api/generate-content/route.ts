@@ -52,7 +52,10 @@ export async function POST(request: Request) {
     const musicRes = await fetch('http://localhost:3000/api/music/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ requestBody, lyricsType })
+      body: JSON.stringify({ 
+        timeLabel,
+        weatherDescription,
+        lyricsType })
     });
     if (!musicRes.ok) {
       throw new Error('Background API failed');
