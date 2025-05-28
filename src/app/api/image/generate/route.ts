@@ -52,11 +52,7 @@ export async function POST(request: Request) {
     // const task_id = result?.data?.task_id;
 
     // TEMPRRARILY using a hard-coded task ID
-    const task_id = "9497f855-c7eb-477d-9eb9-1cf1c5138747";
-
-    saveImageTask(task_id, { prompt: prompt });
-
-
+    const task_id = "06d162cd-9ff1-4319-918f-47fdb1b40250";
 
     return NextResponse.json({ task_id });
   } catch (err) {

@@ -6,7 +6,6 @@ import DateWeatherHeader from "@/components/DateWeatherHeader";
 import FullScreenMusicPlayer from "@/components/FullMusicPlyaer";
 import SpectralAnalyzer from "@/components/SpectralAnalyzer";
 import UserLocationAndTime from "@/components/UserLocationAndTime";
-import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import Background from "@/components/Background";
 
@@ -28,8 +27,6 @@ export default function Home() {
   // Splash loader state
   const [appLoading, setAppLoading] = useState(true);
   // Player/UI states
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarFullyClosed, setSidebarFullyClosed] = useState(true);
   const [showUI, setShowUI] = useState(true);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -38,6 +35,7 @@ export default function Home() {
   const [musicQueue, setMusicQueue] = useState<Song[]>([]);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [overlayIcon, setOverlayIcon] = useState<'play' | 'pause' | null>(null);
+  const [themeColor, setThemeColor] = useState<string>('rgb(17, 24, 39)');
 
   const { userId } = useAuth();
 
@@ -46,13 +44,6 @@ export default function Home() {
 
   // Automatically hide loader after 5 seconds
   useAppLoader(setAppLoading);
-
-  // manage sidebar closing
-  const closeSidebar = () => {
-    setSidebarOpen(false);
-    setSidebarFullyClosed(false);
-    setTimeout(() => setSidebarFullyClosed(true), 500); // match the transition duration (500ms)
-  };
 
   // Polling hooks
   usePollMusic(musicTaskId, (url, title) => {
@@ -130,6 +121,7 @@ export default function Home() {
         {/* Background Images */}
         <Background
           imageTaskId={imageTaskId}
+          setThemeColor={setThemeColor}
         />
 
         {/* UI Elements (sidebar, controls, etc.) */}
@@ -138,7 +130,9 @@ export default function Home() {
             `${showUI ? "opacity-100 pointer-events-auto z-20" : "opacity-0 pointer-events-none"} transition-opacity duration-500`
           }
         >
-          <Sidebar />
+          <Sidebar
+            themeColor={themeColor}
+          />
 
           {/* <Header
             musicTaskId={musicTaskId}

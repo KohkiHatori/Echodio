@@ -2,12 +2,14 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { usePollImage } from '@/hooks/usePollImage';
+import { getDominantColorKMeans, rgbToCss } from '@/lib/getDominantColor';
 
 interface BackgroundProps {
   imageTaskId: string | null;
+  setThemeColor: (color: string) => void;
 }
 
-export default function Background({ imageTaskId }: BackgroundProps) {
+export default function Background({ imageTaskId, setThemeColor }: BackgroundProps) {
 
   const [currentBg, setCurrentBg] = useState("/forest-bg.png");
   const [nextBg, setNextBg] = useState<string | null>(null);
@@ -41,7 +43,16 @@ export default function Background({ imageTaskId }: BackgroundProps) {
             alt="Next Background"
             fill
             priority
-            onLoad={() => setIsNextLoaded(true)}
+            onLoad={async () => {
+              setIsNextLoaded(true)
+              try {
+                const rgb = await getDominantColorKMeans(nextBg);
+                const cssColor = rgbToCss(rgb);
+                setThemeColor(cssColor);
+              } catch (e) {
+                console.error("Failed to extract color", e);
+              }
+            }}
             className={
               `absolute inset-0 z-0 object-cover transition-opacity duration-[2000ms] ${isNextLoaded ? "opacity-100" : "opacity-0"
               }`

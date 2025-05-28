@@ -6,77 +6,87 @@ export default function SpectralAnalyzer() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const barCount = 128;
   const lastBarValuesRef = useRef(new Array(barCount).fill(0));
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
 
   useEffect(() => {
-    if (!audioRef.current) return;
+    const audio = audioRef.current;
+    const canvas = canvasRef.current;
+    if (!audio || !canvas) return;
 
-    // Set up AudioContext/Analyser
-    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    // Prevent re-creating source for already connected audio
+    if (sourceNodeRef.current) return;
+
+    const audioCtx = new AudioContext();
+    audioCtxRef.current = audioCtx;
+
     const analyser = audioCtx.createAnalyser();
     analyser.fftSize = 16384;
 
-    const source = audioCtx.createMediaElementSource(audioRef.current);
+    const source = audioCtx.createMediaElementSource(audio);
     source.connect(analyser);
     analyser.connect(audioCtx.destination);
+    sourceNodeRef.current = source;
 
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
-    let rafId: number;
-    const canvas = canvasRef.current!;
     const ctx = canvas.getContext("2d")!;
+    let rafId: number;
 
     function resizeCanvas() {
+      if (!canvas) return;
       canvas.width = window.innerWidth;
-      canvas.height = 300; // Bar height
+      canvas.height = 300;
     }
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
-
 
     const draw = () => {
       analyser.getByteFrequencyData(dataArray);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       let progress = 0;
-      if (audioRef.current && audioRef.current.duration > 0) {
-        progress = audioRef.current.currentTime / audioRef.current.duration;
+      if (audio.duration > 0) {
+        progress = audio.currentTime / audio.duration;
       }
 
       const totalGap = canvas.width - (barCount * 1);
       const gap = barCount > 1 ? totalGap / (barCount - 1) : 0;
       const barWidth = 1;
-      // Temporal smoothing variables
       const lastBarValues = lastBarValuesRef.current;
-      const smoothingFactor = 0.9; // much more smoothing
-      // Only use the first barCount bins from dataArray
+      const smoothingFactor = 0.9;
+
       for (let i = 0; i < barCount; i++) {
         const rawValue = dataArray[i] / 255;
-        const scaledValue = Math.pow(rawValue, 0.5); // square root normalization
+        const scaledValue = Math.pow(rawValue, 0.5);
         const barHeight = scaledValue * canvas.height;
         const x = i * (barWidth + gap);
         const color = (i / barCount) < progress ? "#ff3232" : "#fff";
         ctx.fillStyle = color;
-        // Blend with previous value for temporal smoothing
-        const shownHeight = barHeight;
-        const blended = lastBarValues[i] * smoothingFactor + shownHeight * (1 - smoothingFactor);
+        const blended = lastBarValues[i] * smoothingFactor + barHeight * (1 - smoothingFactor);
         lastBarValues[i] = blended;
         ctx.fillRect(x, canvas.height - blended, barWidth, blended);
       }
+
       rafId = requestAnimationFrame(draw);
     };
+
     draw();
 
     function resumeAudioCtx() {
       if (audioCtx.state === 'suspended') audioCtx.resume();
     }
-    audioRef.current.addEventListener('play', resumeAudioCtx);
+
+    audio.addEventListener('play', resumeAudioCtx);
 
     return () => {
       if (rafId) cancelAnimationFrame(rafId);
       window.removeEventListener('resize', resizeCanvas);
-      if (audioRef.current) audioRef.current.removeEventListener('play', resumeAudioCtx);
+      audio.removeEventListener('play', resumeAudioCtx);
       audioCtx.close();
+      sourceNodeRef.current = null;
+      audioCtxRef.current = null;
     };
   }, []);
 

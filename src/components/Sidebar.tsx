@@ -7,7 +7,11 @@ import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import Link from 'next/link';
 
-export default function Sidebar() {
+interface SidebarProps {
+  themeColor: string;
+}
+
+export default function Sidebar({ themeColor }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [fullyClosed, setFullyClosed] = useState(true);
 
@@ -32,8 +36,9 @@ export default function Sidebar() {
     <>
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-gray-900 text-white transform transition-transform duration-500 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 left-0 h-full w-64 text-white transition-colors duration-500 transform transition-transform duration-500 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'
           } z-30`}
+        style={{ backgroundColor: themeColor }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="absolute top-4 left-4 right-4 flex items-center justify-between px-2">
