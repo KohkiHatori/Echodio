@@ -11,7 +11,7 @@ interface BackgroundProps {
 
 export default function Background({ imageTaskId, setThemeColor }: BackgroundProps) {
 
-  const [currentBg, setCurrentBg] = useState("/forest-bg.png");
+  const [currentBg, setCurrentBg] = useState("/jazz.png");
   const [nextBg, setNextBg] = useState<string | null>(null);
   const [isNextLoaded, setIsNextLoaded] = useState(false);
 
