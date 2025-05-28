@@ -9,7 +9,6 @@ export function usePollMusic(
 
     let retries = 0;
     const maxRetries = 100;
-    // Increase maxRetries!
 
     const interval = setInterval(async () => {
       try {
@@ -19,27 +18,28 @@ export function usePollMusic(
           body: JSON.stringify({ task_id }),
         });
 
-        if (res.status === 400 || res.status === 500) {
-          console.warn(`Polling stopped due to server error: ${res.status}`);
-          clearInterval(interval);
-          return;
-        }
-
         const result = await res.json();
-        console.log("📩 Polling result:", result);
+        console.log(`🎧 Polling result:`, result);
 
-        const song = result?.data?.output?.songs?.[0];
+        const songs = result?.data?.output?.songs;
+        const song = songs?.[0];
         const url = song?.song_path;
         const title = song?.title ?? null;
 
-        if (result.status === "completed" && url) {
+        if (result.data?.status === "completed" && url) {
+          console.log("✅ Music is ready:", { url, title });
           onSuccess(url, title);
           clearInterval(interval);
-        } else if (++retries >= maxRetries) {
+        } else {
+          console.log(`⏳ Poll #${retries + 1} - Status: ${result.data?.status} (waiting...)`);
+        }
+
+        if (++retries >= maxRetries) {
+          console.warn("⏹️ Max retries reached, stopping polling.");
           clearInterval(interval);
         }
       } catch (err) {
-        console.error("Polling error (music):", err);
+        console.error("❌ Polling error:", err);
         clearInterval(interval);
       }
     }, 3000);
