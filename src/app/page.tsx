@@ -2,12 +2,14 @@
 "use client";
 
 // components
+import CityWeatherClockWidget from "@/components/CityWeatherClockWidget";
 import DateWeatherHeader from "@/components/DateWeatherHeader";
 import FullScreenMusicPlayer from "@/components/FullMusicPlyaer";
 import SpectralAnalyzer from "@/components/SpectralAnalyzer";
 import UserLocationAndTime from "@/components/UserLocationAndTime";
 import Sidebar from "@/components/Sidebar";
 import Background from "@/components/Background";
+import WeatherCompassWidget from "@/components/WeatherCompassWidget";
 
 // hooks
 import { useAuth } from "@/context/AuthContext";
@@ -138,7 +140,9 @@ export default function Home() {
             musicTaskId={musicTaskId}
             imageTaskId={imageTaskId}
           /> */}
-          <DateWeatherHeader />
+          {/* <DateWeatherHeader /> */}
+          {/* <WeatherCompassWidget/> */}
+          <CityWeatherClockWidget/>
 
         </div>
         <SpectralAnalyzer />
