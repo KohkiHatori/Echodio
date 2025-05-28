@@ -2,14 +2,12 @@
 "use client";
 
 // components
-import CityWeatherClockWidget from "@/components/CityWeatherClockWidget";
 import DateWeatherHeader from "@/components/DateWeatherHeader";
 import FullScreenMusicPlayer from "@/components/FullMusicPlyaer";
 import SpectralAnalyzer from "@/components/SpectralAnalyzer";
 import UserLocationAndTime from "@/components/UserLocationAndTime";
 import Sidebar from "@/components/Sidebar";
 import Background from "@/components/Background";
-import WeatherCompassWidget from "@/components/WeatherCompassWidget";
 
 // hooks
 import { useAuth } from "@/context/AuthContext";
@@ -107,8 +105,13 @@ export default function Home() {
       >
         <audio
           ref={audioRef}
-          src={musicQueue[0]?.url || undefined}
+          src={
+            musicQueue[0]?.url
+              ? `/api/proxy-audio?url=${encodeURIComponent(musicQueue[0].url)}`
+              : undefined
+          }
           preload="auto"
+          crossOrigin="anonymous"
           className="hidden"
         />
         <UserLocationAndTime
@@ -140,12 +143,17 @@ export default function Home() {
             musicTaskId={musicTaskId}
             imageTaskId={imageTaskId}
           /> */}
-          {/* <DateWeatherHeader /> */}
-          {/* <WeatherCompassWidget/> */}
-          <CityWeatherClockWidget/>
+          <DateWeatherHeader />
 
         </div>
-        <SpectralAnalyzer />
+        <SpectralAnalyzer
+          audioRef={audioRef}
+          audioSrc={
+            musicQueue[0]?.url
+              ? `/api/proxy-audio?url=${encodeURIComponent(musicQueue[0].url)}`
+              : undefined
+          }
+        />
       </div>
     </>
   );

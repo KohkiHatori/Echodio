@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     //   "Content-Type": "application/json"
     // };
 
-    const prompt = `a half naked middle aged fat man using a laptop on a desk lofi, painting, chil, pop, ${timeLabel}, with ${weatherDescription}.`;
+    const prompt = `a  middle aged fat man using a laptop on a desk lofi, painting, chil, pop, ${timeLabel}, with ${weatherDescription}.`;
 
 
     // const payload = {
