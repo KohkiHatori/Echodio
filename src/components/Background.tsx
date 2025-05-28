@@ -1,0 +1,53 @@
+'use client';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { usePollImage } from '@/hooks/usePollImage';
+
+interface BackgroundProps {
+  imageTaskId: string | null;
+}
+
+export default function Background({ imageTaskId }: BackgroundProps) {
+
+  const [currentBg, setCurrentBg] = useState("/forest-bg.png");
+  const [nextBg, setNextBg] = useState<string | null>(null);
+  const [isNextLoaded, setIsNextLoaded] = useState(false);
+
+  usePollImage(imageTaskId, setNextBg);
+  useEffect(() => {
+    if (isNextLoaded && nextBg) {
+      const t = setTimeout(() => {
+        setCurrentBg(nextBg);
+        setNextBg(null);
+        setIsNextLoaded(false);
+      }, 2000);
+      return () => clearTimeout(t);
+    }
+  }, [isNextLoaded, nextBg]);
+
+  return (
+    <>
+      < Image
+        src={currentBg}
+        alt="Background"
+        fill
+        priority
+        className="absolute inset-0 z-0 object-cover transition-opacity duration-500 opacity-100"
+      />
+      {
+        nextBg && (
+          <Image
+            src={nextBg}
+            alt="Next Background"
+            fill
+            priority
+            onLoad={() => setIsNextLoaded(true)}
+            className={
+              `absolute inset-0 z-0 object-cover transition-opacity duration-[2000ms] ${isNextLoaded ? "opacity-100" : "opacity-0"
+              }`
+            }
+          />)
+      }
+    </>
+  );
+}

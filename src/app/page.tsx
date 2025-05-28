@@ -4,15 +4,16 @@
 // components
 import DateWeatherHeader from "@/components/DateWeatherHeader";
 import FullScreenMusicPlayer from "@/components/FullMusicPlyaer";
-import Sidebar from "@/components/Sidebar";
 import SpectralAnalyzer from "@/components/SpectralAnalyzer";
 import UserLocationAndTime from "@/components/UserLocationAndTime";
+import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
+import Background from "@/components/Background";
 
 // hooks
 import { useAuth } from "@/context/AuthContext";
 import { useAppLoader } from "@/hooks/useAppLoader";
 import { useIdleHideUI } from "@/hooks/useIdleHidUI";
-import { usePollImage } from "@/hooks/usePollImage";
 import { usePollMusic } from "@/hooks/usePollMusic";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -34,9 +35,6 @@ export default function Home() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [imageTaskId, setImageTaskId] = useState<string | null>(null);
   const [musicTaskId, setMusicTaskId] = useState<string | null>(null);
-  const [currentBg, setCurrentBg] = useState("/forest-bg.png");
-  const [nextBg, setNextBg] = useState<string | null>(null);
-  const [isNextLoaded, setIsNextLoaded] = useState(false);
   const [musicQueue, setMusicQueue] = useState<Song[]>([]);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [overlayIcon, setOverlayIcon] = useState<'play' | 'pause' | null>(null);
@@ -57,27 +55,16 @@ export default function Home() {
   };
 
   // Polling hooks
-  usePollImage(imageTaskId, setNextBg);
   usePollMusic(musicTaskId, (url, title) => {
     setMusicQueue((prev) => [...prev, { url, title }]);
     console.log("✅ Song added to queue:", { url, title });
   });
 
   // Background transition on new image
-  useEffect(() => {
-    if (isNextLoaded && nextBg) {
-      const t = setTimeout(() => {
-        setCurrentBg(nextBg);
-        setNextBg(null);
-        setIsNextLoaded(false);
-      }, 2000);
-      return () => clearTimeout(t);
-    }
-  }, [isNextLoaded, nextBg]);
 
   useEffect(() => {
-  console.log("🎵 Updated musicQueue:", musicQueue);
-}, [musicQueue]);
+    console.log("🎵 Updated musicQueue:", musicQueue);
+  }, [musicQueue]);
 
 
   return (
@@ -134,33 +121,16 @@ export default function Home() {
         <UserLocationAndTime
           onContentLoaded={(data) => {
             if (data.imageTaskId) setImageTaskId(data.imageTaskId);
-              if (data.musicTaskId) {
-                setMusicTaskId(data.musicTaskId);  // This triggers usePollMusic again
-              }
+            if (data.musicTaskId) {
+              setMusicTaskId(data.musicTaskId);  // This triggers usePollMusic again
+            }
           }}
         />
 
         {/* Background Images */}
-        <Image
-          src={currentBg}
-          alt="Background"
-          fill
-          priority
-          className="absolute inset-0 z-0 object-cover transition-opacity duration-500 opacity-100"
+        <Background
+          imageTaskId={imageTaskId}
         />
-        {nextBg && (
-          <Image
-            src={nextBg}
-            alt="Next Background"
-            fill
-            priority
-            onLoad={() => setIsNextLoaded(true)}
-            className={
-              `absolute inset-0 z-0 object-cover transition-opacity duration-[2000ms] ${isNextLoaded ? "opacity-100" : "opacity-0"
-              }`
-            }
-          />
-        )}
 
         {/* UI Elements (sidebar, controls, etc.) */}
         <div
@@ -174,7 +144,7 @@ export default function Home() {
             musicTaskId={musicTaskId}
             imageTaskId={imageTaskId}
           /> */}
-          <DateWeatherHeader/>
+          <DateWeatherHeader />
 
         </div>
         <SpectralAnalyzer />
