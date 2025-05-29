@@ -8,6 +8,7 @@ import SpectralAnalyzer from "@/components/SpectralAnalyzer";
 import Sidebar from "@/components/Sidebar";
 import Background from "@/components/Background";
 import FavoriteButton from "@/components/FavoriteButton";
+import ControlCenter from "@/components/ControlCenter";
 
 // hooks
 import { useAppLoader } from "@/hooks/useAppLoader";
@@ -148,6 +149,7 @@ export default function Home() {
             `${showUI ? "opacity-100 pointer-events-auto z-20" : "opacity-0 pointer-events-none"} transition-opacity duration-500`
           }
         >
+          <ControlCenter audioRef={audioRef} />
           <Sidebar
             themeColor={themeColor}
             favorites={favorites}
