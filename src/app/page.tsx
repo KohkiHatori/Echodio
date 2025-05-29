@@ -17,6 +17,7 @@ import { usePollMusic } from "@/hooks/usePollMusic";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import LoadPage from "./load/page";
+import SmallCityWeatherClockWidget from "@/components/CityWeatherClockWidget";
 
 interface Song {
   url: string;
@@ -143,7 +144,7 @@ export default function Home() {
             musicTaskId={musicTaskId}
             imageTaskId={imageTaskId}
           /> */}
-          <DateWeatherHeader />
+          <SmallCityWeatherClockWidget />
 
         </div>
         <SpectralAnalyzer
