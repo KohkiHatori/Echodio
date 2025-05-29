@@ -5,7 +5,6 @@
 import DateWeatherHeader from "@/components/DateWeatherHeader";
 import FullScreenMusicPlayer from "@/components/FullMusicPlyaer";
 import SpectralAnalyzer from "@/components/SpectralAnalyzer";
-import UserLocationAndTime from "@/components/UserLocationAndTime";
 import Sidebar from "@/components/Sidebar";
 import Background from "@/components/Background";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -18,6 +17,8 @@ import { useUserFavorites, FavoriteSong } from "@/hooks/useUserFavorites";
 import { useEffect, useRef, useState } from "react";
 import LoadPage from "./load/page";
 import SmallCityWeatherClockWidget from "@/components/CityWeatherClockWidget";
+import { useLocationAndTime } from "@/hooks/useLocationAndTime";
+import { useGenerate } from "@/hooks/useGenerate";
 
 interface Song {
   url: string;
@@ -37,9 +38,11 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [overlayIcon, setOverlayIcon] = useState<'play' | 'pause' | null>(null);
   const [themeColor, setThemeColor] = useState<string>('rgb(17, 24, 39)');
-
-
+  const { location, time, locationChecked } = useLocationAndTime();
   const { favorites, loadingFavorites, favoritesError, refreshFavorites } = useUserFavorites();
+
+  // Call useGenerate unconditionally
+  useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked });
 
   // Idle-hide UI
   useIdleHideUI(setShowUI);
@@ -114,14 +117,6 @@ export default function Home() {
           crossOrigin="anonymous"
           className="hidden"
         />
-        <UserLocationAndTime
-          onContentLoaded={(data) => {
-            if (data.imageTaskId) setImageTaskId(data.imageTaskId);
-            if (data.musicTaskId) {
-              setMusicTaskId(data.musicTaskId);  // This triggers usePollMusic again
-            }
-          }}
-        />
 
         {/* Background Images */}
         <Background
@@ -156,6 +151,9 @@ export default function Home() {
           <SmallCityWeatherClockWidget />
 
         </div>
+
+
+        { /* */}
         <SpectralAnalyzer
           audioRef={audioRef}
           audioSrc={
@@ -164,6 +162,7 @@ export default function Home() {
               : undefined
           }
         />
+
       </div>
     </>
   );

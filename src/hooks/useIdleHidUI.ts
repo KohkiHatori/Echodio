@@ -1,4 +1,5 @@
 // hooks/useIdleHideUI.ts
+'use client'
 import { useEffect, useRef } from "react";
 
 export function useIdleHideUI(setShowUI: (v: boolean) => void) {
@@ -11,9 +12,9 @@ export function useIdleHideUI(setShowUI: (v: boolean) => void) {
       idleTimer.current = setTimeout(() => setShowUI(false), 5000);
     };
     ["mousemove", "mousedown", "touchstart",
-         "wheel"].forEach((e) =>
-      window.addEventListener(e, resetIdle)
-    );
+      "wheel"].forEach((e) =>
+        window.addEventListener(e, resetIdle)
+      );
 
     resetIdle(); // initialize timer
 
