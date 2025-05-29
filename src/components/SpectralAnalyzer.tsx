@@ -106,7 +106,6 @@ export default function SpectralAnalyzer({ audioRef, audioSrc }: Props) {
       analyserRef.current.getByteFrequencyData(dataArray);
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
 
-      const barCount = 128;
       const totalGap = canvas.width - (barCount * 1);
       const gap = barCount > 1 ? totalGap / (barCount - 1) : 0;
       const barWidth = 1;

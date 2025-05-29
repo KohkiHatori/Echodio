@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-let counter = 0;
 
+// for testing purposes, we're using hardcoded task ids
+let counter = 0;
 const task_ids = [
     "e3471dc2-d1ea-4cc5-ba65-5911a1f9091a",
     "7a5b690a-0b13-45f6-8d8a-9cd8b1e7f047",
@@ -58,7 +59,8 @@ export async function POST(request: Request) {
         //         return NextResponse.json({ task_id: result.data.task_id });
 
         // TEMPORALILLY using hardcoded task ids to prevent external API calls
-        return NextResponse.json({ task_id: task_ids[counter++] });
+        // return NextResponse.json({ task_id: "e3471dc2-d1ea-4cc5-ba65-5911a1f9091a" });
+        return NextResponse.json({ task_id: task_ids[counter++ % task_ids.length] });
 
     } catch (error) {
         console.error('Error in /api/music:', error);
