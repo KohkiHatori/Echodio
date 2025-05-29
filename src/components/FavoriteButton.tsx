@@ -5,20 +5,21 @@ import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import { doc, getDoc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { useAuth } from '@/context/AuthContext';
 
 interface FavoriteButtonProps {
-  userId: string | null;
   musicTaskId: string | null;
   imageTaskId: string | null;
+  onFavoriteChange?: () => void;
 }
 
 export default function FavoriteButton({
-  userId,
   musicTaskId,
   imageTaskId,
+  onFavoriteChange,
 }: FavoriteButtonProps) {
   const [isFavorited, setIsFavorited] = useState(false);
-
+  const { userId } = useAuth();
   useEffect(() => {
     const checkIfFavorited = async () => {
       if (!userId || !musicTaskId) return;
@@ -46,6 +47,7 @@ export default function FavoriteButton({
       } else {
         await deleteDoc(docRef);
       }
+      if (onFavoriteChange) onFavoriteChange();
     } catch (error) {
       console.error('Failed to toggle favorite:', error);
       //  Rollback UI if error occurs

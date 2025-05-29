@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { saveMusicTask } from '@/services/firestore/musicTasks';
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -27,6 +28,18 @@ export async function POST(request: Request) {
     }
 
     const result = await response.json();
+    // save the music task to firestore
+    if (result.data.status === "completed") {
+      const song = result.data.output.songs[0];
+      saveMusicTask(task_id, {
+        url: song.song_path,
+        prompt: result.data.input.gpt_description_prompt,
+        lyricsType: result.data.input.lyrics_type,
+        // genre: song.genre,
+        title: song.title
+      });
+    }
+
     return NextResponse.json(result);
 
   } catch (error) {

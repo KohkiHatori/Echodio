@@ -1,6 +1,5 @@
 //src/app/api/image/result/route.ts
 import { NextResponse } from 'next/server';
-import { saveImageTask } from '@/services/firestore/imageTasks';
 
 
 // const GENERATION_MODE = "relax";

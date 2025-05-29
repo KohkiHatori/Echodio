@@ -1,17 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Bars3Icon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import Link from 'next/link';
 
-interface SidebarProps {
-  themeColor: string;
+interface FavoriteSong {
+  musicTaskId: string;
+  title: string | null;
 }
 
-export default function Sidebar({ themeColor }: SidebarProps) {
+interface SidebarProps {
+  themeColor: string;
+  favorites: FavoriteSong[];
+  loadingFavorites: boolean;
+  favoritesError: string | null;
+}
+
+export default function Sidebar({
+  themeColor,
+  favorites,
+  loadingFavorites,
+  favoritesError,
+}: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [fullyClosed, setFullyClosed] = useState(true);
 
@@ -74,6 +87,24 @@ export default function Sidebar({ themeColor }: SidebarProps) {
             </Link>
           )}
         </div>
+        {/* Favorites List */}
+        {user && (
+          <div className="mt-16 px-4">
+            <h2 className="text-lg font-semibold mb-2">Favorites</h2>
+            {loadingFavorites && <div className="text-sm text-gray-300">Loading...</div>}
+            {favoritesError && <div className="text-sm text-red-400">{favoritesError}</div>}
+            {!loadingFavorites && !favoritesError && favorites.length === 0 && (
+              <div className="text-sm text-gray-300">No favorites yet.</div>
+            )}
+            <ul className="space-y-1">
+              {favorites.map((fav) => (
+                <li key={fav.musicTaskId} className="truncate text-sm text-white/90">
+                  {fav.title}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </aside>
 
       {/* Open Sidebar Button */}

@@ -114,7 +114,7 @@ export default function SpectralAnalyzer({ audioRef, audioSrc }: Props) {
         left: 0,
         right: 0,
         bottom: 0,
-        zIndex: 40,
+        zIndex: 15,
         width: '100vw',
         height: '64px',
         pointerEvents: 'none',

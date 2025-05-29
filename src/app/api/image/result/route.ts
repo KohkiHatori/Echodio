@@ -20,13 +20,15 @@ export async function POST(request: Request) {
   });
 
   const result = await response.json();
-  console.log("result", result);
 
   const status = result?.data?.status;
   if (status === "completed") {
     const index = Math.floor(Math.random() * 4);
     const imageUrl = result?.data?.output?.temporary_image_urls?.[index];
-    saveImageTask(task_id, { url: imageUrl });
+    saveImageTask(task_id, {
+      url: imageUrl,
+      prompt: result.data.input.prompt
+    });
     return NextResponse.json({ status, imageUrl });
   }
 

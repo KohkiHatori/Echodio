@@ -14,8 +14,8 @@ import FavoriteButton from "@/components/FavoriteButton";
 import { useAppLoader } from "@/hooks/useAppLoader";
 import { useIdleHideUI } from "@/hooks/useIdleHidUI";
 import { usePollMusic } from "@/hooks/usePollMusic";
+import { useUserFavorites, FavoriteSong } from "@/hooks/useUserFavorites";
 import { useEffect, useRef, useState } from "react";
-import { useAuth } from "@/context/AuthContext";
 import LoadPage from "./load/page";
 import SmallCityWeatherClockWidget from "@/components/CityWeatherClockWidget";
 
@@ -38,7 +38,8 @@ export default function Home() {
   const [overlayIcon, setOverlayIcon] = useState<'play' | 'pause' | null>(null);
   const [themeColor, setThemeColor] = useState<string>('rgb(17, 24, 39)');
 
-  const { userId } = useAuth();
+
+  const { favorites, loadingFavorites, favoritesError, refreshFavorites } = useUserFavorites();
 
   // Idle-hide UI
   useIdleHideUI(setShowUI);
@@ -64,8 +65,7 @@ export default function Home() {
       {/* Loader Overlay */}
       <div
         className={
-          `fixed inset-0 z-50 transition-opacity duration-700 ease-out ${appLoading ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`
+          `fixed inset-0 z-50 transition-opacity duration-700 ease-out ${appLoading ? "opacity-100" : "opacity-0 pointer-events-none"}`
         }
       >
         <LoadPage />
@@ -85,16 +85,15 @@ export default function Home() {
       {/* Main UI Container */}
       <div
         className={
-          `fixed inset-0 transition-opacity duration-700 ease-out ${appLoading ? "opacity-0 pointer-events-none" : "opacity-100"
-          }`
+          `fixed inset-0 transition-opacity duration-700 ease-out ${appLoading ? "opacity-0 pointer-events-none" : "opacity-100"}`
         }
-        // onClick={togglePlay}
         onClickCapture={(e) => {
           const clickedElement = e.target as HTMLElement;
           const isInteractive =
             clickedElement.closest('button') ||
             clickedElement.closest('a') ||
-            clickedElement.closest('input');
+            clickedElement.closest('input') ||
+            clickedElement.closest('aside');
 
           if (!isInteractive && musicQueue.length > 0) {
             const next = !isPlaying;
@@ -138,13 +137,16 @@ export default function Home() {
         >
           <Sidebar
             themeColor={themeColor}
+            favorites={favorites}
+            loadingFavorites={loadingFavorites}
+            favoritesError={favoritesError}
           />
 
           {/* Favorite Button */}
           <FavoriteButton
-            userId={userId}
             musicTaskId={musicTaskId}
             imageTaskId={imageTaskId}
+            onFavoriteChange={refreshFavorites}
           />
 
           {/* <Header
