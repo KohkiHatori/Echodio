@@ -68,14 +68,14 @@ export default function FullScreenMusicPlayer({
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.code === 'Space') {
+      if (e.code === 'Space' && currentSong) {
         e.preventDefault();
         togglePlay();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [togglePlay]);
+  }, [togglePlay, currentSong]);
 
 
   const handleSkipBack = () =>
@@ -85,10 +85,6 @@ export default function FullScreenMusicPlayer({
 
   return (
     <>
-      {currentSong && (
-        <audio ref={audioRef} src={currentSong.url} autoPlay hidden />
-      )}
-
       <div className="fixed inset-0 z-10 pointer-events-none">
 
         {/* Skip Back Button */}

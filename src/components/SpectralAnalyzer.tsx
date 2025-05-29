@@ -2,7 +2,7 @@
 import { useEffect, useRef } from "react";
 
 interface Props {
-  audioRef: React.RefObject<HTMLAudioElement>;
+  audioRef: React.RefObject<HTMLAudioElement | null>;
   audioSrc?: string;
 }
 

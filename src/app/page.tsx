@@ -96,7 +96,7 @@ export default function Home() {
             clickedElement.closest('a') ||
             clickedElement.closest('input');
 
-          if (!isInteractive) {
+          if (!isInteractive && musicQueue.length > 0) {
             const next = !isPlaying;
             setIsPlaying(next);
             setOverlayIcon(next ? 'play' : 'pause');
