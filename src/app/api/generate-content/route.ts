@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { time, location } = await request.json();
+    const { time, location, generateImage } = await request.json();
 
     let weather = null;
 
@@ -34,28 +34,32 @@ export async function POST(request: Request) {
       weatherDescription
     };
 
+    let imageTaskId = null;
     //IMAGE
-    const imageRes = await fetch('http://localhost:3000/api/image/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody),
-    });
-    if (!imageRes.ok) {
-      throw new Error('Background API failed');
+    if (generateImage) {
+      const imageRes = await fetch('http://localhost:3000/api/image/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+      });
+      if (!imageRes.ok) {
+        throw new Error('Background API failed');
+      }
+      const imageData = await imageRes.json();
+      imageTaskId = imageData.task_id;
+      console.log("Image task ID:", imageTaskId);
     }
-    const imageData = await imageRes.json();
-    const imageTaskId = imageData.task_id;
-    console.log("Image task ID:", imageTaskId);
 
 
     const lyricsType = 'instrumental'
     const musicRes = await fetch('http://localhost:3000/api/music/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         timeLabel,
         weatherDescription,
-        lyricsType })
+        lyricsType
+      })
     });
     if (!musicRes.ok) {
       throw new Error('Background API failed');
@@ -65,7 +69,10 @@ export async function POST(request: Request) {
     const musicTaskId = data.task_id;
     console.log("Music taskId:", musicTaskId);
 
-    return NextResponse.json({ imageTaskId, musicTaskId });
+    return NextResponse.json({
+      ...(imageTaskId && { imageTaskId }),
+      ...(musicTaskId && { musicTaskId })
+    });
   } catch (err) {
     console.error("generate-content error:", err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

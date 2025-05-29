@@ -18,45 +18,93 @@ export default function SpectralAnalyzer({ audioRef, audioSrc }: Props) {
   useEffect(() => {
     const audio = audioRef.current;
     const canvas = canvasRef.current;
-    if (!audio || !canvas || !audioSrc) return;
 
-    // Reset <audio> element and stop playback
-    audio.pause();
-    audio.src = audioSrc;
-    audio.load();
-
-    // Clear previous audio context
-    if (audioCtxRef.current) {
-      audioCtxRef.current.close();
-      audioCtxRef.current = null;
+    if (!audio || !canvas) {
+      // If no audio or canvas, ensure everything is cleaned up
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
+      if (sourceNodeRef.current) {
+        sourceNodeRef.current.disconnect();
+        sourceNodeRef.current = null;
+      }
+      // Optionally close AudioContext if it's only for this analyzer and no audioSrc
+      // if (audioCtxRef.current && !audioSrc) {
+      //   audioCtxRef.current.close();
+      //   audioCtxRef.current = null;
+      // }
+      return;
     }
 
-    const audioCtx = new AudioContext();
-    audioCtxRef.current = audioCtx;
+    // Initialize AudioContext and AnalyserNode once
+    if (!audioCtxRef.current) {
+      audioCtxRef.current = new AudioContext();
+    }
+    const audioCtx = audioCtxRef.current;
 
-    const analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 16384;
-    analyserRef.current = analyser;
+    if (!analyserRef.current) {
+      analyserRef.current = audioCtx.createAnalyser();
+      analyserRef.current.fftSize = 16384; // or your preferred fftSize
+    }
+    const analyser = analyserRef.current;
 
-    const source = audioCtx.createMediaElementSource(audio);
-    source.connect(analyser);
-    analyser.connect(audioCtx.destination);
-    sourceNodeRef.current = source;
+    // Handle audio source changes
+    if (audioSrc) {
+      audio.pause();
+      audio.src = audioSrc;
+      audio.load();
+
+      // Disconnect previous source if it exists
+      if (sourceNodeRef.current) {
+        try {
+          sourceNodeRef.current.disconnect();
+        } catch (e) {
+          console.warn("Error disconnecting previous source node:", e);
+        }
+      }
+
+      // Create a new source node for the current audio element and connect it.
+      // This check is crucial for preventing the re-connection error.
+      if (!sourceNodeRef.current || sourceNodeRef.current.mediaElement !== audio) {
+        try {
+          sourceNodeRef.current = audioCtx.createMediaElementSource(audio);
+        } catch (e) {
+          console.error("Failed to create media element source:", e);
+          return; // Exit if source creation fails
+        }
+      }
+
+      sourceNodeRef.current.connect(analyser);
+      analyser.connect(audioCtx.destination); // Connect analyser to output
+
+    } else {
+      // If audioSrc is removed, disconnect the source
+      if (sourceNodeRef.current) {
+        sourceNodeRef.current.disconnect();
+        sourceNodeRef.current = null;
+      }
+      audio.pause();
+      // audio.src = ''; // Optionally clear src
+    }
 
     const ctx = canvas.getContext("2d")!;
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = 300;
+      if (canvasRef.current) { // Ensure canvas still exists
+        canvasRef.current.width = window.innerWidth;
+        canvasRef.current.height = 300; // Or your desired canvas height
+      }
     };
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
+    let isDrawing = true; // Flag to control animation loop
+
     const draw = () => {
-      analyser.getByteFrequencyData(dataArray);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!isDrawing || !analyserRef.current || !canvasRef.current) return;
+
+      analyserRef.current.getByteFrequencyData(dataArray);
+      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
 
       const barCount = 128;
       const totalGap = canvas.width - (barCount * 1);
@@ -82,7 +130,9 @@ export default function SpectralAnalyzer({ audioRef, audioSrc }: Props) {
       rafIdRef.current = requestAnimationFrame(draw);
     };
 
-    draw();
+    if (audioSrc) {
+      draw(); // Start drawing only if there's an audio source
+    }
 
     const resumeAudioCtx = () => {
       if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -90,21 +140,17 @@ export default function SpectralAnalyzer({ audioRef, audioSrc }: Props) {
 
     audio.addEventListener('play', resumeAudioCtx);
 
-    // Optionally auto-play here if needed
-    // audio.play().catch(e => console.warn("Playback failed:", e));
-
     return () => {
+      isDrawing = false; // Stop animation loop
       if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
       window.removeEventListener('resize', resizeCanvas);
       audio.removeEventListener('play', resumeAudioCtx);
-      if (audioCtxRef.current) {
-        audioCtxRef.current.close();
-        audioCtxRef.current = null;
-      }
-      sourceNodeRef.current = null;
-      analyserRef.current = null;
+      // Source node is disconnected based on audioSrc changes now,
+      // so direct disconnection here might be redundant or cause issues if audioSrc didn't change.
+      // Analyser and AudioContext are reused, so generally not closed here unless component unmounts entirely.
     };
-  }, [audioSrc]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [audioRef, audioSrc]); // audioRef should be stable, audioSrc triggers effect
 
   return (
     <canvas

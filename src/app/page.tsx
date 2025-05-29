@@ -13,16 +13,18 @@ import FavoriteButton from "@/components/FavoriteButton";
 import { useAppLoader } from "@/hooks/useAppLoader";
 import { useIdleHideUI } from "@/hooks/useIdleHidUI";
 import { usePollMusic } from "@/hooks/usePollMusic";
-import { useUserFavorites, FavoriteSong } from "@/hooks/useUserFavorites";
-import { useEffect, useRef, useState } from "react";
+import { useUserFavorites } from "@/hooks/useUserFavorites";
+import { useEffect, useRef, useState, useCallback } from "react";
 import LoadPage from "./load/page";
 import SmallCityWeatherClockWidget from "@/components/CityWeatherClockWidget";
 import { useLocationAndTime } from "@/hooks/useLocationAndTime";
 import { useGenerate } from "@/hooks/useGenerate";
+import { useAudioPlaybackManager } from "@/hooks/useAudioPlaybackManager";
 
 interface Song {
   url: string;
   title: string | null;
+  task_id: string;
 }
 
 export default function Home() {
@@ -34,6 +36,7 @@ export default function Home() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [imageTaskId, setImageTaskId] = useState<string | null>(null);
   const [musicTaskId, setMusicTaskId] = useState<string | null>(null);
+  const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [musicQueue, setMusicQueue] = useState<Song[]>([]);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [overlayIcon, setOverlayIcon] = useState<'play' | 'pause' | null>(null);
@@ -41,8 +44,9 @@ export default function Home() {
   const { location, time, locationChecked } = useLocationAndTime();
   const { favorites, loadingFavorites, favoritesError, refreshFavorites } = useUserFavorites();
 
-  // Call useGenerate unconditionally
-  useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked });
+  useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked, imageTaskId, musicQueue });
+
+  useAudioPlaybackManager({ audioRef, currentSong, isPlaying });
 
   // Idle-hide UI
   useIdleHideUI(setShowUI);
@@ -51,16 +55,26 @@ export default function Home() {
   useAppLoader(setAppLoading);
 
   // Polling hooks
-  usePollMusic(musicTaskId, (url, title) => {
-    setMusicQueue((prev) => [...prev, { url, title }]);
-    console.log("✅ Song added to queue:", { url, title });
+  usePollMusic(musicTaskId, (url, title, task_id) => {
+    const newSong = { url, title, task_id };
+    // Don't change the current song if the queue already has a song.
+    if (musicQueue.length === 0) {
+      setCurrentSong(newSong);
+    }
+    setMusicQueue((prev) => [...prev, newSong]);
+    console.log("✅ Song added to queue:", newSong);
   });
+  // Callback for FullScreenMusicPlayer to change the current song
 
   // Background transition on new image
 
   useEffect(() => {
     console.log("🎵 Updated musicQueue:", musicQueue);
   }, [musicQueue]);
+
+  useEffect(() => {
+    console.log("💿 current song:", currentSong);
+  }, [currentSong]);
 
 
   return (
@@ -81,6 +95,8 @@ export default function Home() {
           setIsPlaying={setIsPlaying}
           overlayIcon={overlayIcon}
           setOverlayIcon={setOverlayIcon}
+          currentSong={currentSong}
+          onSongChange={setCurrentSong}
         />
 
       )}
@@ -98,7 +114,7 @@ export default function Home() {
             clickedElement.closest('input') ||
             clickedElement.closest('aside');
 
-          if (!isInteractive && musicQueue.length > 0) {
+          if (!isInteractive && currentSong) {
             const next = !isPlaying;
             setIsPlaying(next);
             setOverlayIcon(next ? 'play' : 'pause');
@@ -109,13 +125,15 @@ export default function Home() {
         <audio
           ref={audioRef}
           src={
-            musicQueue[0]?.url
-              ? `/api/proxy-audio?url=${encodeURIComponent(musicQueue[0].url)}`
+            currentSong?.url
+              ? `/api/proxy-audio?url=${encodeURIComponent(currentSong.url)}`
               : undefined
           }
           preload="auto"
           crossOrigin="anonymous"
           className="hidden"
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
         />
 
         {/* Background Images */}
@@ -139,15 +157,11 @@ export default function Home() {
 
           {/* Favorite Button */}
           <FavoriteButton
-            musicTaskId={musicTaskId}
+            musicTaskId={currentSong?.task_id ?? null}
             imageTaskId={imageTaskId}
             onFavoriteChange={refreshFavorites}
           />
 
-          {/* <Header
-            musicTaskId={musicTaskId}
-            imageTaskId={imageTaskId}
-          /> */}
           <SmallCityWeatherClockWidget />
 
         </div>
@@ -157,8 +171,8 @@ export default function Home() {
         <SpectralAnalyzer
           audioRef={audioRef}
           audioSrc={
-            musicQueue[0]?.url
-              ? `/api/proxy-audio?url=${encodeURIComponent(musicQueue[0].url)}`
+            currentSong?.url
+              ? `/api/proxy-audio?url=${encodeURIComponent(currentSong.url)}`
               : undefined
           }
         />

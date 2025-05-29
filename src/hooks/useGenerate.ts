@@ -1,24 +1,39 @@
 'use client'
 import { useEffect } from "react";
 
+// Define Song interface locally or import from a shared types file
+interface Song {
+  url: string;
+  title: string | null;
+  task_id: string;
+}
+
 interface Props {
   setImageTaskId: (id: string) => void;
   setMusicTaskId: (id: string) => void;
   time: string | null;
   location: { lat: number; lon: number } | null;
   locationChecked: boolean;
+  imageTaskId: string | null;
+  musicQueue: Song[];
 }
 
-export function useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked }: Props) {
+export function useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked, imageTaskId, musicQueue }: Props) {
 
   useEffect(() => {
     if (time && locationChecked) {
+      let generateImage = false;
+      if (!imageTaskId) {
+        generateImage = true;
+      }
       fetch('http://localhost:3000/api/generate-content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           time,
-          ...(location && { location }) // only include if location exists
+          ...(location && { location }), // only include if location exists
+          generateImage,
+
         })
       })
         .then((res) => res.json())
@@ -31,5 +46,5 @@ export function useGenerate({ setImageTaskId, setMusicTaskId, time, location, lo
           console.error("Failed to send content request:", err);
         });
     }
-  }, [time, location, locationChecked]);
+  }, [locationChecked, musicQueue]);
 }

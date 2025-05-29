@@ -8,7 +8,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useEffect, useState, useCallback } from 'react';
 
-interface Song { url: string; title: string | null }
+interface Song { url: string; title: string | null; task_id: string }
 interface Props {
   audioRef: React.RefObject<HTMLAudioElement | null>;
   songs: Song[];
@@ -16,6 +16,8 @@ interface Props {
   setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
   overlayIcon: 'play' | 'pause' | null;
   setOverlayIcon: (icon: 'play' | 'pause' | null) => void;
+  currentSong: Song | null;
+  onSongChange: (song: Song) => void;
 }
 
 export default function FullScreenMusicPlayer({
@@ -25,11 +27,30 @@ export default function FullScreenMusicPlayer({
   setIsPlaying,
   overlayIcon,
   setOverlayIcon,
+  currentSong,
+  onSongChange,
 }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const currentSong = songs[currentIndex];
 
-  // 1) Play / Pause effect
+  useEffect(() => {
+    if (songs.length > 0 && currentIndex >= 0 && currentIndex < songs.length) {
+      const newSong = songs[currentIndex];
+      if (currentSong?.task_id !== newSong.task_id) {
+        onSongChange(newSong);
+      }
+    }
+  }, [currentIndex, songs, onSongChange, currentSong]);
+
+  useEffect(() => {
+    if (currentSong && songs.length > 0) {
+      const initialIndex = songs.findIndex(song => song.task_id === currentSong.task_id);
+      if (initialIndex !== -1) {
+        setCurrentIndex(initialIndex);
+      }
+    }
+  }, [currentSong, songs]);
+
+  // Play/Pause effect
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -39,9 +60,9 @@ export default function FullScreenMusicPlayer({
     } else {
       audio.pause();
     }
-  }, [isPlaying, currentSong?.url]);
+  }, [isPlaying, songs, currentIndex, audioRef]);
 
-  // 2) Advance on end
+  // Advance on end
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -53,35 +74,44 @@ export default function FullScreenMusicPlayer({
     };
     audio.addEventListener('ended', onEnded);
     return () => void audio.removeEventListener('ended', onEnded);
-  }, [currentIndex, songs.length]);
-
-  // 3) Spacebar toggles play/pause
+  }, [currentIndex, songs.length, audioRef]);
 
   const togglePlay = useCallback(() => {
+    if (songs.length === 0) return;
     setIsPlaying((prev: boolean) => {
       const next = !prev;
       setOverlayIcon(next ? 'play' : 'pause');
       setTimeout(() => setOverlayIcon(null), 1000);
       return next;
     });
-  }, [setOverlayIcon]);
+  }, [setIsPlaying, setOverlayIcon, songs.length]);
 
+  // Spacebar toggles play/pause
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.code === 'Space' && currentSong) {
+      if (e.code === 'Space' && songs[currentIndex]) {
         e.preventDefault();
         togglePlay();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [togglePlay, currentSong]);
+  }, [togglePlay, songs, currentIndex]);
 
+  const handleSkipBack = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex((i) => i - 1);
+    }
+  }
+  const handleSkipForward = () => {
+    if (currentIndex < songs.length - 1) {
+      setCurrentIndex((i) => i + 1);
+    }
+  }
 
-  const handleSkipBack = () =>
-    currentIndex > 0 && setCurrentIndex((i) => i - 1);
-  const handleSkipForward = () =>
-    currentIndex < songs.length - 1 && setCurrentIndex((i) => i + 1);
+  if (songs.length === 0) {
+    return null;
+  }
 
   return (
     <>
@@ -124,8 +154,6 @@ export default function FullScreenMusicPlayer({
           </div>
         )}
       </div>
-      {/* If you still want the analyzer here: */}
-
     </>
   );
 }

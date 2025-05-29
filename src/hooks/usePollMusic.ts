@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 export function usePollMusic(
   task_id: string | null,
-  onSuccess: (url: string, title: string | null) => void
+  onSuccess: (url: string, title: string | null, task_id: string) => void
 ) {
   useEffect(() => {
     if (!task_id) return;
@@ -29,7 +29,7 @@ export function usePollMusic(
 
         if (result.data?.status === "completed" && url) {
           console.log("✅ Music is ready:", { url, title });
-          onSuccess(url, title);
+          onSuccess(url, title, task_id);
           clearInterval(interval);
         } else {
           console.log(`⏳ Poll #${retries + 1} - Status: ${result.data?.status} (waiting...)`);
