@@ -1,14 +1,57 @@
 'use client';
 import { WiDaySunny } from "react-icons/wi";
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 export default function SmallCityWeatherClockWidget({
   city = "Tokyo",
   date = "Wed, Jul 26",
   time = "12:00",
 }) {
+  // Drag state
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
+  const dragStart = useRef<{ x: number; y: number; offsetX: number; offsetY: number } | null>(null);
+
+  // Drag handlers
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    setDragging(true);
+    dragStart.current = {
+      x: e.clientX,
+      y: e.clientY,
+      offsetX: position.x,
+      offsetY: position.y,
+    };
+    document.body.style.userSelect = 'none';
+  };
+  useEffect(() => {
+    if (!dragging) return;
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!dragStart.current) return;
+      const dx = e.clientX - dragStart.current.x;
+      const dy = e.clientY - dragStart.current.y;
+      // No clamping, allow anywhere
+      let newX = dragStart.current.offsetX + dx;
+      let newY = dragStart.current.offsetY + dy;
+      setPosition({ x: newX, y: newY });
+    };
+    const handleMouseUp = () => {
+      setDragging(false);
+      document.body.style.userSelect = '';
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [dragging]);
+
   return (
-    <div className="relative w-[184px] h-[110px] flex items-center justify-center rounded-[24px] overflow-hidden shadow-lg mt-5 ml-327">
+    <div
+      className="relative w-[184px] h-[110px] flex items-center justify-center rounded-[24px] overflow-hidden shadow-lg mt-5 ml-327 cursor-move"
+      style={{ left: position.x, top: position.y, position: 'fixed', zIndex: 100 }}
+      onMouseDown={handleMouseDown}
+    >
       {/* Gradient BG stripes */}
       <div className="absolute inset-0 z-0 flex">
         <div className="w-1/4 h-full bg-gradient-to-b from-[#bb5021] to-[#ff8c42]" />
