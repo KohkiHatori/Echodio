@@ -53,9 +53,9 @@ export default function FavoriteButton({
     }
   };
 
-  if (!userId) return null;
-
   const Icon = isFavorited ? HeartSolid : HeartOutline;
+
+  if (!userId) return null;
 
   return (
     <button
@@ -63,7 +63,8 @@ export default function FavoriteButton({
         e.stopPropagation();
         toggleFavorite();
       }}
-      className="hover:scale-110 transition-transform"
+      className="fixed top-4 right-4 z-50 p-2 bg-black/50 rounded-full cursor-pointer flex items-center justify-center"
+      style={{ width: 40, height: 40 }}
     >
       <Icon className={`w-6 h-6 ${isFavorited ? 'text-red-500' : 'text-white'}`} />
     </button>

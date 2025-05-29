@@ -36,7 +36,7 @@ export default function Sidebar({ themeColor }: SidebarProps) {
     <>
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-64 text-white transition-colors duration-500 transform transition-transform duration-500 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 left-0 h-full w-64 text-white transition-colors duration-500 transform transition-transform duration-500 ease-in-out opacity-92 ${isOpen ? 'translate-x-0' : '-translate-x-full'
           } z-30`}
         style={{ backgroundColor: themeColor }}
         onClick={(e) => e.stopPropagation()}

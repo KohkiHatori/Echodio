@@ -8,14 +8,14 @@ import SpectralAnalyzer from "@/components/SpectralAnalyzer";
 import UserLocationAndTime from "@/components/UserLocationAndTime";
 import Sidebar from "@/components/Sidebar";
 import Background from "@/components/Background";
+import FavoriteButton from "@/components/FavoriteButton";
 
 // hooks
-import { useAuth } from "@/context/AuthContext";
 import { useAppLoader } from "@/hooks/useAppLoader";
 import { useIdleHideUI } from "@/hooks/useIdleHidUI";
 import { usePollMusic } from "@/hooks/usePollMusic";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import LoadPage from "./load/page";
 import SmallCityWeatherClockWidget from "@/components/CityWeatherClockWidget";
 
@@ -138,6 +138,13 @@ export default function Home() {
         >
           <Sidebar
             themeColor={themeColor}
+          />
+
+          {/* Favorite Button */}
+          <FavoriteButton
+            userId={userId}
+            musicTaskId={musicTaskId}
+            imageTaskId={imageTaskId}
           />
 
           {/* <Header
