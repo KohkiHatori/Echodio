@@ -179,8 +179,13 @@ export default function Home() {
               : undefined
           }
         />
-
       </div>
+      {/* Show current song title if available */}
+      {currentSong?.title ? (
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[99999] max-w-[90vw] text-center break-words">
+          <p className="text-white text-4xl font-semibold">{currentSong.title}</p>
+        </div>
+      ) : null}
     </>
   );
 }

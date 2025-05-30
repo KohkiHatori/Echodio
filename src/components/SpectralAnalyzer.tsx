@@ -122,11 +122,8 @@ export default function SpectralAnalyzer({ audioRef, audioSrc }: Props) {
         const scaledValue = Math.pow(rawValue, 0.5);
         const x = i * (barWidth + gap);
 
-        // User curve height (limit)
-        const userCurveHeight = canvas.height * eqValues[i];
-        // Draw faint user limit curve first
-        ctx.fillStyle = 'rgba(255,255,255,0.12)';
-        ctx.fillRect(x, canvas.height - userCurveHeight, barWidth, userCurveHeight);
+        // User curve height (limit), now limited to 1.5× but cannot exceed canvas height
+        const userCurveHeight = canvas.height * Math.min(1.5 * eqValues[i], 1);
 
         // Main spectrum bar, limited by user curve
         const spectrumBarHeight = scaledValue * canvas.height;
