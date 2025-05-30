@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Props {
   audioRef: React.RefObject<HTMLAudioElement | null>;
@@ -14,6 +14,9 @@ export default function SpectralAnalyzer({ audioRef, audioSrc }: Props) {
   const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const rafIdRef = useRef<number | null>(null);
+
+  const [eqValues, setEqValues] = useState<number[]>(() => new Array(barCount).fill(1));
+  const [draggingBar, setDraggingBar] = useState<number | null>(null);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -117,8 +120,18 @@ export default function SpectralAnalyzer({ audioRef, audioSrc }: Props) {
       for (let i = 0; i < barCount; i++) {
         const rawValue = dataArray[i] / 255;
         const scaledValue = Math.pow(rawValue, 0.5);
-        const barHeight = scaledValue * canvas.height;
         const x = i * (barWidth + gap);
+
+        // User curve height (limit)
+        const userCurveHeight = canvas.height * eqValues[i];
+        // Draw faint user limit curve first
+        ctx.fillStyle = 'rgba(255,255,255,0.12)';
+        ctx.fillRect(x, canvas.height - userCurveHeight, barWidth, userCurveHeight);
+
+        // Main spectrum bar, limited by user curve
+        const spectrumBarHeight = scaledValue * canvas.height;
+        const barHeight = Math.min(spectrumBarHeight, userCurveHeight);
+        // Smoothing
         const blended = lastBarValues[i] * smoothingFactor + barHeight * (1 - smoothingFactor);
         lastBarValues[i] = blended;
 
@@ -149,23 +162,95 @@ export default function SpectralAnalyzer({ audioRef, audioSrc }: Props) {
       // Analyser and AudioContext are reused, so generally not closed here unless component unmounts entirely.
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [audioRef, audioSrc]); // audioRef should be stable, audioSrc triggers effect
+  }, [audioRef, audioSrc, eqValues]);
+
+  const totalGap = typeof window !== 'undefined' ? window.innerWidth - (barCount * 1) : 0;
+  const gap = barCount > 1 ? totalGap / (barCount - 1) : 0;
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        position: 'fixed',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 15,
-        width: '100vw',
-        height: '64px',
-        pointerEvents: 'none',
-        background: 'transparent',
-      }}
-      height={200}
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: 'fixed',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 15,
+          width: '100vw',
+          height: '64px',
+          pointerEvents: 'none',
+          background: 'transparent',
+        }}
+        height={200}
+      />
+      <div
+        style={{
+          position: 'fixed',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 16,
+          width: '100vw',
+          height: '200px',
+          pointerEvents: 'auto',
+          background: 'transparent',
+          cursor: draggingBar !== null ? 'ns-resize' : 'pointer',
+        }}
+        onMouseDown={e => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const barArea = rect.width;
+          const gapLocal = barCount > 1 ? (barArea - barCount * 1) / (barCount - 1) : 0;
+          const barWidth = 1;
+          const perBar = barWidth + gapLocal;
+          const barIdx = Math.floor(x / perBar);
+          if (barIdx >= 0 && barIdx < barCount) setDraggingBar(barIdx);
+        }}
+        onMouseMove={e => {
+          if (draggingBar === null) return;
+          const rect = e.currentTarget.getBoundingClientRect();
+          const y = e.clientY - rect.top;
+          const norm = 1 - Math.max(0, Math.min(1, y / rect.height));
+          const influenceRadius = 12; // how wide the "mountain" spreads
+          setEqValues(vals => {
+            const next = [...vals];
+            for (let i = 0; i < next.length; i++) {
+              const dist = Math.abs(i - draggingBar);
+              const weight = Math.exp(-0.5 * (dist / influenceRadius) ** 2);
+              next[i] = norm * weight + next[i] * (1 - weight);
+            }
+            return next;
+          });
+        }}
+        onMouseUp={() => setDraggingBar(null)}
+        onMouseLeave={() => setDraggingBar(null)}
+      />
+      {draggingBar !== null && (
+        <div
+          style={{
+            position: 'fixed',
+            left: `${draggingBar * (1 + gap)}px`,
+            bottom: 200 - (eqValues[draggingBar] * 200) - 24 + 'px',
+            zIndex: 18,
+            width: 32,
+            height: 32,
+            borderRadius: 16,
+            background: '#c44',
+            color: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none',
+            fontWeight: 700,
+            fontSize: 20,
+            boxShadow: '0 2px 10px #0002',
+            transition: 'left 0.1s, bottom 0.1s'
+          }}
+        >
+          N
+        </div>
+      )}
+    </>
   );
 }
