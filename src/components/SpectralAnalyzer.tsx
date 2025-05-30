@@ -223,31 +223,6 @@ export default function SpectralAnalyzer({ audioRef, audioSrc }: Props) {
         onMouseUp={() => setDraggingBar(null)}
         onMouseLeave={() => setDraggingBar(null)}
       />
-      {draggingBar !== null && (
-        <div
-          style={{
-            position: 'fixed',
-            left: `${draggingBar * (1 + gap)}px`,
-            bottom: 200 - (eqValues[draggingBar] * 200) - 24 + 'px',
-            zIndex: 18,
-            width: 32,
-            height: 32,
-            borderRadius: 16,
-            background: '#c44',
-            color: '#fff',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            pointerEvents: 'none',
-            fontWeight: 700,
-            fontSize: 20,
-            boxShadow: '0 2px 10px #0002',
-            transition: 'left 0.1s, bottom 0.1s'
-          }}
-        >
-          N
-        </div>
-      )}
     </>
   );
 }
