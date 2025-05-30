@@ -115,7 +115,15 @@ export default function Home() {
             clickedElement.closest('input') ||
             clickedElement.closest('aside');
 
-          if (!isInteractive && currentSong) {
+          // Prevent toggle if click is in bottom fifth of the screen
+          const windowHeight = window.innerHeight;
+          const clickY = (e as React.MouseEvent).clientY;
+          const isBottomFifth = clickY > windowHeight * 0.8;
+
+          // Prevent toggle if click is on CityWeatherClockWidget
+          const isWeatherWidget = clickedElement.closest('.city-weather-clock-widget');
+
+          if (!isInteractive && !isBottomFifth && !isWeatherWidget && currentSong) {
             const next = !isPlaying;
             setIsPlaying(next);
             setOverlayIcon(next ? 'play' : 'pause');

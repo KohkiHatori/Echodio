@@ -48,7 +48,7 @@ export default function SmallCityWeatherClockWidget({
 
   return (
     <div
-      className="relative w-[184px] h-[110px] flex items-center justify-center rounded-[24px] overflow-hidden shadow-lg mt-5 ml-327 cursor-move"
+      className="city-weather-clock-widget relative w-[184px] h-[110px] flex items-center justify-center rounded-[24px] overflow-hidden shadow-lg mt-5 ml-327 cursor-move"
       style={{ left: position.x, top: position.y, position: 'fixed', zIndex: 100 }}
       onMouseDown={handleMouseDown}
     >
