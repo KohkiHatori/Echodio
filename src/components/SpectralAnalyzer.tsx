@@ -209,7 +209,7 @@ export default function SpectralAnalyzer({ audioRef, audioSrc }: Props) {
           const rect = e.currentTarget.getBoundingClientRect();
           const y = e.clientY - rect.top;
           const norm = 1 - Math.max(0, Math.min(1, y / rect.height));
-          const influenceRadius = 12; // how wide the "mountain" spreads
+          const influenceRadius = 4; // how wide the "mountain" spreads
           setEqValues(vals => {
             const next = [...vals];
             for (let i = 0; i < next.length; i++) {
