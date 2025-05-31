@@ -191,8 +191,25 @@ export default function Home() {
       </div>
       {/* Show current song title if available */}
       {currentSong?.title ? (
-        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[99999] max-w-[90vw] text-center break-words">
-          <p className="text-white text-4xl font-semibold font-mono">{currentSong.title}</p>
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[99999] max-w-[50vw] text-left break-words">
+          <div className="flex items-center gap-1">
+            <img src="/logo.png" alt="Logo" className="w-48 h-48 object-contain" />
+            <p className="ml-[-2rem] text-white text-4xl font-semibold font-mono break-words whitespace-pre-line">
+              {(() => {
+                const words = currentSong.title?.split(" ") || [];
+                const mid = Math.ceil(words.length / 2);
+                const firstLine = words.slice(0, mid).join(" ");
+                const secondLine = words.slice(mid).join(" ");
+                return (
+                  <>
+                    {firstLine}
+                    <br />
+                    {secondLine}
+                  </>
+                );
+              })()}
+            </p>
+          </div>
         </div>
       ) : null}
     </>
