@@ -58,9 +58,10 @@ export default function Home() {
   // Polling hooks
   usePollMusic(musicTaskId, (url, title, task_id) => {
     const newSong = { url, title, task_id };
-    // Don't change the current song if the queue already has a song.
+    // If the queue is empty, set current song and start playing
     if (musicQueue.length === 0) {
       setCurrentSong(newSong);
+      setIsPlaying(true); // Start playing automatically
     }
     setMusicQueue((prev) => [...prev, newSong]);
     console.log("✅ Song added to queue:", newSong);

@@ -122,7 +122,7 @@ export default function ControlCenter({ audioRef }: ControlCenterProps) {
         style={{ top: buttonTop, transition: 'top 0.5s cubic-bezier(0.4,0,0.2,1)' }}
       >
         <button
-          className="bg-black/60 text-white px-8 py-2 rounded-b-2xl shadow-lg hover:bg-black/80 transition flex items-center justify-center w-48"
+          className="bg-black/60 text-white px-8 py-2 rounded-b-2xl shadow-lg hover:bg-black/80 transition flex items-center justify-center w-48 cursor-pointer"
           style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
           onClick={() => setOpen((v) => !v)}
         >

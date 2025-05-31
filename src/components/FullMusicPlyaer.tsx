@@ -68,13 +68,18 @@ export default function FullScreenMusicPlayer({
     if (!audio) return;
 
     const onEnded = () => {
+      if (songs.length === 0) return;
       if (currentIndex < songs.length - 1) {
         setCurrentIndex((i) => i + 1);
+        setIsPlaying(true);
+      } else {
+        setCurrentIndex(0);
+        setIsPlaying(true);
       }
     };
     audio.addEventListener('ended', onEnded);
     return () => void audio.removeEventListener('ended', onEnded);
-  }, [currentIndex, songs.length, audioRef]);
+  }, [currentIndex, songs.length, audioRef, setIsPlaying]);
 
   const togglePlay = useCallback(() => {
     if (songs.length === 0) return;
@@ -120,7 +125,7 @@ export default function FullScreenMusicPlayer({
         {/* Skip Back Button */}
         {currentIndex > 0 && (
           <button
-            className="fixed top-1/2 left-4 -translate-y-1/2 p-2 bg-black/50 rounded-full pointer-events-auto"
+            className="fixed top-1/2 left-4 -translate-y-1/2 p-2 bg-black/50 rounded-full pointer-events-auto cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
               handleSkipBack();
@@ -133,7 +138,7 @@ export default function FullScreenMusicPlayer({
         {/* Skip Forward Button */}
         {currentIndex < songs.length - 1 && (
           <button
-            className="fixed top-1/2 right-4 -translate-y-1/2 p-2 bg-black/50 rounded-full pointer-events-auto"
+            className="fixed top-1/2 right-4 -translate-y-1/2 p-2 bg-black/50 rounded-full pointer-events-auto cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
               handleSkipForward();
