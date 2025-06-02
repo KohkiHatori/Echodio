@@ -21,6 +21,7 @@ import SmallCityWeatherClockWidget from "@/components/CityWeatherClockWidget";
 import { useLocationAndTime } from "@/hooks/useLocationAndTime";
 import { useGenerate } from "@/hooks/useGenerate";
 import { useAudioPlaybackManager } from "@/hooks/useAudioPlaybackManager";
+import { handleMainUIClickCapture } from "@/app/utils/handleClickCapture";
 
 interface Song {
   url: string;
@@ -37,7 +38,7 @@ export default function Home() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [imageTaskId, setImageTaskId] = useState<string | null>(null);
   const [musicTaskId, setMusicTaskId] = useState<string | null>(null);
-  const [currentSong, setCurrentSong] = useState<Song | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [musicQueue, setMusicQueue] = useState<Song[]>([]);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [overlayIcon, setOverlayIcon] = useState<'play' | 'pause' | null>(null);
@@ -47,7 +48,7 @@ export default function Home() {
 
   useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked, imageTaskId, musicQueue });
 
-  useAudioPlaybackManager({ audioRef, currentSong, isPlaying });
+  useAudioPlaybackManager({ audioRef, isPlaying, songs: musicQueue, currentIndex, setIsPlaying, setCurrentIndex, setOverlayIcon });
 
   // Idle-hide UI
   useIdleHideUI(setShowUI);
@@ -60,7 +61,6 @@ export default function Home() {
     const newSong = { url, title, task_id };
     // If the queue is empty, set current song and start playing
     if (musicQueue.length === 0) {
-      setCurrentSong(newSong);
       setIsPlaying(true); // Start playing automatically
     }
     setMusicQueue((prev) => [...prev, newSong]);
@@ -75,8 +75,8 @@ export default function Home() {
   }, [musicQueue]);
 
   useEffect(() => {
-    console.log("💿 current song:", currentSong);
-  }, [currentSong]);
+    console.log("💿 current song:", musicQueue[currentIndex]);
+  }, [currentIndex]);
 
 
   return (
@@ -91,14 +91,10 @@ export default function Home() {
       </div>
       {!appLoading && (
         <FullScreenMusicPlayer
-          audioRef={audioRef}
-          songs={musicQueue}
-          isPlaying={isPlaying}
-          setIsPlaying={setIsPlaying}
+          currentIndex={currentIndex}
+          setCurrentIndex={setCurrentIndex}
+          length={musicQueue.length}
           overlayIcon={overlayIcon}
-          setOverlayIcon={setOverlayIcon}
-          currentSong={currentSong}
-          onSongChange={setCurrentSong}
         />
 
       )}
@@ -108,40 +104,26 @@ export default function Home() {
         className={
           `fixed inset-0 transition-opacity duration-700 ease-out ${appLoading ? "opacity-0 pointer-events-none" : "opacity-100"}`
         }
-        onClickCapture={(e) => {
-          const clickedElement = e.target as HTMLElement;
-          const isInteractive =
-            clickedElement.closest('button') ||
-            clickedElement.closest('a') ||
-            clickedElement.closest('input') ||
-            clickedElement.closest('aside');
-
-          // Prevent toggle if click is in bottom fifth of the screen
-          const windowHeight = window.innerHeight;
-          const clickY = (e as React.MouseEvent).clientY;
-          const isBottomFifth = clickY > windowHeight * 0.8;
-
-          // Prevent toggle if click is on CityWeatherClockWidget
-          const isWeatherWidget = clickedElement.closest('.city-weather-clock-widget');
-
-          if (!isInteractive && !isBottomFifth && !isWeatherWidget && currentSong) {
-            const next = !isPlaying;
-            setIsPlaying(next);
-            setOverlayIcon(next ? 'play' : 'pause');
-            setTimeout(() => setOverlayIcon(null), 1000);
-          }
-        }}
+        onClickCapture={(e) =>
+          handleMainUIClickCapture(e, {
+            setIsPlaying,
+            setOverlayIcon,
+            musicQueue,
+            currentIndex,
+          })
+        }
       >
         <audio
           ref={audioRef}
           src={
-            currentSong?.url
-              ? `/api/proxy-audio?url=${encodeURIComponent(currentSong.url)}`
+            musicQueue[currentIndex]?.url
+              ? `/api/proxy-audio?url=${encodeURIComponent(musicQueue[currentIndex].url)}`
               : undefined
           }
           preload="auto"
           crossOrigin="anonymous"
           className="hidden"
+          // Not strictly necessary, but it's a good practice to set isPlaying to true when the audio starts playing
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
         />
@@ -170,12 +152,12 @@ export default function Home() {
 
           {/* Favorite Button */}
           <FavoriteButton
-            musicTaskId={currentSong?.task_id ?? null}
+            musicTaskId={musicQueue[currentIndex]?.task_id ?? null}
             imageTaskId={imageTaskId}
             onFavoriteChange={refreshFavorites}
           />
 
-          
+
 
 
         </div>
@@ -185,20 +167,20 @@ export default function Home() {
         <SpectralAnalyzer
           audioRef={audioRef}
           audioSrc={
-            currentSong?.url
-              ? `/api/proxy-audio?url=${encodeURIComponent(currentSong.url)}`
+            musicQueue[currentIndex]?.url
+              ? `/api/proxy-audio?url=${encodeURIComponent(musicQueue[currentIndex].url)}`
               : undefined
           }
         />
       </div>
       {/* Show current song title if available */}
-      {currentSong?.title ? (
+      {musicQueue[currentIndex]?.title ? (
         <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[99999] max-w-[50vw] text-left break-words">
           <div className="flex items-center gap-1">
             <img src="/logo.png" alt="Logo" className="w-48 h-48 object-contain" />
             <p className="ml-[-2rem] text-white text-4xl font-semibold font-mono break-words whitespace-pre-line">
               {(() => {
-                const words = currentSong.title?.split(" ") || [];
+                const words = musicQueue[currentIndex].title?.split(" ") || [];
                 const mid = Math.ceil(words.length / 2);
                 const firstLine = words.slice(0, mid).join(" ");
                 const secondLine = words.slice(mid).join(" ");

@@ -1,46 +1,48 @@
 'use client';
 
+import { togglePlay } from '@/app/utils/togglePlay';
 import { useEffect, RefObject } from 'react';
+import { useGlobalSpacebar } from './useGlobalSpacebar';
 
 interface Song {
   url: string;
-  // Add other song properties if needed by the hook, though currently only url is used directly
+  title: string | null;
+  task_id: string;
 }
 
 interface UseAudioPlaybackManagerProps {
   audioRef: RefObject<HTMLAudioElement | null>;
-  currentSong: Song | null;
   isPlaying: boolean;
+  songs: Song[];
+  currentIndex: number;
+  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrentIndex: React.Dispatch<React.SetStateAction<number>>;
+  setOverlayIcon: React.Dispatch<React.SetStateAction<'play' | 'pause' | null>>;
 }
 
 export function useAudioPlaybackManager({
   audioRef,
-  currentSong,
   isPlaying,
+  songs,
+  currentIndex,
+  setIsPlaying,
+  setCurrentIndex,
+  setOverlayIcon,
 }: UseAudioPlaybackManagerProps) {
+
+  // Play/Pause effect
   useEffect(() => {
-    console.log("💿 Current song (in hook):", currentSong, "Is Playing:", isPlaying);
+    console.log("💿 Current song (in hook):", songs[currentIndex], "Is Playing:", isPlaying);
     const audio = audioRef.current;
 
-    if (currentSong && audio) {
-      const targetSrc = `/api/proxy-audio?url=${encodeURIComponent(currentSong.url)}`;
-      let sourceChanged = false;
+    if (songs[currentIndex] && audio) {
+      const targetSrc = `/api/proxy-audio?url=${encodeURIComponent(songs[currentIndex].url)}`;
 
-      // Check if the source attribute needs to be updated or if it's already correct
-      // This handles the case where currentSong object changes but URL is the same,
-      // or when src is not yet set by React's declarative update.
-      if (audio.src !== targetSrc) {
-        // console.log("Audio source changed or needs update. Current:", audio.src, "Target:", targetSrc);
-        // It's generally better to let React manage the src attribute declaratively.
-        // This effect primarily ensures playback state and loading for the declaratively set src.
-      }
 
       // Check if the browser's current source is different from the target
       // This helps ensure we call load() if React has updated src but browser hasn't picked it up.
       if (audio.currentSrc !== targetSrc && audio.src === targetSrc) {
-        // console.log("Browser currentSrc differs from targetSrc, calling load(). Current:", audio.currentSrc, "Target:", targetSrc);
         audio.load();
-        sourceChanged = true;
       }
 
       if (isPlaying) {
@@ -51,7 +53,7 @@ export function useAudioPlaybackManager({
           playPromise.catch(error => {
             // Autoplay was prevented. This can happen if the page hasn't been interacted with,
             // or if the browser has strict autoplay policies.
-            // console.error("Error attempting to play audio:", error);
+            console.error("Error attempting to play audio:", error);
             // You might want to set isPlaying to false here if play was rejected and not by user pause
           });
         }
@@ -61,7 +63,7 @@ export function useAudioPlaybackManager({
           audio.pause();
         }
       }
-    } else if (!currentSong && audio) {
+    } else if (!songs[currentIndex] && audio) {
       // If there's no current song, pause and reset the audio element
       if (!audio.paused) {
         audio.pause();
@@ -72,5 +74,28 @@ export function useAudioPlaybackManager({
       // audio.removeAttribute('src'); // Alternative way to clear
       // audio.load(); // After clearing src, some browsers might need a load() to reflect empty state
     }
-  }, [currentSong, isPlaying, audioRef]); // audioRef itself should be stable
+  }, [songs[currentIndex], isPlaying, audioRef]); // audioRef itself should be stable
+
+  // Advance on end
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const onEnded = () => {
+      if (songs.length === 0) return;
+      if (currentIndex < songs.length - 1) {
+        setCurrentIndex((i) => i + 1);
+        setIsPlaying(true);
+      } else {
+        setCurrentIndex(0);
+        setIsPlaying(true);
+      }
+    };
+    audio.addEventListener('ended', onEnded);
+    return () => void audio.removeEventListener('ended', onEnded);
+  }, [currentIndex, songs.length, audioRef, setIsPlaying]);
+
+
+  // Spacebar toggles play/pause
+  useGlobalSpacebar(() => togglePlay(setIsPlaying, setOverlayIcon));
 }
