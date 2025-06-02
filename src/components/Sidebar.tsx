@@ -27,6 +27,7 @@ export default function Sidebar({
 }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [fullyClosed, setFullyClosed] = useState(true);
+  const [selectedGenre, setSelectedGenre] = useState('ジャズ');
 
   const { user } = useAuth();
 
@@ -51,7 +52,7 @@ export default function Sidebar({
       <aside
         className={`fixed top-0 left-0 h-full w-64 text-white transition-colors duration-500 transform transition-transform duration-500 ease-in-out opacity-92 ${isOpen ? 'translate-x-0' : '-translate-x-full'
           } z-30`}
-        style={{ backgroundColor: themeColor }}
+        style={{ backgroundColor: "#3b2517" }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="absolute top-4 left-4 right-4 flex items-center justify-between px-2">
@@ -87,9 +88,27 @@ export default function Sidebar({
             </Link>
           )}
         </div>
+
+        <div className="mt-14 px-4">
+          <label htmlFor="genre-select" className="block text-white text-sm mb-1">ジャンル選択</label>
+          <select
+            id="genre-select"
+            value={selectedGenre}
+            onChange={e => setSelectedGenre(e.target.value)}
+            className="w-full rounded-md p-2 bg-black text-white font-mono select-arrow-right"
+            style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none', paddingRight: '2.5rem' }}
+          >
+            <option value="ジャズ">ジャズ</option>
+            <option value="ボサノバ">ボサノバ</option>
+            <option value="アンビエント">アンビエント</option>
+            <option value="ヒーリング">ヒーリング</option>
+            <option value="Lo-fi">Lo-fi</option>
+          </select>
+        </div>
+
         {/* Favorites List */}
         {user && (
-          <div className="mt-16 px-4">
+          <div className="mt-6 px-4">
             <h2 className="text-lg font-semibold mb-2">Favorites</h2>
             {loadingFavorites && <div className="text-sm text-gray-300">Loading...</div>}
             {favoritesError && <div className="text-sm text-red-400">{favoritesError}</div>}
