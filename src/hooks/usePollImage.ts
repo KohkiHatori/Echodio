@@ -6,7 +6,7 @@ export function usePollImage(task_id: string | null, onSuccess: (url: string) =>
     if (!task_id) return;
 
     let retries = 0;
-    const maxRetries = 10;
+    const maxRetries = 30;
 
     const interval = setInterval(async () => {
       try {

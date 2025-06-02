@@ -43,10 +43,10 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [overlayIcon, setOverlayIcon] = useState<'play' | 'pause' | null>(null);
   const [themeColor, setThemeColor] = useState<string>('rgb(17, 24, 39)');
-  const { location, time, locationChecked } = useLocationAndTime();
+  const { location, time, locationChecked, refreshLocationAndTime } = useLocationAndTime();
   const { favorites, loadingFavorites, favoritesError, refreshFavorites } = useUserFavorites();
 
-  useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked, imageTaskId, musicQueue });
+  useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked, musicQueue, refreshLocationAndTime });
 
   useAudioPlaybackManager({ audioRef, isPlaying, songs: musicQueue, currentIndex, setIsPlaying, setCurrentIndex, setOverlayIcon });
 
@@ -132,6 +132,7 @@ export default function Home() {
         <Background
           imageTaskId={imageTaskId}
           setThemeColor={setThemeColor}
+          currentIndex={currentIndex}
         />
 
         {/* UI Elements (sidebar, controls, etc.) */}
@@ -153,7 +154,6 @@ export default function Home() {
           {/* Favorite Button */}
           <FavoriteButton
             musicTaskId={musicQueue[currentIndex]?.task_id ?? null}
-            imageTaskId={imageTaskId}
             onFavoriteChange={refreshFavorites}
           />
 

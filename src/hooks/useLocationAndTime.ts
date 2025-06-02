@@ -6,8 +6,8 @@ export function useLocationAndTime() {
   const [time, setTime] = useState<string | null>(null);
   const [locationChecked, setLocationChecked] = useState(false); // to track attempt status
 
-  // Attempt to get geolocation (runs only once)
-  useEffect(() => {
+  // Function to refresh location and time
+  const refreshLocationAndTime = () => {
     const now = new Date();
     setTime(now.toISOString());
     if (navigator.geolocation) {
@@ -28,7 +28,12 @@ export function useLocationAndTime() {
       console.warn("Geolocation not supported");
       setLocationChecked(true);
     }
+  };
+
+  // Attempt to get geolocation (runs only once on mount)
+  useEffect(() => {
+    refreshLocationAndTime();
   }, []);
 
-  return { location, time, locationChecked };
+  return { location, time, locationChecked, refreshLocationAndTime };
 }

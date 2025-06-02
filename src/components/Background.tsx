@@ -7,15 +7,21 @@ import { getDominantColorKMeans, rgbToCss } from '@/lib/getDominantColor';
 interface BackgroundProps {
   imageTaskId: string | null;
   setThemeColor: (color: string) => void;
+  currentIndex: number;
 }
 
-export default function Background({ imageTaskId, setThemeColor }: BackgroundProps) {
+
+export default function Background({ imageTaskId, setThemeColor, currentIndex }: BackgroundProps) {
 
   const [currentBg, setCurrentBg] = useState("/jazz.png");
   const [nextBg, setNextBg] = useState<string | null>(null);
   const [isNextLoaded, setIsNextLoaded] = useState(false);
+  const [imageQueue, setImageQueue] = useState<string[]>(["/jazz.png"]);
 
-  usePollImage(imageTaskId, setNextBg);
+  usePollImage(imageTaskId, (url) => {
+    setImageQueue((prev) => [...prev, url]);
+  });
+
   useEffect(() => {
     if (isNextLoaded && nextBg) {
       const t = setTimeout(() => {
@@ -26,6 +32,12 @@ export default function Background({ imageTaskId, setThemeColor }: BackgroundPro
       return () => clearTimeout(t);
     }
   }, [isNextLoaded, nextBg]);
+
+  useEffect(() => {
+    if (imageQueue.length > 1) {
+      setNextBg(imageQueue[currentIndex + 1]);
+    }
+  }, [currentIndex, imageQueue]);
 
   return (
     <>

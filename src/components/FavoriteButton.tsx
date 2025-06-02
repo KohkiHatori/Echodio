@@ -9,13 +9,11 @@ import { useAuth } from '@/context/AuthContext';
 
 interface FavoriteButtonProps {
   musicTaskId: string | null;
-  imageTaskId: string | null;
   onFavoriteChange?: () => void;
 }
 
 export default function FavoriteButton({
   musicTaskId,
-  imageTaskId,
   onFavoriteChange,
 }: FavoriteButtonProps) {
   const [isFavorited, setIsFavorited] = useState(false);
@@ -31,7 +29,7 @@ export default function FavoriteButton({
   }, [userId, musicTaskId]);
 
   const toggleFavorite = async () => {
-    if (!userId || !musicTaskId || !imageTaskId) return;
+    if (!userId || !musicTaskId) return;
 
     const docRef = doc(db, 'users', userId, 'favorites', musicTaskId);
 
@@ -41,7 +39,6 @@ export default function FavoriteButton({
     try {
       if (optimisticState) {
         await setDoc(docRef, {
-          imageTaskId,
           favoritedAt: serverTimestamp(),
         });
       } else {

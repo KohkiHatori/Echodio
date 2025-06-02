@@ -36,19 +36,17 @@ export async function POST(request: Request) {
 
     let imageTaskId = null;
     //IMAGE
-    if (generateImage) {
-      const imageRes = await fetch('http://localhost:3000/api/image/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody),
-      });
-      if (!imageRes.ok) {
-        throw new Error('Background API failed');
-      }
-      const imageData = await imageRes.json();
-      imageTaskId = imageData.task_id;
-      console.log("Image task ID:", imageTaskId);
+    const imageRes = await fetch('http://localhost:3000/api/image/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody),
+    });
+    if (!imageRes.ok) {
+      throw new Error('Background API failed');
     }
+    const imageData = await imageRes.json();
+    imageTaskId = imageData.task_id;
+    console.log("Image task ID:", imageTaskId);
 
 
     const lyricsType = 'instrumental'
@@ -70,8 +68,7 @@ export async function POST(request: Request) {
     console.log("Music taskId:", musicTaskId);
 
     return NextResponse.json({
-      ...(imageTaskId && { imageTaskId }),
-      ...(musicTaskId && { musicTaskId })
+      imageTaskId, musicTaskId
     });
   } catch (err) {
     console.error("generate-content error:", err);

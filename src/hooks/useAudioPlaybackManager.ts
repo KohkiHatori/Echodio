@@ -34,8 +34,9 @@ export function useAudioPlaybackManager({
   useEffect(() => {
     console.log("💿 Current song (in hook):", songs[currentIndex], "Is Playing:", isPlaying);
     const audio = audioRef.current;
+    if (!audio) return;
 
-    if (songs[currentIndex] && audio) {
+    if (songs[currentIndex]) {
       const targetSrc = `/api/proxy-audio?url=${encodeURIComponent(songs[currentIndex].url)}`;
 
 
@@ -53,8 +54,9 @@ export function useAudioPlaybackManager({
           playPromise.catch(error => {
             // Autoplay was prevented. This can happen if the page hasn't been interacted with,
             // or if the browser has strict autoplay policies.
-            console.error("Error attempting to play audio:", error);
+            // console.error("Error attempting to play audio:", error);
             // You might want to set isPlaying to false here if play was rejected and not by user pause
+            setIsPlaying(false);
           });
         }
       } else {
@@ -63,7 +65,7 @@ export function useAudioPlaybackManager({
           audio.pause();
         }
       }
-    } else if (!songs[currentIndex] && audio) {
+    } else if (!songs[currentIndex]) {
       // If there's no current song, pause and reset the audio element
       if (!audio.paused) {
         audio.pause();

@@ -14,26 +14,22 @@ interface Props {
   time: string | null;
   location: { lat: number; lon: number } | null;
   locationChecked: boolean;
-  imageTaskId: string | null;
   musicQueue: Song[];
+  refreshLocationAndTime: () => void;
 }
 
-export function useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked, imageTaskId, musicQueue }: Props) {
+export function useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked, musicQueue, refreshLocationAndTime }: Props) {
 
   useEffect(() => {
+    // Refresh location and time whenever this effect runs
+    refreshLocationAndTime();
     if (time && locationChecked) {
-      let generateImage = false;
-      if (!imageTaskId) {
-        generateImage = true;
-      }
       fetch('http://localhost:3000/api/generate-content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           time,
           ...(location && { location }), // only include if location exists
-          generateImage,
-
         })
       })
         .then((res) => res.json())
