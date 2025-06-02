@@ -132,7 +132,7 @@ export default function SpectralAnalyzer({ audioRef, audioSrc }: Props) {
         const blended = lastBarValues[i] * smoothingFactor + barHeight * (1 - smoothingFactor);
         lastBarValues[i] = blended;
 
-        ctx.fillStyle = (i / barCount) < progress ? "#000000" : "#ffffff";
+        ctx.fillStyle = (i / barCount) < progress ? "#FFA500" : "#ffffff";
         ctx.fillRect(x, canvas.height - blended, barWidth, blended);
       }
 
