@@ -27,11 +27,6 @@ export default function Header({ musicTaskId, imageTaskId }: HeaderProps) {
           className="rounded-full ring-2 ring-white"
         />
         <Spinner />
-        <FavoriteButton
-          userId={userId}
-          musicTaskId={musicTaskId}
-          imageTaskId={imageTaskId}
-        />
       </div>
     </header>
   );

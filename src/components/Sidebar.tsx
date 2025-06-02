@@ -6,12 +6,13 @@ import { useAuth } from '@/context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import Link from 'next/link';
+import Image from 'next/image';
 import { getMusicTask } from '@/services/firestore/musicTasks';
 
 interface FavoriteSong {
   musicTaskId: string;
   title: string | null;
-  favoritedAt: number | string;
+  favoritedAt: number | Date;
 }
 
 interface SidebarProps {
@@ -51,6 +52,7 @@ export default function Sidebar({
       console.error('Logout failed:', err);
     }
   };
+
 
   return (
     <>
@@ -133,7 +135,6 @@ export default function Sidebar({
                     key={fav.musicTaskId}
                     className="truncate text-sm text-white/90 cursor-pointer hover:underline"
                     onClick={async () => {
-                      // Fetch the song url using getMusicTask
                       const task = await getMusicTask(fav.musicTaskId) as { url?: string } | null;
                       const url = task?.url || '';
                       setMusicQueue((prev) => {
@@ -164,7 +165,11 @@ export default function Sidebar({
             setIsOpen(true);
           }}
         >
-          <Bars3Icon className="w-6 h-6 text-white" />
+          {user?.photoURL ? (
+            <Image src={user.photoURL} alt="User Avatar" width={32} height={32} className="rounded-full ring-2 ring-white" />
+          ) : (
+            <Bars3Icon className="w-6 h-6 text-white" />
+          )}
         </button>
       )}
     </>

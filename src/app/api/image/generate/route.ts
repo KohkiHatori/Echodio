@@ -58,7 +58,7 @@ export async function POST(request: Request) {
 
     // TEMPRRARILY using a hard-coded task ID
     // const task_id = "7e65b123-e28f-4dc3-a06f-a52a03f490bc";
-    const task_id = task_ids[counter++];
+    const task_id = task_ids[counter++ % task_ids.length];
 
     return NextResponse.json({ task_id });
   } catch (err) {
