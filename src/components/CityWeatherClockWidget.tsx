@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useRef, useEffect } from "react";
+import { setWeatherWidgetResizing } from '../app/utils/handleClickCapture';
 
 type WeatherData = {
   name: string;
@@ -15,13 +16,27 @@ export default function SmallCityWeatherClockWidget() {
   const [dragging, setDragging] = useState(false);
   const dragStart = useRef<{ x: number; y: number; offsetX: number; offsetY: number } | null>(null);
 
+  // Resize state
+  const [size, setSize] = useState({ width: 184, height: 110 });
+  const [resizing, setResizing] = useState(false);
+  const resizeStart = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
+
   // Data state
   const [loading, setLoading] = useState(true);
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [localTime, setLocalTime] = useState<Date | null>(null);
 
+  // Calculate scale factor for contents
+  const minWidth = 184;
+  const minHeight = 110;
+  const maxWidth = 368;
+  const maxHeight = 220;
+  const scale = size.width / minWidth;
+
   // Drag handlers
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Prevent drag if resizing
+    if ((e.target as HTMLElement).classList.contains('resize-handle')) return;
     setDragging(true);
     dragStart.current = {
       x: e.clientX,
@@ -53,6 +68,51 @@ export default function SmallCityWeatherClockWidget() {
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [dragging]);
+
+  // Resize handlers
+  useEffect(() => {
+    if (!resizing) return;
+    const aspectRatio = 184 / 110;
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!resizeStart.current) return;
+      const dx = e.clientX - resizeStart.current.x;
+      const dy = e.clientY - resizeStart.current.y;
+      // Calculate new width and height while maintaining aspect ratio
+      let newWidth = resizeStart.current.width + dx;
+      let newHeight = resizeStart.current.height + dy;
+      // Determine which delta is larger in terms of aspect ratio
+      if (Math.abs(dx) > Math.abs(dy * aspectRatio)) {
+        // Width change dominates
+        newWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+        newHeight = Math.max(minHeight, Math.min(maxHeight, newWidth / aspectRatio));
+      } else {
+        // Height change dominates
+        newHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
+        newWidth = Math.max(minWidth, Math.min(maxWidth, newHeight * aspectRatio));
+      }
+      setSize({
+        width: newWidth,
+        height: newHeight,
+      });
+    };
+    const handleMouseUp = () => {
+      document.body.style.userSelect = '';
+      setResizing(false);
+      window.__weatherWidgetJustResized = true;
+      // setTimeout to clear the flag after the event loop, so click/capture can see it
+      setTimeout(() => {
+        window.__weatherWidgetJustResized = false;
+      }, 0);
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.userSelect = '';
+      setWeatherWidgetResizing(false);
+    };
+  }, [resizing]);
 
   // Fetch geolocation & weather
   useEffect(() => {
@@ -102,11 +162,11 @@ export default function SmallCityWeatherClockWidget() {
     : "";
   const dateStr = localTime
     ? localTime.toLocaleDateString('en-US', {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        timeZone: "Asia/Tokyo",
-      })
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      timeZone: "Asia/Tokyo",
+    })
     : "";
   const timeStr = localTime
     ? localTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: "Asia/Tokyo" })
@@ -117,13 +177,24 @@ export default function SmallCityWeatherClockWidget() {
 
   return (
     <div
-      className="city-weather-clock-widget relative w-[184px] h-[110px] flex items-center justify-center rounded-[24px] overflow-hidden shadow-lg mt-5 ml-315 cursor-move"
-      style={{ left: position.x, top: position.y, position: 'fixed', zIndex: 100 }}
+      className="city-weather-clock-widget relative flex items-center justify-center rounded-[24px] overflow-hidden shadow-lg mt-5 ml-315 cursor-move"
+      style={{
+        left: position.x,
+        top: position.y,
+        position: 'fixed',
+        zIndex: 100,
+        width: size.width,
+        height: size.height,
+        minWidth,
+        minHeight,
+        maxWidth,
+        maxHeight,
+      }}
       onMouseDown={handleMouseDown}
     >
-      <div className="relative z-10 w-[88%] h-[84%] bg-black/30 rounded-[16px] flex flex-col justify-between p-2">
+      <div className="relative z-10 w-[88%] h-[84%] bg-black/30 rounded-[16px] flex flex-col justify-between p-2" style={{ fontSize: `${scale}em` }}>
         {loading ? (
-          <div className="flex flex-col items-center justify-center h-full w-full text-white">
+          <div className="flex flex-col items-center justify-center h-full w-full text-white" style={{ fontSize: `${1 * scale}em` }}>
             Loading...
           </div>
         ) : weather && localTime ? (
@@ -131,32 +202,54 @@ export default function SmallCityWeatherClockWidget() {
             {/* City, date, weather icon row */}
             <div className="flex items-start justify-between mb-1">
               <div>
-                <div className="text-white font-bold text-[1rem] leading-tight">
+                <div className="text-white font-bold leading-tight" style={{ fontSize: `${1 * scale}rem` }}>
                   {city}
                 </div>
-                <div className="text-white text-xs opacity-90">{dateStr}</div>
+                <div className="text-white opacity-90" style={{ fontSize: `${0.75 * scale}rem` }}>{dateStr}</div>
               </div>
               {weatherIcon && (
                 <img
                   src={weatherIcon}
                   alt=""
-                  width={22}
-                  height={22}
+                  width={40 * scale}
+                  height={40 * scale}
                   style={{ filter: "drop-shadow(0 0 2px #fff6)" }}
                 />
               )}
             </div>
             {/* Time */}
             <div className="flex-1 flex items-end">
-              <span className="text-white text-3xl font-bold leading-tight">{timeStr}</span>
+              <span
+                className="text-white font-bold leading-tight"
+                style={{ fontSize: `${2 * scale}rem` }}
+              >
+                {timeStr}
+              </span>
             </div>
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center h-full w-full text-white">
+          <div className="flex flex-col items-center justify-center h-full w-full text-white" style={{ fontSize: `${1 * scale}em` }}>
             Failed to load
           </div>
         )}
       </div>
+      {/* Resize handle */}
+      <div
+        className="resize-handle absolute right-1 bottom-1 w-4 h-4 bg-white/50 rounded cursor-nwse-resize z-20"
+        onMouseDown={e => {
+          e.stopPropagation();
+          document.body.style.userSelect = 'none';
+          setResizing(true);
+          setWeatherWidgetResizing(true);
+          resizeStart.current = {
+            x: e.clientX,
+            y: e.clientY,
+            width: size.width,
+            height: size.height,
+          };
+        }}
+        style={{ pointerEvents: 'auto' }}
+      />
     </div>
   );
 }

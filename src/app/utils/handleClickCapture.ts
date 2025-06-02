@@ -1,6 +1,19 @@
 import React from "react";
 import { togglePlay } from "./togglePlay";
 
+// Track if the weather widget is being resized
+let isWeatherWidgetResizing = false;
+
+// Expose a setter for the weather widget to use
+export function setWeatherWidgetResizing(val: boolean) {
+  isWeatherWidgetResizing = val;
+}
+
+// Add at the top
+declare global {
+  interface Window { __weatherWidgetJustResized?: boolean }
+}
+
 export function handleMainUIClickCapture(
   e: React.MouseEvent,
   options: {
@@ -23,7 +36,16 @@ export function handleMainUIClickCapture(
   const isBottomFifth = clickY > windowHeight * 0.8;
   const isWeatherWidget = clickedElement.closest('.city-weather-clock-widget');
 
-  if (!isInteractive && !isBottomFifth && !isWeatherWidget && musicQueue[currentIndex]) {
+  // Prevent toggle if a resize just happened
+  if (
+    !isInteractive &&
+    !isBottomFifth &&
+    !isWeatherWidget &&
+    musicQueue[currentIndex] &&
+    !window.__weatherWidgetJustResized
+  ) {
     togglePlay(setIsPlaying, setOverlayIcon);
   }
+  // Always clear the flag after handling
+  window.__weatherWidgetJustResized = false;
 }

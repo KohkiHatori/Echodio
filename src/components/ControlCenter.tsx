@@ -6,7 +6,7 @@ interface ControlCenterProps {
   audioRef: React.RefObject<HTMLAudioElement | null>;
 }
 
-const PANEL_HEIGHT = 340;
+const PANEL_HEIGHT = 200;
 
 const EQ_BANDS = [
   { label: 'Preamp', key: 'preamp', min: -12, max: 12, step: 0.1, default: 0 },
@@ -49,10 +49,10 @@ export default function ControlCenter({ audioRef }: ControlCenterProps) {
         className={`fixed left-1/2 top-0 z-40 w-[520px] max-w-[98vw] p-6 pt-8 rounded-b-2xl shadow-2xl bg-zinc-900/95 border-b border-zinc-700 transition-transform duration-500 ease-in-out ${open ? "translate-x-[-50%] translate-y-0" : "translate-x-[-50%] -translate-y-full"}`}
         style={{ height: PANEL_HEIGHT, pointerEvents: open ? "auto" : "none" }}
       >
-        <div className="flex flex-col items-center space-y-6">
+        <div className="flex flex-col items-center">
           <div className="w-full flex flex-row items-end justify-center gap-6">
             {/* Sliders Row with Axis and Lines */}
-            <div className="relative flex flex-row items-end gap-2" style={{ height: SLIDER_HEIGHT + 32 }}>
+            <div className="relative flex flex-row items-end gap-2" style={{ height: SLIDER_HEIGHT }}>
               {/* Volume Slider (leftmost, aligned with EQ) */}
               <div className="flex flex-col items-center justify-end h-full">
                 <input
