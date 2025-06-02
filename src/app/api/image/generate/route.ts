@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 let counter = 0;
 const task_ids = [
   "7e65b123-e28f-4dc3-a06f-a52a03f490bc",
-  "cb0dd14f-9d3c-43b5-b805-8f9b2efbcf2c",
+  // "cb0dd14f-9d3c-43b5-b805-8f9b2efbcf2c",
   "82827649-b3d5-4beb-88fa-fe815a799fbc"
 ]
 
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
 
     // TEMPRRARILY using a hard-coded task ID
     // const task_id = "7e65b123-e28f-4dc3-a06f-a52a03f490bc";
-    const task_id = task_ids[counter++ % task_ids.length];
+    const task_id = task_ids[counter++];
 
     return NextResponse.json({ task_id });
   } catch (err) {

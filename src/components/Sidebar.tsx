@@ -6,10 +6,12 @@ import { useAuth } from '@/context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import Link from 'next/link';
+import { getMusicTask } from '@/services/firestore/musicTasks';
 
 interface FavoriteSong {
   musicTaskId: string;
   title: string | null;
+  favoritedAt: number | string;
 }
 
 interface SidebarProps {
@@ -17,6 +19,8 @@ interface SidebarProps {
   favorites: FavoriteSong[];
   loadingFavorites: boolean;
   favoritesError: string | null;
+  setMusicQueue: React.Dispatch<React.SetStateAction<any[]>>;
+  currentIndex: number;
 }
 
 export default function Sidebar({
@@ -24,6 +28,8 @@ export default function Sidebar({
   favorites,
   loadingFavorites,
   favoritesError,
+  setMusicQueue,
+  currentIndex,
 }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [fullyClosed, setFullyClosed] = useState(true);
@@ -116,11 +122,34 @@ export default function Sidebar({
               <div className="text-sm text-gray-300">No favorites yet.</div>
             )}
             <ul className="space-y-1">
-              {favorites.map((fav) => (
-                <li key={fav.musicTaskId} className="truncate text-sm text-white/90">
-                  {fav.title}
-                </li>
-              ))}
+              {[...favorites]
+                .sort((a, b) => {
+                  const aTime = typeof a.favoritedAt === 'number' ? a.favoritedAt : new Date(a.favoritedAt).getTime();
+                  const bTime = typeof b.favoritedAt === 'number' ? b.favoritedAt : new Date(b.favoritedAt).getTime();
+                  return bTime - aTime;
+                })
+                .map((fav) => (
+                  <li
+                    key={fav.musicTaskId}
+                    className="truncate text-sm text-white/90 cursor-pointer hover:underline"
+                    onClick={async () => {
+                      // Fetch the song url using getMusicTask
+                      const task = await getMusicTask(fav.musicTaskId) as { url?: string } | null;
+                      const url = task?.url || '';
+                      setMusicQueue((prev) => {
+                        // Insert favorite at currentIndex
+                        const newSong = { url, title: fav.title, task_id: fav.musicTaskId };
+                        return [
+                          ...prev.slice(0, currentIndex),
+                          newSong,
+                          ...prev.slice(currentIndex)
+                        ];
+                      });
+                    }}
+                  >
+                    {fav.title}
+                  </li>
+                ))}
             </ul>
           </div>
         )}

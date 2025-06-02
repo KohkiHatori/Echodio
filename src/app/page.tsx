@@ -144,9 +144,14 @@ export default function Home() {
           <ControlCenter audioRef={audioRef} />
           <Sidebar
             themeColor={themeColor}
-            favorites={favorites}
+            favorites={favorites.map(fav => ({
+              ...fav,
+              favoritedAt: fav.favoritedAt ? new Date(fav.favoritedAt).getTime() : 0
+            }))}
             loadingFavorites={loadingFavorites}
             favoritesError={favoritesError}
+            setMusicQueue={setMusicQueue}
+            currentIndex={currentIndex}
           />
 
           <SmallCityWeatherClockWidget />
