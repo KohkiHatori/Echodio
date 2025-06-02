@@ -166,6 +166,8 @@ export default function Home() {
             favoritesError={favoritesError}
           />
 
+          <SmallCityWeatherClockWidget />
+
           {/* Favorite Button */}
           <FavoriteButton
             musicTaskId={currentSong?.task_id ?? null}
@@ -173,7 +175,7 @@ export default function Home() {
             onFavoriteChange={refreshFavorites}
           />
 
-          <SmallCityWeatherClockWidget />
+          
 
 
         </div>
