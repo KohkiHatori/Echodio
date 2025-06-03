@@ -1,6 +1,8 @@
 'use client';
 import React, { useState, useRef, useEffect } from "react";
 import { setWeatherWidgetResizing } from '../app/utils/handleClickCapture';
+import { MdPushPin, MdOutlinePushPin } from "react-icons/md";
+
 
 type WeatherData = {
   name: string;
@@ -10,7 +12,8 @@ type WeatherData = {
   dt: number;
 };
 
-export default function SmallCityWeatherClockWidget() {
+export default function SmallCityWeatherClockWidget({ onPinChange, pinned }: { onPinChange?: (pinned: boolean) => void, pinned?: boolean }) {
+
   // Drag state
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
@@ -175,6 +178,13 @@ export default function SmallCityWeatherClockWidget() {
     ? `https://openweathermap.org/img/wn/${weather.weather[0].icon}.png`
     : null;
 
+  // SVGs for pin icon
+  const PinIcon = pinned ? (
+    <MdPushPin className="w-5 h-5 text-yellow-400" />
+  ) : (
+    <MdOutlinePushPin className="w-5 h-5 text-white" />
+  );
+
   return (
     <div
       className="city-weather-clock-widget relative flex items-center justify-center rounded-[24px] overflow-hidden shadow-lg mt-5 ml-315 cursor-move"
@@ -199,23 +209,46 @@ export default function SmallCityWeatherClockWidget() {
           </div>
         ) : weather && localTime ? (
           <>
-            {/* City, date, weather icon row */}
+            {/* City, date, pin, weather icon row */}
             <div className="flex items-start justify-between mb-1">
-              <div>
-                <div className="text-white font-bold leading-tight" style={{ fontSize: `${1 * scale}rem` }}>
-                  {city}
+              {/* Left: city, date, weather icon */}
+              <div className="flex items-center gap-2">
+                <div>
+                  <div className="text-white font-bold leading-tight" style={{ fontSize: `${1 * scale}rem` }}>
+                    {city}
+                  </div>
+                  <div className="text-white opacity-90 flex items-center gap-1" style={{ fontSize: `${0.75 * scale}rem` }}>
+                    {dateStr}
+                  </div>
                 </div>
-                <div className="text-white opacity-90" style={{ fontSize: `${0.75 * scale}rem` }}>{dateStr}</div>
+                {weatherIcon && (
+                  <img
+                    src={weatherIcon}
+                    alt=""
+                    width={40 * scale}
+                    height={40 * scale}
+                    style={{ filter: "drop-shadow(0 0 2px #fff6)" }}
+                  />
+                )}
               </div>
-              {weatherIcon && (
-                <img
-                  src={weatherIcon}
-                  alt=""
-                  width={40 * scale}
-                  height={40 * scale}
-                  style={{ filter: "drop-shadow(0 0 2px #fff6)" }}
-                />
-              )}
+              {/* Right: push pin icon */}
+              <button
+                type="button"
+                aria-label={pinned ? "Unpin widget" : "Pin widget"}
+                tabIndex={0}
+                className={`ml-1 focus:outline-none ${pinned ? 'text-yellow-400' : 'text-white'} hover:scale-110 transition-transform`}
+                style={{ background: 'none', border: 'none', padding: 0, lineHeight: 0, display: 'flex', alignItems: 'center' }}
+                onClick={e => {
+                  e.stopPropagation();
+                  if (onPinChange) onPinChange(!pinned);
+                }}
+              >
+                {pinned ? (
+                  <MdPushPin className="w-7 h-7 text-yellow-400" />
+                ) : (
+                  <MdOutlinePushPin className="w-7 h-7 text-white" />
+                )}
+              </button>
             </div>
             {/* Time */}
             <div className="flex-1 flex items-end">
