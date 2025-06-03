@@ -22,10 +22,11 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
   const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const rafIdRef = useRef<number | null>(null);
-  const timeLabelRef = useRef<HTMLDivElement>(null);
 
   const [eqValues, setEqValues] = useState<number[]>(() => new Array(barCount).fill(1));
   const [draggingBar, setDraggingBar] = useState<number | null>(null);
+  const [timeLabel, setTimeLabel] = useState<string>("0:00 / 0:00");
+  const [progress, setProgress] = useState<number>(0);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -118,12 +119,9 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
         const current = audio.currentTime;
         const total = audio.duration || 0;
         // 時間ラベルの更新（前述と同様）
-        if (timeLabelRef.current) {
-          timeLabelRef.current.textContent = `${formatTime(current)} / ${formatTime(total)}`;
-        }
-}
-
-
+        setTimeLabel(`${formatTime(current)} / ${formatTime(total)}`);
+        setProgress(total > 0 ? current / total : 0);
+      }
 
       analyserRef.current.getByteFrequencyData(dataArray);
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
@@ -185,27 +183,6 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
 
   return (
     <>
-    {showProgressTime && (
-          <div
-    className = 'transition-[left] duration-500'
-      ref={timeLabelRef}
-      style={{
-        position: 'fixed',
-        top: '80px',
-        left: isSidebarOpen ? "288px" : "80px",
-        width: '100%',
-        color: 'white',
-        fontSize: '16px',
-        zIndex: 20,
-        fontFamily: "'Space Grotesk', sans-serif",
-        mixBlendMode: "exclusion",
-      }}
-></div>
-
-
-    )}
-
-
       <canvas
         ref={canvasRef}
         style={{
@@ -221,6 +198,34 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
         }}
         height={200}
       />
+      {showProgressTime && (
+  <div
+    style={{
+      position: 'fixed',
+      left: `calc(${progress * 100}vw - 44px)`,
+      bottom: '0px',
+      zIndex: 21,
+      width: '88px',
+      height: '28px',
+      background: 'rgba(30,30,40,0.85)',
+      color: 'white',
+      borderRadius: '10px 10px 0 0',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: "'Space Grotesk', sans-serif",
+      fontSize: '15px',
+      fontWeight: 500,
+      boxShadow: '0 0 12px #000a',
+      border: '1px solid #fff2',
+      pointerEvents: 'none',
+      transition: 'left 0.1s linear',
+      userSelect: 'none'
+    }}
+  >
+    {timeLabel}
+  </div>
+)}
       <div
         style={{
           position: 'fixed',
