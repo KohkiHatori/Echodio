@@ -103,6 +103,7 @@ export default function Home() {
           length={musicQueue.length}
           overlayIcon={overlayIcon}
           isSidebarOpen={isSidebarOpen}
+          showUI={showUI}
         />
 
       )}

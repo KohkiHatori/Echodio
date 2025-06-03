@@ -15,6 +15,7 @@ interface Props {
   length: number;
   overlayIcon: 'play' | 'pause' | null;
   isSidebarOpen: boolean;
+  showUI: boolean;
 }
 
 export default function FullScreenMusicPlayer({
@@ -23,6 +24,7 @@ export default function FullScreenMusicPlayer({
   length,
   overlayIcon,
   isSidebarOpen,
+  showUI,
 }: Props) {
 
 
@@ -46,7 +48,7 @@ export default function FullScreenMusicPlayer({
       <div className="fixed inset-0 z-10 pointer-events-none">
 
         {/* Skip Back Button */}
-        {currentIndex > 0 && (
+        {showUI && currentIndex > 0 && (
           <button
             className="fixed top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full pointer-events-auto cursor-pointer transition-[left] duration-500"
             style={{ left: isSidebarOpen ? "288px" : "16px" }}
@@ -60,7 +62,7 @@ export default function FullScreenMusicPlayer({
         )}
 
         {/* Skip Forward Button */}
-        {currentIndex < length - 1 && (
+        {showUI && currentIndex < length - 1 && (
           <button
             className="fixed top-1/2 right-4 -translate-y-1/2 p-2 bg-black/50 rounded-full pointer-events-auto cursor-pointer"
             onClick={(e) => {
@@ -74,13 +76,13 @@ export default function FullScreenMusicPlayer({
 
         {/* Play/Pause Overlay Icon */}
         {overlayIcon && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            {overlayIcon === 'play' ? (
-              <PlayIcon className="w-16 h-16 text-white animate-pulse" />
-            ) : (
-              <PauseIcon className="w-16 h-16 text-white animate-pulse" />
-            )}
-          </div>
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ marginLeft: '270px' }}>
+  {overlayIcon === 'play' ? (
+    <PlayIcon className="w-16 h-16 text-white animate-pulse" />
+  ) : (
+    <PauseIcon className="w-16 h-16 text-white animate-pulse" />
+  )}
+</div>
         )}
       </div>
     </>
