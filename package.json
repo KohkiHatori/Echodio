@@ -12,6 +12,7 @@
     "@fontsource/space-grotesk": "^5.2.8",
     "@heroicons/react": "^2.2.0",
     "firebase": "^11.8.1",
+    "framer-motion": "^12.15.0",
     "fs": "^0.0.1-security",
     "ml-kmeans": "^6.0.0",
     "next": "^15.3.2",

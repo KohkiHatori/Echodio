@@ -9,6 +9,7 @@ import Sidebar from "@/components/Sidebar";
 import Background from "@/components/Background";
 import FavoriteButton from "@/components/FavoriteButton";
 import ControlCenter from "@/components/ControlCenter";
+import { motion } from "framer-motion";
 
 // hooks
 import { useAppLoader } from "@/hooks/useAppLoader";
@@ -193,14 +194,38 @@ export default function Home() {
           }
         />
       </div>
-    import "@fontsource/space-grotesk/500.css";<div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[99999] max-w-[50vw] text-center">
+    {/* Centered Logo/Text Block: always mounted, animated on load */}
+    <motion.div
+      className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] max-w-[50vw] text-center pointer-events-none"
+      initial={appLoading ? { scale: 1.6, filter: "blur(6px) brightness(2)", opacity: 0 } : false}
+      animate={{
+        scale: 1,
+        filter: "blur(0px) brightness(1)",
+        opacity: 1,
+      }}
+      transition={{ type: "spring", duration: 1.2, bounce: 0.25 }}
+    >
       <div className="flex flex-row items-center justify-center gap-6">
         <img src="/logo.png" alt="Logo" className="w-48 h-48 object-contain" />
-        <p className="ml-[-3.5rem] text-white text-4xl font-semibold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+        <motion.p
+          className="ml-[-3.5rem] text-white text-4xl font-semibold"
+          style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+          initial={appLoading ? { y: 50, opacity: 0 } : false}
+          animate={{
+            y: 0,
+            opacity: 1,
+            transition: {
+              delay: appLoading ? 1.3 : 0,
+              duration: 0.8,
+              type: "spring",
+              bounce: 0.35,
+            },
+          }}
+        >
           Echodio
-        </p>
+        </motion.p>
       </div>
-    </div>
+    </motion.div>
     </>
   );
 }
