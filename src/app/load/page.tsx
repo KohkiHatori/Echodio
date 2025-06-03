@@ -33,7 +33,7 @@ export default function LoadingScreen() {
         <AnimatePresence>
           {showSplash && (
             <motion.div
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[99999] max-w-[50vw] text-center"
+              className="fixed top-1/2 left-[46%] -translate-x-1/2 -translate-y-1/2 z-[99999] max-w-[50vw] text-center"
               initial={{ opacity: 1 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: { duration: 0.5 } }}
