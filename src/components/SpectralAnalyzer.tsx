@@ -4,9 +4,16 @@ import { useEffect, useRef, useState } from "react";
 interface Props {
   audioRef: React.RefObject<HTMLAudioElement | null>;
   audioSrc?: string;
+  isSidebarOpen?: boolean;
 }
 
-export default function SpectralAnalyzer({ audioRef, audioSrc }: Props) {
+function formatTime(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const barCount = 128;
   const lastBarValuesRef = useRef<number[]>(new Array(barCount).fill(0));
@@ -14,6 +21,7 @@ export default function SpectralAnalyzer({ audioRef, audioSrc }: Props) {
   const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const rafIdRef = useRef<number | null>(null);
+  const timeLabelRef = useRef<HTMLDivElement>(null);
 
   const [eqValues, setEqValues] = useState<number[]>(() => new Array(barCount).fill(1));
   const [draggingBar, setDraggingBar] = useState<number | null>(null);
@@ -105,6 +113,16 @@ export default function SpectralAnalyzer({ audioRef, audioSrc }: Props) {
 
     const draw = () => {
       if (!isDrawing || !analyserRef.current || !canvasRef.current) return;
+      if (audio) {
+        const current = audio.currentTime;
+        const total = audio.duration || 0;
+        // 時間ラベルの更新（前述と同様）
+        if (timeLabelRef.current) {
+          timeLabelRef.current.textContent = `${formatTime(current)} / ${formatTime(total)}`;
+        }
+}
+
+
 
       analyserRef.current.getByteFrequencyData(dataArray);
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
@@ -166,6 +184,21 @@ export default function SpectralAnalyzer({ audioRef, audioSrc }: Props) {
 
   return (
     <>
+    <div
+    className = 'transition-[left] duration-500'
+      ref={timeLabelRef}
+      style={{
+        position: 'fixed',
+        top: '80px',
+        left: isSidebarOpen ? "288px" : "80px",
+        width: '100%',
+        color: 'white',
+        fontSize: '16px',
+        zIndex: 20,
+        fontFamily: "'Space Grotesk', sans-serif",
+      }}
+></div>
+
       <canvas
         ref={canvasRef}
         style={{

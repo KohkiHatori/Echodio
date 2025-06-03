@@ -2,27 +2,26 @@
 "use client";
 
 // components
-import "@fontsource/space-grotesk/500.css";
-import FullScreenMusicPlayer from "@/components/FullMusicPlyaer";
-import SpectralAnalyzer from "@/components/SpectralAnalyzer";
-import Sidebar from "@/components/Sidebar";
 import Background from "@/components/Background";
-import FavoriteButton from "@/components/FavoriteButton";
 import ControlCenter from "@/components/ControlCenter";
+import FavoriteButton from "@/components/FavoriteButton";
+import FullScreenMusicPlayer from "@/components/FullMusicPlyaer";
+import Sidebar from "@/components/Sidebar";
+import SpectralAnalyzer from "@/components/SpectralAnalyzer";
 import { motion } from "framer-motion";
 
 // hooks
+import { handleMainUIClickCapture } from "@/app/utils/handleClickCapture";
+import SmallCityWeatherClockWidget from "@/components/CityWeatherClockWidget";
 import { useAppLoader } from "@/hooks/useAppLoader";
+import { useAudioPlaybackManager } from "@/hooks/useAudioPlaybackManager";
+import { useGenerate } from "@/hooks/useGenerate";
 import { useIdleHideUI } from "@/hooks/useIdleHidUI";
+import { useLocationAndTime } from "@/hooks/useLocationAndTime";
 import { usePollMusic } from "@/hooks/usePollMusic";
 import { useUserFavorites } from "@/hooks/useUserFavorites";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import LoadPage from "./load/page";
-import SmallCityWeatherClockWidget from "@/components/CityWeatherClockWidget";
-import { useLocationAndTime } from "@/hooks/useLocationAndTime";
-import { useGenerate } from "@/hooks/useGenerate";
-import { useAudioPlaybackManager } from "@/hooks/useAudioPlaybackManager";
-import { handleMainUIClickCapture } from "@/app/utils/handleClickCapture";
 
 interface Song {
   url: string;
@@ -192,6 +191,8 @@ export default function Home() {
               ? `/api/proxy-audio?url=${encodeURIComponent(musicQueue[currentIndex].url)}`
               : undefined
           }
+          isSidebarOpen={isSidebarOpen}
+
         />
       </div>
     {/* Centered Logo/Text Block: always mounted, animated on load */}
