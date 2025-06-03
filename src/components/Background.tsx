@@ -13,10 +13,10 @@ interface BackgroundProps {
 
 export default function Background({ imageTaskId, setThemeColor, currentIndex }: BackgroundProps) {
 
-  const [currentBg, setCurrentBg] = useState("/jazz.png");
+  const [currentBg, setCurrentBg] = useState<string | null>(null);
   const [nextBg, setNextBg] = useState<string | null>(null);
   const [isNextLoaded, setIsNextLoaded] = useState(false);
-  const [imageQueue, setImageQueue] = useState<string[]>(["/jazz.png"]);
+  const [imageQueue, setImageQueue] = useState<string[]>([]);
 
   usePollImage(imageTaskId, (url) => {
     setImageQueue((prev) => [...prev, url]);
@@ -41,13 +41,15 @@ export default function Background({ imageTaskId, setThemeColor, currentIndex }:
 
   return (
     <>
-      < Image
-        src={currentBg}
-        alt="Background"
-        fill
-        priority
-        className="absolute inset-0 z-0 object-cover transition-opacity duration-500 opacity-100"
-      />
+      {currentBg && (
+        < Image
+          src={currentBg}
+          alt="Background"
+          fill
+          priority
+          className="absolute inset-0 z-0 object-cover transition-opacity duration-500 opacity-100"
+        />
+      )}
       {
         nextBg && (
           <Image

@@ -193,28 +193,13 @@ export default function SmallCityWeatherClockWidget() {
       onMouseDown={handleMouseDown}
     >
       <div className="relative z-10 w-[88%] h-[84%] bg-black/30 rounded-[16px] flex flex-col justify-between p-2" style={{ fontSize: `${scale}em` }}>
-        {weatherIcon && (
-          <img
-            src={weatherIcon}
-            alt=""
-            width={60 * scale}
-            height={60 * scale}
-            style={{
-              position: 'absolute',
-              top: 1 * scale,
-              right: 2 * scale,
-              filter: "drop-shadow(0 0 2px #fff6)",
-              pointerEvents: 'none',
-            }}
-          />
-        )}
         {loading ? (
           <div className="flex flex-col items-center justify-center h-full w-full text-white" style={{ fontSize: `${1 * scale}em` }}>
             Loading...
           </div>
         ) : weather && localTime ? (
           <>
-            {/* City, date row */}
+            {/* City, date, weather icon row */}
             <div className="flex items-start justify-between mb-1">
               <div>
                 <div className="text-white font-bold leading-tight" style={{ fontSize: `${1 * scale}rem` }}>
@@ -222,6 +207,15 @@ export default function SmallCityWeatherClockWidget() {
                 </div>
                 <div className="text-white opacity-90" style={{ fontSize: `${0.75 * scale}rem` }}>{dateStr}</div>
               </div>
+              {weatherIcon && (
+                <img
+                  src={weatherIcon}
+                  alt=""
+                  width={40 * scale}
+                  height={40 * scale}
+                  style={{ filter: "drop-shadow(0 0 2px #fff6)" }}
+                />
+              )}
             </div>
             {/* Time */}
             <div className="flex-1 flex items-end">
