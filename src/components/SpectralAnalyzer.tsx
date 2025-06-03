@@ -198,6 +198,7 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
         fontSize: '16px',
         zIndex: 20,
         fontFamily: "'Space Grotesk', sans-serif",
+        mixBlendMode: "exclusion",
       }}
 ></div>
 

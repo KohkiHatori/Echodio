@@ -168,6 +168,7 @@ export default function Home() {
     style={{
       left: isSidebarOpen ? "288px" : "80px", // adjust if your sidebar is not 72 (288px)
       fontFamily: "'Space Grotesk', sans-serif",
+      mixBlendMode: "difference",
     }}
   >
     {musicQueue[currentIndex].title}
@@ -210,13 +211,15 @@ export default function Home() {
         filter: "blur(0px) brightness(1)",
         opacity: 1,
       }}
+       style ={{mixBlendMode: "exclusion",}}
       transition={{ type: "spring", duration: 1.2, bounce: 0.25 }}
     >
       <div className="flex flex-row items-center justify-center gap-6">
         <img src="/logo.png" alt="Logo" className="w-48 h-48 object-contain" />
         <motion.p
-          className="ml-[-3.5rem] text-white text-4xl font-semibold"
-          style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+          className="relative ml-[-3.5rem] text-4xl font-semibold"
+          style={{ fontFamily: "'Space Grotesk', sans-serif",
+           }}
           initial={appLoading ? { y: 50, opacity: 0 } : false}
           animate={{
             y: 0,
