@@ -1,6 +1,10 @@
 //src/app/api/image/result/route.ts
 import { NextResponse } from 'next/server';
 
+// const ghost_style = "https://i.ibb.co/Cpg0DYSz/GITS-kusanagi.jpg"
+// const k_style = "https://i.ibb.co/vxJLL4K2/K-Kanehira-A.jpg"
+// const shinkai_style = "https://i.ibb.co/KxSjL5rD/images.jpg"
+
 let counter = 0;
 const task_ids = [
   "7e65b123-e28f-4dc3-a06f-a52a03f490bc",
@@ -25,7 +29,7 @@ export async function POST(request: Request) {
     //   "Content-Type": "application/json"
     // };
 
-    // const prompt = `a middle aged fat man using a laptop on a desk lofi, painting, chil, pop, ${timeLabel}, with ${weatherDescription}.`;
+    // const prompt = `a young beautiful school boy using a laptop on a desk lofi, chill, pop, ${timeLabel}, with ${weatherDescription}. --sref ghost_style::10
 
 
     // const payload = {
