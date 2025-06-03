@@ -14,6 +14,7 @@ interface Props {
   setCurrentIndex: React.Dispatch<React.SetStateAction<number>>;
   length: number;
   overlayIcon: 'play' | 'pause' | null;
+  isSidebarOpen: boolean;
 }
 
 export default function FullScreenMusicPlayer({
@@ -21,6 +22,7 @@ export default function FullScreenMusicPlayer({
   setCurrentIndex,
   length,
   overlayIcon,
+  isSidebarOpen,
 }: Props) {
 
 
@@ -46,7 +48,8 @@ export default function FullScreenMusicPlayer({
         {/* Skip Back Button */}
         {currentIndex > 0 && (
           <button
-            className="fixed top-1/2 left-4 -translate-y-1/2 p-2 bg-black/50 rounded-full pointer-events-auto cursor-pointer"
+            className="fixed top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full pointer-events-auto cursor-pointer transition-[left] duration-500"
+            style={{ left: isSidebarOpen ? "288px" : "16px" }}
             onClick={(e) => {
               e.stopPropagation();
               handleSkipBack();

@@ -2,7 +2,7 @@
 "use client";
 
 // components
-import DateWeatherHeader from "@/components/DateWeatherHeader";
+import "@fontsource/space-grotesk/500.css";
 import FullScreenMusicPlayer from "@/components/FullMusicPlyaer";
 import SpectralAnalyzer from "@/components/SpectralAnalyzer";
 import Sidebar from "@/components/Sidebar";
@@ -45,6 +45,7 @@ export default function Home() {
   const [themeColor, setThemeColor] = useState<string>('rgb(17, 24, 39)');
   const { location, time, locationChecked, refreshLocationAndTime } = useLocationAndTime();
   const { favorites, loadingFavorites, favoritesError, refreshFavorites } = useUserFavorites();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked, musicQueue, refreshLocationAndTime });
 
@@ -95,6 +96,7 @@ export default function Home() {
           setCurrentIndex={setCurrentIndex}
           length={musicQueue.length}
           overlayIcon={overlayIcon}
+          isSidebarOpen={isSidebarOpen}
         />
 
       )}
@@ -152,7 +154,20 @@ export default function Home() {
             favoritesError={favoritesError}
             setMusicQueue={setMusicQueue}
             currentIndex={currentIndex}
+            onOpenChange={setIsSidebarOpen}
           />
+
+          {musicQueue[currentIndex]?.title && (
+  <div
+    className="fixed top-6 z-[100] text-white text-xl font-semibold max-w-[30vw] truncate transition-[left] duration-500"
+    style={{
+      left: isSidebarOpen ? "288px" : "80px", // adjust if your sidebar is not 72 (288px)
+      fontFamily: "'Space Grotesk', sans-serif",
+    }}
+  >
+    {musicQueue[currentIndex].title}
+  </div>
+)}
 
           <SmallCityWeatherClockWidget />
 
@@ -178,29 +193,14 @@ export default function Home() {
           }
         />
       </div>
-      {/* Show current song title if available */}
-      {musicQueue[currentIndex]?.title ? (
-        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[99999] max-w-[50vw] text-left break-words">
-          <div className="flex items-center gap-1">
-            <img src="/logo.png" alt="Logo" className="w-48 h-48 object-contain" />
-            <p className="ml-[-2rem] text-white text-4xl font-semibold font-mono break-words whitespace-pre-line">
-              {(() => {
-                const words = musicQueue[currentIndex].title?.split(" ") || [];
-                const mid = Math.ceil(words.length / 2);
-                const firstLine = words.slice(0, mid).join(" ");
-                const secondLine = words.slice(mid).join(" ");
-                return (
-                  <>
-                    {firstLine}
-                    <br />
-                    {secondLine}
-                  </>
-                );
-              })()}
-            </p>
-          </div>
-        </div>
-      ) : null}
+    import "@fontsource/space-grotesk/500.css";<div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[99999] max-w-[50vw] text-center">
+      <div className="flex flex-row items-center justify-center gap-6">
+        <img src="/logo.png" alt="Logo" className="w-48 h-48 object-contain" />
+        <p className="ml-[-3.5rem] text-white text-4xl font-semibold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+          Echodio
+        </p>
+      </div>
+    </div>
     </>
   );
 }

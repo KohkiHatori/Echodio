@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fontsource/space-grotesk": "^5.2.8",
     "@heroicons/react": "^2.2.0",
     "firebase": "^11.8.1",
     "fs": "^0.0.1-security",

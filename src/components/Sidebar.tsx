@@ -22,6 +22,7 @@ interface SidebarProps {
   favoritesError: string | null;
   setMusicQueue: React.Dispatch<React.SetStateAction<any[]>>;
   currentIndex: number;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export default function Sidebar({
@@ -31,6 +32,7 @@ export default function Sidebar({
   favoritesError,
   setMusicQueue,
   currentIndex,
+  onOpenChange,
 }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [fullyClosed, setFullyClosed] = useState(true);
@@ -40,6 +42,7 @@ export default function Sidebar({
 
   const closeSidebar = () => {
     setIsOpen(false);
+    onOpenChange?.(false);
     setFullyClosed(false);
     setTimeout(() => setFullyClosed(true), 500); // match transition
   };
@@ -60,7 +63,7 @@ export default function Sidebar({
       <aside
         className={`fixed top-0 left-0 h-full w-64 text-white transition-colors duration-500 transform transition-transform duration-500 ease-in-out opacity-92 ${isOpen ? 'translate-x-0' : '-translate-x-full'
           } z-30`}
-        style={{ backgroundColor: "#3b2517" }}
+        style={{ backgroundColor: themeColor }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="absolute top-4 left-4 right-4 flex items-center justify-between px-2">
@@ -163,6 +166,7 @@ export default function Sidebar({
           onClick={(e) => {
             e.stopPropagation();
             setIsOpen(true);
+            onOpenChange?.(true);
           }}
         >
           {user?.photoURL ? (
