@@ -217,23 +217,23 @@ export default function Home() {
       <div className="flex flex-row items-center justify-center gap-6">
         <img src="/logo.png" alt="Logo" className="w-48 h-48 object-contain" />
         <motion.p
-          className="relative ml-[-3.5rem] text-4xl font-semibold"
-          style={{ fontFamily: "'Space Grotesk', sans-serif",
-           }}
-          initial={appLoading ? { y: 50, opacity: 0 } : false}
-          animate={{
-            y: 0,
-            opacity: 1,
-            transition: {
-              delay: appLoading ? 1.3 : 0,
-              duration: 0.8,
-              type: "spring",
-              bounce: 0.35,
-            },
-          }}
-        >
-          Echodio
-        </motion.p>
+  className="ml-[-3.5rem] text-white text-4xl font-semibold"
+  style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+  initial={{ y: 50, opacity: 0, filter: "blur(6px)" }}
+  animate={{
+    y: 0,
+    opacity: 1,
+    filter: "blur(0px)",
+    transition: {
+      delay: 1.3,      // Or your preferred delay
+      duration: 0.8,   // Or your preferred duration
+      type: "spring",
+      bounce: 0.35,
+    }
+  }}
+>
+  Echodio
+</motion.p>
       </div>
     </motion.div>
     </>
