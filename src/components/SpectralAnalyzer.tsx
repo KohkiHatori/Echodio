@@ -5,6 +5,7 @@ interface Props {
   audioRef: React.RefObject<HTMLAudioElement | null>;
   audioSrc?: string;
   isSidebarOpen?: boolean;
+  showProgressTime?: boolean;
 }
 
 function formatTime(seconds: number): string {
@@ -13,7 +14,7 @@ function formatTime(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen }: Props) {
+export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, showProgressTime }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const barCount = 128;
   const lastBarValuesRef = useRef<number[]>(new Array(barCount).fill(0));
@@ -184,7 +185,8 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen }: 
 
   return (
     <>
-    <div
+    {showProgressTime && (
+          <div
     className = 'transition-[left] duration-500'
       ref={timeLabelRef}
       style={{
@@ -198,6 +200,10 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen }: 
         fontFamily: "'Space Grotesk', sans-serif",
       }}
 ></div>
+
+
+    )}
+
 
       <canvas
         ref={canvasRef}

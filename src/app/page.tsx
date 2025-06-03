@@ -20,6 +20,7 @@ import { useIdleHideUI } from "@/hooks/useIdleHidUI";
 import { useLocationAndTime } from "@/hooks/useLocationAndTime";
 import { usePollMusic } from "@/hooks/usePollMusic";
 import { useUserFavorites } from "@/hooks/useUserFavorites";
+import "@fontsource/space-grotesk/500.css";
 import { useEffect, useRef, useState } from "react";
 import LoadPage from "./load/page";
 
@@ -46,6 +47,9 @@ export default function Home() {
   const { location, time, locationChecked, refreshLocationAndTime } = useLocationAndTime();
   const { favorites, loadingFavorites, favoritesError, refreshFavorites } = useUserFavorites();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showProgressTime, setShowProgressTime] = useState(true);
+
+
 
   useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked, musicQueue, refreshLocationAndTime });
 
@@ -53,6 +57,7 @@ export default function Home() {
 
   // Idle-hide UI
   useIdleHideUI(setShowUI);
+  useIdleHideUI(setShowProgressTime);
 
   // Automatically hide loader after 5 seconds
   useAppLoader(setAppLoading);
@@ -192,6 +197,7 @@ export default function Home() {
               : undefined
           }
           isSidebarOpen={isSidebarOpen}
+          showProgressTime={showProgressTime}
 
         />
       </div>
