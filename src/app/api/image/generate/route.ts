@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     //   "Content-Type": "application/json"
     // };
 
-    // const prompt = `a young beautiful school boy using a laptop on a desk lofi, chill, pop, ${timeLabel}, with ${weatherDescription}. --sref ghost_style::10
+    //  //   const prompt = `a young beautiful school boy using a laptop on a desk lofi, chill, pop, ${timeLabel}, with ${weatherDescription}. --sref ghost_style::10, k_style::5, shinkai_style::20
 
 
     // const payload = {
