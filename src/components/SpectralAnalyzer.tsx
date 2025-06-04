@@ -239,34 +239,78 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
           background: 'transparent',
           cursor: draggingBar !== null ? 'ns-resize' : 'pointer',
         }}
-        onMouseDown={e => {
+
+
+        onMouseDown={(e) => {
+          const audio = audioRef.current;
+          if (!audio) return;
+
+          // 1) Measure click position in the analyzer bar
           const rect = e.currentTarget.getBoundingClientRect();
           const x = e.clientX - rect.left;
-          const barArea = rect.width;
-          const gapLocal = barCount > 1 ? (barArea - barCount * 1) / (barCount - 1) : 0;
-          const barWidth = 1;
-          const perBar = barWidth + gapLocal;
-          const barIdx = Math.floor(x / perBar);
-          if (barIdx >= 0 && barIdx < barCount) setDraggingBar(barIdx);
-        }}
-        onMouseMove={e => {
-          if (draggingBar === null) return;
-          const rect = e.currentTarget.getBoundingClientRect();
-          const y = e.clientY - rect.top;
-          const norm = 1 - Math.max(0, Math.min(1, y / rect.height));
-          const influenceRadius = 4; // how wide the "mountain" spreads
-          setEqValues(vals => {
-            const next = [...vals];
-            for (let i = 0; i < next.length; i++) {
-              const dist = Math.abs(i - draggingBar);
-              const weight = Math.exp(-0.5 * (dist / influenceRadius) ** 2);
-              next[i] = norm * weight + next[i] * (1 - weight);
+          const width = rect.width || 1;
+          let clickedPercent = x / width;
+
+          // 2) Clamp between 0 and 1
+          clickedPercent = Math.max(0, Math.min(1, clickedPercent));
+
+          // 3) If duration is valid, seek
+          const total = audio.duration;
+          if (typeof total === "number" && total > 0) {
+            const newTime = total * clickedPercent;
+
+            // Remove any previous 'seeked' listener to avoid duplicate updates
+            audio.removeEventListener("seeked", handleSeeked);
+
+            // Define a handler that runs once, right after seeking occurs
+            function handleSeeked() {
+              // Update the visible time label and progress
+              setTimeLabel(`${formatTime(newTime)} / ${formatTime(total)}`);
+              setProgress(newTime / total);
+
+              // Clean up: remove this listener
+              audio?.removeEventListener("seeked", handleSeeked);
             }
-            return next;
-          });
+
+            // Attach the 'seeked' listener before changing currentTime
+            audio.addEventListener("seeked", handleSeeked);
+
+            // Now actually change the playback position
+            audio.currentTime = newTime;
+            // (When setting currentTime, the 'seeked' event fires immediately afterward.)
+          }
+
+          // 4) Still allow “bar drag” logic for EQ
+          // const barArea = rect.width;
+          // const gapLocal = barCount > 1 ? (barArea - barCount * 1) / (barCount - 1) : 0;
+          // const barWidth = 1;
+          // const perBar = barWidth + gapLocal;
+          // const barIdx = Math.floor(x / perBar);
+          // if (barIdx >= 0 && barIdx < barCount) {
+          //   setDraggingBar(barIdx);
+          // }
         }}
-        onMouseUp={() => setDraggingBar(null)}
-        onMouseLeave={() => setDraggingBar(null)}
+
+
+
+        // onMouseMove={e => {
+        //   if (draggingBar === null) return;
+        //   const rect = e.currentTarget.getBoundingClientRect();
+        //   const y = e.clientY - rect.top;
+        //   const norm = 1 - Math.max(0, Math.min(1, y / rect.height));
+        //   const influenceRadius = 4; // how wide the "mountain" spreads
+        //   setEqValues(vals => {
+        //     const next = [...vals];
+        //     for (let i = 0; i < next.length; i++) {
+        //       const dist = Math.abs(i - draggingBar);
+        //       const weight = Math.exp(-0.5 * (dist / influenceRadius) ** 2);
+        //       next[i] = norm * weight + next[i] * (1 - weight);
+        //     }
+        //     return next;
+        //   });
+        // }}
+        // onMouseUp={() => setDraggingBar(null)}
+        // onMouseLeave={() => setDraggingBar(null)}
       />
     </>
   );
