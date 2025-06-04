@@ -34,8 +34,9 @@ export default function Background({ imageTaskId, setThemeColor, currentIndex }:
   }, [isNextLoaded, nextBg]);
 
   useEffect(() => {
-    if (imageQueue.length > 1) {
+    if (imageQueue.length >= 1) {
       setNextBg(imageQueue[currentIndex]);
+      console.log("nextBg", nextBg);
     }
   }, [currentIndex, imageQueue]);
 

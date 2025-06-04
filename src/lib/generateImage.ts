@@ -6,9 +6,8 @@
 
 let counter = 0;
 const task_ids = [
-  "7e65b123-e28f-4dc3-a06f-a52a03f490bc",
-  // "cb0dd14f-9d3c-43b5-b805-8f9b2efbcf2c",
-  "82827649-b3d5-4beb-88fa-fe815a799fbc"
+  "f6fbe897-a093-489f-9c75-021da61ba425",
+  "686ac26c-dd3f-4e21-88f5-9117a8cf1944"
 ]
 
 const GENERATION_MODE = "fast";
@@ -22,57 +21,55 @@ const GENERATION_MODE = "fast";
  */
 export async function generateImage(timeLabel: string, weatherDescription: string): Promise<string> {
   // Uncomment below to use real API
-  /*
-  const apiKey = process.env.GO_API_KEY;
-  if (!apiKey) {
-    throw new Error('Missing API key');
-  }
+  // const apiKey = process.env.GO_API_KEY;
+  // if (!apiKey) {
+  //   throw new Error('Missing API key');
+  // }
 
-  const headers = {
-    "x-api-key": apiKey,
-    "Content-Type": "application/json"
-  };
+  // const headers = {
+  //   "x-api-key": apiKey,
+  //   "Content-Type": "application/json"
+  // };
 
-  const prompt = `
-    a young beautiful school teenager using a laptop on a desk lofi, chill, pop, painting, ${timeLabel}, with ${weatherDescription}.`;
+  // const prompt = `
+  //   a young beautiful school teenager using a laptop on a desk lofi, chill, pop, painting, ${timeLabel}, with ${weatherDescription}.`;
 
-  const payload = {
-    model: "midjourney",
-    task_type: "imagine",
-    input: {
-      prompt,
-      aspect_ratio: "16:9",
-      process_mode: GENERATION_MODE,
-      skip_prompt_check: false,
-      bot_id: 0
-    },
-    config: {
-      service_mode: "",
-      webhook_config: {
-        endpoint: "",
-        secret: ""
-      }
-    }
-  };
+  // const payload = {
+  //   model: "midjourney",
+  //   task_type: "imagine",
+  //   input: {
+  //     prompt,
+  //     aspect_ratio: "16:9",
+  //     process_mode: GENERATION_MODE,
+  //     skip_prompt_check: false,
+  //     bot_id: 0
+  //   },
+  //   config: {
+  //     service_mode: "",
+  //     webhook_config: {
+  //       endpoint: "",
+  //       secret: ""
+  //     }
+  //   }
+  // };
 
-  const response = await fetch("https://api.goapi.ai/api/v1/task", {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(payload),
-  });
+  // const response = await fetch("https://api.goapi.ai/api/v1/task", {
+  //   method: "POST",
+  //   headers: headers,
+  //   body: JSON.stringify(payload),
+  // });
 
-  if (!response.ok) {
-    throw new Error(`Image API error: ${response.status} ${response.statusText}`);
-  }
+  // if (!response.ok) {
+  //   throw new Error(`Image API error: ${response.status} ${response.statusText}`);
+  // }
 
-  const result = await response.json();
-  const task_id = result?.data?.task_id;
-  if (!task_id) {
-    throw new Error("No task_id returned from image API");
-  }
-  return task_id;
-  */
+  // const result = await response.json();
+  // const task_id = result?.data?.task_id;
+  // if (!task_id) {
+  //   throw new Error("No task_id returned from image API");
+  // }
+  // return task_id;
 
   // TEMPORARILY using hardcoded task ids to prevent external API calls
-  return task_ids[counter++ % task_ids.length];
+  return task_ids[counter++];
 }

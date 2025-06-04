@@ -43,7 +43,7 @@ export function getTimePeriodLabel(currentTime: string, weather: WeatherData): s
   const endOfDaySeconds = Math.floor(endOfDay.getTime() / 1000); // End of the day in seconds in UTC
 
   if (currentSeconds >= sunsetSeconds + buffer && currentSeconds <= endOfDaySeconds)
-    return "evening";
+    return "night";
 
   return "night";
 }

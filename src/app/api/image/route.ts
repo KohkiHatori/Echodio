@@ -24,7 +24,7 @@ export async function POST(request: Request) {
   const status = result?.data?.status;
   if (status === "completed") {
     // const index = Math.floor(Math.random() * 4);
-    const imageUrl = result?.data?.output?.temporary_image_urls?.[0];
+    const imageUrl = result?.data?.output?.temporary_image_urls?.[1];
     saveImageTask(task_id, {
       url: imageUrl,
       prompt: result.data.input.prompt

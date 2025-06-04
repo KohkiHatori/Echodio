@@ -17,6 +17,7 @@ export async function POST(request: Request) {
 
     // 2. Always call image and music APIs, with or without weather
     const timeLabel = getTimePeriodLabel(time, weather);
+    console.log("timeLabel", timeLabel);
     const weatherDescription = weather?.weather?.[0]?.description || 'clear sky';
 
     //IMAGE

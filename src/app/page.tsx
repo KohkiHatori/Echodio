@@ -23,7 +23,6 @@ import { useUserFavorites } from "@/hooks/useUserFavorites";
 import "@fontsource/space-grotesk/500.css";
 import { useEffect, useRef, useState } from "react";
 import LoadPage from "./load/page";
-import { useRotatingLogo } from "@/hooks/useRotateLogo";
 
 interface Song {
   url: string;
@@ -51,7 +50,6 @@ export default function Home() {
   const [showProgressTime, setShowProgressTime] = useState(true);
   const [widgetPinned, setWidgetPinned] = useState(false);
   const [selectedGenre, setSelectedGenre] = useState('Jazz');
-  const rotation = useRotatingLogo(isPlaying);
 
   useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked, musicQueue, refreshLocationAndTime, selectedGenre });
 
@@ -246,12 +244,7 @@ export default function Home() {
         transition={{ type: "spring", duration: 1.2, bounce: 0.25 }}
       >
         <div className="flex flex-row items-center justify-center gap-6">
-          <motion.img
-            src="/logo.png"
-            alt="Logo"
-            className="w-48 h-48 object-contain"
-            style={{ rotate: `${rotation}deg`, originX: 0.5, originY: 0.5 }}
-          />
+          <img src="/logo.png" alt="Logo" className="w-48 h-48 object-contain" />
           <motion.p
             className="ml-[-3.5rem] text-white text-4xl font-semibold"
             style={{ fontFamily: "'Space Grotesk', sans-serif" }}

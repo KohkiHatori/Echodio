@@ -27,6 +27,7 @@ export function usePollImage(task_id: string | null, onSuccess: (url: string) =>
         const result = await res.json();
         if (result.status === "completed" && result.imageUrl) {
           onSuccess(result.imageUrl);
+          console.log("Image URL:", result.imageUrl);
           clearInterval(interval);
         } else if (++retries >= maxRetries) {
           clearInterval(interval);

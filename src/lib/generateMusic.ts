@@ -1,9 +1,9 @@
+import { error } from "console";
 
 let counter = 0;
 const task_ids = [
-  "e3471dc2-d1ea-4cc5-ba65-5911a1f9091a",
-  // "7a5b690a-0b13-45f6-8d8a-9cd8b1e7f047",
-  "e47d2efc-1a4f-401a-8912-13aaa365df32"
+  "e2534c82-9a85-4183-89df-3219b609f996",
+  "e33241d0-81dc-463d-96a5-2c9d263c3dbd"
 ]
 
 /**
@@ -24,7 +24,7 @@ export async function generateMusic(
   selectedGenre: string
 ): Promise<string> {
   // const prompt = `${selectedGenre}, chil, pop, ${timeLabel}, with ${weatherDescription}`;
-  // console.log("🎵 Prompt:", prompt);
+  // console.log("🎵 prompt:", prompt);
 
   // const payload = {
   //   model: "music-u",
@@ -44,37 +44,37 @@ export async function generateMusic(
   //   },
   // };
 
-  // const apiKey = process.env.GO_API_KEY;
-  // if (!apiKey) {
-  //   throw new Error('Missing GO_API_KEY in environment');
+  // const apikey = process.env.GO_API_KEY;
+  // if (!apikey) {
+  //   throw new Error('missing go_api_key in environment');
   // }
 
   // const response = await fetch('https://api.goapi.ai/api/v1/task', {
-  //   method: 'POST',
+  //   method: 'post',
   //   headers: {
-  //     'Content-Type': 'application/json',
-  //     'x-api-key': apiKey,
+  //     'content-type': 'application/json',
+  //     'x-api-key': apikey,
   //   },
   //   body: JSON.stringify(payload),
   // });
 
   // if (!response.ok) {
-  //   const errorText = await response.text();
-  //   console.error('GoAPI error:', errorText);
-  //   throw new Error('Failed to generate music: ' + errorText);
+  //   const errortext = await response.text();
+  //   console.error('goapi error:', errortext);
+  //   throw new Error('failed to generate music: ' + errortext);
   // }
 
   // const result = await response.json();
-  // console.log("📩 GoAPI response body:", result);
+  // console.log("📩 goapi response body:", result);
   // if (!result.data?.task_id) {
-  //   console.error("❌ No task_id found in GoAPI response:", result);
-  //   throw new Error("Missing task_id in GoAPI response");
+  //   console.error("❌ no task_id found in goapi response:", result);
+  //   throw new Error("missing task_id in goapi response");
   // }
 
   // return result.data.task_id;
 
-  // TEMPORALILLY using hardcoded task ids to prevent external API calls
-  return task_ids[counter++ % task_ids.length];
+  // // temporalilly using hardcoded task ids to prevent external api calls
+  return task_ids[counter++];
 
 
 }
