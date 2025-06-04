@@ -1,7 +1,8 @@
 'use client';
 import React, { useEffect, useRef, useState } from "react";
-import { MdOutlinePushPin, MdPushPin } from "react-icons/md";
+import { AiOutlinePushpin, AiFillPushpin } from "react-icons/ai";
 import { setWeatherWidgetResizing } from '../app/utils/handleClickCapture';
+import { MdPushPin } from "react-icons/md";
 
 
 type WeatherData = {
@@ -181,11 +182,6 @@ export default function SmallCityWeatherClockWidget({ onPinChange, pinned }: { o
     : null;
 
   // SVGs for pin icon
-  const PinIcon = pinned ? (
-    <MdPushPin className="w-5 h-5 text-yellow-400" />
-  ) : (
-    <MdOutlinePushPin className="w-5 h-5 text-white" />
-  );
 
   return (
     <div
@@ -246,9 +242,9 @@ export default function SmallCityWeatherClockWidget({ onPinChange, pinned }: { o
                 }}
               >
                 {pinned ? (
-                  <MdPushPin className="w-7 h-7 text-yellow-400" />
+                  <AiFillPushpin className="w-5*scale h-5*scale text-yellow-400" />
                 ) : (
-                  <MdOutlinePushPin className="w-7 h-7 text-white" />
+                  <AiOutlinePushpin className="w-5*scale h-5*scale text-white" />
                 )}
               </button>
             </div>

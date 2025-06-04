@@ -189,22 +189,23 @@ export default function Home() {
               }}
             >
               <div className=""
-                   style={{
-                    mixBlendMode: "difference",}}>
+                style={{
+                  mixBlendMode: "difference",
+                }}>
                 {musicQueue[currentIndex].title}
               </div>
-              
+
 
             </div>
           )}
 
-             <div className = "fixed transition-[left] duration-500"               
-                  style={{
-                    left: isSidebarOpen ? "388px" : "180px", // adjust if your sidebar is not 72 (288px)
-              }}>
+          <div className="fixed transition-[left] duration-500"
+            style={{
+              left: isSidebarOpen ? "388px" : "180px", // adjust if your sidebar is not 72 (288px)
+            }}>
 
-                <VolumeControl audioRef={audioRef} isSidebarOpen={isSidebarOpen} />
-              </div>
+            <VolumeControl audioRef={audioRef} isSidebarOpen={isSidebarOpen} />
+          </div>
 
           {/* Favorite Button */}
           <FavoriteButton

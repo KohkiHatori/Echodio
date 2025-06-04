@@ -24,14 +24,14 @@ export default function VolumeControl({ audioRef, isSidebarOpen }: VolumeControl
       <div
         className="flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-md border border-white/20"
         style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            height: '2rem', // ensure consistent height with text
+          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          height: '2rem', // ensure consistent height with text
         }}>
 
         <SpeakerWaveIcon
-  className="w-4 h-4 text-white"
-  style={{ mixBlendMode: 'difference' }}
-/>
+          className="w-4 h-4 text-white"
+          style={{ mixBlendMode: 'difference' }}
+        />
         <input
           id="volume-slider"
           type="range"
@@ -39,7 +39,10 @@ export default function VolumeControl({ audioRef, isSidebarOpen }: VolumeControl
           max={1}
           step={0.01}
           value={volume}
-          onChange={(e) => setVolume(Number(e.target.value))}
+          onChange={(e) => {
+            setVolume(Number(e.target.value));
+            e.target.blur(); // Blur after change to release focus
+          }}
           className="w-40 h-2 accent-white appearance-none bg-zinc-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/60"
           style={{
             mixBlendMode: 'difference',
