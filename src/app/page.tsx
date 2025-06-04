@@ -3,7 +3,6 @@
 
 // components
 import Background from "@/components/Background";
-import ControlCenter from "@/components/ControlCenter";
 import FavoriteButton from "@/components/FavoriteButton";
 import FullScreenMusicPlayer from "@/components/FullMusicPlyaer";
 import Sidebar from "@/components/Sidebar";
@@ -13,6 +12,7 @@ import { motion } from "framer-motion";
 // hooks
 import { handleMainUIClickCapture } from "@/app/utils/handleClickCapture";
 import SmallCityWeatherClockWidget from "@/components/CityWeatherClockWidget";
+import VolumeControl from "@/components/VolumeBar";
 import { useAppLoader } from "@/hooks/useAppLoader";
 import { useAudioPlaybackManager } from "@/hooks/useAudioPlaybackManager";
 import { useGenerate } from "@/hooks/useGenerate";
@@ -166,7 +166,6 @@ export default function Home() {
             `${showUI ? "opacity-100 pointer-events-auto z-20" : "opacity-0 pointer-events-none"} transition-opacity duration-500`
           }
         >
-          <ControlCenter audioRef={audioRef} />
           <Sidebar
             themeColor={themeColor}
             favorites={favorites.map(fav => ({
@@ -182,16 +181,30 @@ export default function Home() {
 
           {musicQueue[currentIndex]?.title && (
             <div
-              className="fixed top-6 z-[100] text-white text-xl font-semibold max-w-[30vw] truncate transition-[left] duration-500"
+              className="fixed top-6 z-[100] text-white text-xl font-semibold max-w-[30vw] truncate transition-[left] duration-500 flex items-baseline justify-between"
               style={{
                 left: isSidebarOpen ? "288px" : "80px", // adjust if your sidebar is not 72 (288px)
                 fontFamily: "'Space Grotesk', sans-serif",
-                mixBlendMode: "difference",
+                mixBlendMode: "difference"
               }}
             >
-              {musicQueue[currentIndex].title}
+              <div className=""
+                   style={{
+                    mixBlendMode: "difference",}}>
+                {musicQueue[currentIndex].title}
+              </div>
+              
+
             </div>
           )}
+
+             <div className = "fixed transition-[left] duration-500"               
+                  style={{
+                    left: isSidebarOpen ? "388px" : "180px", // adjust if your sidebar is not 72 (288px)
+              }}>
+
+                <VolumeControl audioRef={audioRef} isSidebarOpen={isSidebarOpen} />
+              </div>
 
           {/* Favorite Button */}
           <FavoriteButton
