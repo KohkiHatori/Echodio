@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import { saveMusicTask } from '@/services/firestore/musicTasks';
+import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -19,7 +19,6 @@ export async function POST(request: Request) {
       },
     });
 
-    // console.log(response);
 
     if (!response.ok) {
       const errorText = await response.text();
