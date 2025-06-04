@@ -44,8 +44,9 @@ export const getAverageColorFromImageURL = (url: string): Promise<RGB> => {
 export const getDominantColorKMeans = (imageUrl: string): Promise<RGB> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
+    const proxiedUrl = `/api/proxy-image?url=${encodeURIComponent(imageUrl)}`;
     img.crossOrigin = "anonymous";
-    img.src = imageUrl;
+    img.src = proxiedUrl;
 
     img.onload = () => {
       const canvas = document.createElement("canvas");
