@@ -40,7 +40,6 @@ export default function SmallCityWeatherClockWidget({ onPinChange, pinned }: { o
   // Drag handlers
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
 
-    if (pinned) return
     // Prevent drag if resizing
     if ((e.target as HTMLElement).classList.contains('resize-handle')) return;
     setDragging(true);
@@ -268,7 +267,6 @@ export default function SmallCityWeatherClockWidget({ onPinChange, pinned }: { o
       <div
         className="resize-handle absolute right-1 bottom-1 w-4 h-4 bg-white/50 rounded cursor-nwse-resize z-20"
         onMouseDown={e => {
-          if (pinned) return;
           e.stopPropagation();
           document.body.style.userSelect = 'none';
           setResizing(true);

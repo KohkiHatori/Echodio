@@ -23,6 +23,7 @@ import { useUserFavorites } from "@/hooks/useUserFavorites";
 import "@fontsource/space-grotesk/500.css";
 import { useEffect, useRef, useState } from "react";
 import LoadPage from "./load/page";
+import { useRotatingLogo } from "@/hooks/useRotateLogo";
 
 interface Song {
   url: string;
@@ -49,10 +50,10 @@ export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showProgressTime, setShowProgressTime] = useState(true);
   const [widgetPinned, setWidgetPinned] = useState(false);
+  const [selectedGenre, setSelectedGenre] = useState('Jazz');
+  const rotation = useRotatingLogo(isPlaying);
 
-
-
-  useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked, musicQueue, refreshLocationAndTime });
+  useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked, musicQueue, refreshLocationAndTime, selectedGenre });
 
   useAudioPlaybackManager({ audioRef, isPlaying, songs: musicQueue, currentIndex, setIsPlaying, setCurrentIndex, setOverlayIcon });
 
@@ -84,7 +85,6 @@ export default function Home() {
   useEffect(() => {
     console.log("💿 current song:", musicQueue[currentIndex]);
   }, [currentIndex]);
-
 
   return (
     <>
@@ -176,6 +176,8 @@ export default function Home() {
             favoritesError={favoritesError}
             setMusicQueue={setMusicQueue}
             currentIndex={currentIndex}
+            selectedGenre={selectedGenre}
+            setSelectedGenre={setSelectedGenre}
             onOpenChange={setIsSidebarOpen}
           />
 
@@ -244,7 +246,12 @@ export default function Home() {
         transition={{ type: "spring", duration: 1.2, bounce: 0.25 }}
       >
         <div className="flex flex-row items-center justify-center gap-6">
-          <img src="/logo.png" alt="Logo" className="w-48 h-48 object-contain" />
+          <motion.img
+            src="/logo.png"
+            alt="Logo"
+            className="w-48 h-48 object-contain"
+            style={{ rotate: `${rotation}deg`, originX: 0.5, originY: 0.5 }}
+          />
           <motion.p
             className="ml-[-3.5rem] text-white text-4xl font-semibold"
             style={{ fontFamily: "'Space Grotesk', sans-serif" }}

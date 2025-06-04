@@ -8,11 +8,11 @@ export function usePollImage(task_id: string | null, onSuccess: (url: string) =>
     if (!task_id) return;
 
     let retries = 0;
-    const maxRetries = 30;
+    const maxRetries = 100;
 
     const interval = setInterval(async () => {
       try {
-        const res = await fetch("/api/image/result", {
+        const res = await fetch("/api/image/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ task_id }),

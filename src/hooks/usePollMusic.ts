@@ -13,7 +13,7 @@ export function usePollMusic(
 
     const interval = setInterval(async () => {
       try {
-        const res = await fetch("/api/music/result", {
+        const res = await fetch("/api/music/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ task_id }),

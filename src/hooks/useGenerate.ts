@@ -16,19 +16,21 @@ interface Props {
   locationChecked: boolean;
   musicQueue: Song[];
   refreshLocationAndTime: () => void;
+  selectedGenre: string;
 }
 
-export function useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked, musicQueue, refreshLocationAndTime }: Props) {
+export function useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked, musicQueue, refreshLocationAndTime, selectedGenre }: Props) {
 
   useEffect(() => {
     // Refresh location and time whenever this effect runs
     refreshLocationAndTime();
     if (time && locationChecked) {
-      fetch('app/api/generate-content', {
+      fetch('/api/generate-content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           time,
+          selectedGenre,
           ...(location && { location }), // only include if location exists
         })
       })

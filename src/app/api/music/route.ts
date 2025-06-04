@@ -19,7 +19,7 @@ export async function POST(request: Request) {
       },
     });
 
-    console.log(response);
+    // console.log(response);
 
     if (!response.ok) {
       const errorText = await response.text();

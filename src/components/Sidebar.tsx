@@ -22,6 +22,8 @@ interface SidebarProps {
   favoritesError: string | null;
   setMusicQueue: React.Dispatch<React.SetStateAction<any[]>>;
   currentIndex: number;
+  selectedGenre: string;
+  setSelectedGenre: React.Dispatch<React.SetStateAction<string>>;
   onOpenChange?: (open: boolean) => void;
 }
 
@@ -32,11 +34,13 @@ export default function Sidebar({
   favoritesError,
   setMusicQueue,
   currentIndex,
+  selectedGenre,
+  setSelectedGenre,
   onOpenChange,
+
 }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [fullyClosed, setFullyClosed] = useState(true);
-  const [selectedGenre, setSelectedGenre] = useState('ジャズ');
 
   const { user } = useAuth();
 
@@ -109,10 +113,10 @@ export default function Sidebar({
             className="w-full rounded-md p-2 bg-black text-white font-mono select-arrow-right"
             style={{ appearance: 'none', WebkitAppearance: 'none', MozAppearance: 'none', paddingRight: '2.5rem' }}
           >
-            <option value="ジャズ">ジャズ</option>
-            <option value="ボサノバ">ボサノバ</option>
-            <option value="アンビエント">アンビエント</option>
-            <option value="ヒーリング">ヒーリング</option>
+            <option value="Jazz">ジャズ</option>
+            <option value="Bossa Nova">ボサノバ</option>
+            <option value="Ambient">アンビエント</option>
+            <option value="Healing">ヒーリング</option>
             <option value="Lo-fi">Lo-fi</option>
           </select>
         </div>
