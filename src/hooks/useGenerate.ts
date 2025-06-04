@@ -24,7 +24,7 @@ export function useGenerate({ setImageTaskId, setMusicTaskId, time, location, lo
     // Refresh location and time whenever this effect runs
     refreshLocationAndTime();
     if (time && locationChecked) {
-      fetch('api/generate-content', {
+      fetch('app/api/generate-content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

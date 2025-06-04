@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     // 1. If location is available, try to fetch weather
     if (location) {
       try {
-        const weatherRes = await fetch('/api/weather', {
+        const weatherRes = await fetch('app/api/weather', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ location }),
