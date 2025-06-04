@@ -1,6 +1,8 @@
 import { getTimePeriodLabel } from '@/lib/time';
 import { NextResponse } from 'next/server';
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+
 export async function POST(request: Request) {
   try {
     const { time, location, generateImage } = await request.json();
@@ -10,7 +12,7 @@ export async function POST(request: Request) {
     // 1. If location is available, try to fetch weather
     if (location) {
       try {
-        const weatherRes = await fetch('http://localhost:3000/api/weather', {
+        const weatherRes = await fetch('${baseUrl}/api/weather', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ location }),
@@ -36,7 +38,7 @@ export async function POST(request: Request) {
 
     let imageTaskId = null;
     //IMAGE
-    const imageRes = await fetch('http://localhost:3000/api/image/generate', {
+    const imageRes = await fetch('${baseUrl}/api/image/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody),
@@ -50,7 +52,7 @@ export async function POST(request: Request) {
 
 
     const lyricsType = 'instrumental'
-    const musicRes = await fetch('http://localhost:3000/api/music/generate', {
+    const musicRes = await fetch('${baseUrl}/api/music/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

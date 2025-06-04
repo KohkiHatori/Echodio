@@ -1,6 +1,8 @@
 'use client'
 import { useEffect } from "react";
 
+
+
 export function usePollImage(task_id: string | null, onSuccess: (url: string) => void) {
   useEffect(() => {
     if (!task_id) return;
