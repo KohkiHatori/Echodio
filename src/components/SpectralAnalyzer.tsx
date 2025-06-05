@@ -27,6 +27,7 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
   const [draggingBar, setDraggingBar] = useState<number | null>(null);
   const [timeLabel, setTimeLabel] = useState<string>("0:00 / 0:00");
   const [progress, setProgress] = useState<number>(0);
+  const [labelX, setLabelX] = useState<number | null>(null);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -202,7 +203,10 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
   <div
     style={{
       position: 'fixed',
-      left: `calc(${progress * 100}vw - 44px)`,
+      // If labelX is set, use it; otherwise fall back to progress*vw:
+      left: labelX !== null
+        ? `${labelX - 44}px`                  // 44px is half the tooltip’s width
+        : `calc(${progress * 100}vw - 44px)`,
       bottom: '0px',
       zIndex: 21,
       width: '88px',
@@ -219,13 +223,14 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
       boxShadow: '0 0 12px #000a',
       border: '1px solid #fff2',
       pointerEvents: 'none',
-      transition: 'left 0.1s linear',
+      transition: 'left 0.15s linear',
       userSelect: 'none'
     }}
   >
     {timeLabel}
   </div>
 )}
+
       <div
         style={{
           position: 'fixed',
@@ -241,46 +246,32 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
         }}
 
 
+        
         onMouseDown={(e) => {
           const audio = audioRef.current;
           if (!audio) return;
 
-          // 1) Measure click position in the analyzer bar
+          // 1) Figure out where you clicked (fraction of total width)
           const rect = e.currentTarget.getBoundingClientRect();
           const x = e.clientX - rect.left;
           const width = rect.width || 1;
           let clickedPercent = x / width;
-
-          // 2) Clamp between 0 and 1
           clickedPercent = Math.max(0, Math.min(1, clickedPercent));
 
-          // 3) If duration is valid, seek
+          // 2) Only seek if duration is valid
           const total = audio.duration;
           if (typeof total === "number" && total > 0) {
             const newTime = total * clickedPercent;
-
-            // Remove any previous 'seeked' listener to avoid duplicate updates
-            audio.removeEventListener("seeked", handleSeeked);
-
-            // Define a handler that runs once, right after seeking occurs
-            function handleSeeked() {
-              // Update the visible time label and progress
-              setTimeLabel(`${formatTime(newTime)} / ${formatTime(total)}`);
-              setProgress(newTime / total);
-
-              // Clean up: remove this listener
-              audio?.removeEventListener("seeked", handleSeeked);
-            }
-
-            // Attach the 'seeked' listener before changing currentTime
-            audio.addEventListener("seeked", handleSeeked);
-
-            // Now actually change the playback position
             audio.currentTime = newTime;
-            // (When setting currentTime, the 'seeked' event fires immediately afterward.)
+
+            // 3) Immediately move the floating time label
+            setTimeLabel(`${formatTime(newTime)} / ${formatTime(total)}`);
+            setProgress(clickedPercent);
+
+            setLabelX(rect.left + x);
           }
 
-          // 4) Still allow “bar drag” logic for EQ
+          // 4) (Optional) If you still want bar‐dragging for EQ, calculate barIdx here…
           // const barArea = rect.width;
           // const gapLocal = barCount > 1 ? (barArea - barCount * 1) / (barCount - 1) : 0;
           // const barWidth = 1;
@@ -290,6 +281,7 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
           //   setDraggingBar(barIdx);
           // }
         }}
+
 
 
 
