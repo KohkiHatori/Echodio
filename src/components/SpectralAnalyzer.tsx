@@ -124,6 +124,10 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
         setProgress(total > 0 ? current / total : 0);
       }
 
+      if (labelX !== null) {
+        setLabelX(null);
+      }
+
       analyserRef.current.getByteFrequencyData(dataArray);
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
 
@@ -199,13 +203,12 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
         }}
         height={200}
       />
-      {showProgressTime && (
+ {showProgressTime && (
   <div
     style={{
       position: 'fixed',
-      // If labelX is set, use it; otherwise fall back to progress*vw:
       left: labelX !== null
-        ? `${labelX - 44}px`                  // 44px is half the tooltip’s width
+        ? `${labelX - 44}px`
         : `calc(${progress * 100}vw - 44px)`,
       bottom: '0px',
       zIndex: 21,
@@ -223,13 +226,14 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
       boxShadow: '0 0 12px #000a',
       border: '1px solid #fff2',
       pointerEvents: 'none',
-      transition: 'left 0.15s linear',
+      transition: 'left 0.1s linear',
       userSelect: 'none'
     }}
   >
     {timeLabel}
   </div>
 )}
+
 
       <div
         style={{
@@ -251,7 +255,7 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
           const audio = audioRef.current;
           if (!audio) return;
 
-          // 1) Figure out where you clicked (fraction of total width)
+          // 1) Get click position
           const rect = e.currentTarget.getBoundingClientRect();
           const x = e.clientX - rect.left;
           const width = rect.width || 1;
@@ -264,23 +268,23 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
             const newTime = total * clickedPercent;
             audio.currentTime = newTime;
 
-            // 3) Immediately move the floating time label
+            // 3) Immediately update timeLabel and “progress” fraction
             setTimeLabel(`${formatTime(newTime)} / ${formatTime(total)}`);
             setProgress(clickedPercent);
 
-            setLabelX(rect.left + x);
+            // 4) Compute absolute pixel-X for tooltip(centered)
+            const absoluteX = rect.left + x;
+            setLabelX(absoluteX);
+
+            // 5) After 500 ms, clear labelX so we fall back to “progress * vw”
+            setTimeout(() => {
+              setLabelX(null);
+            }, 500);
           }
 
-          // 4) (Optional) If you still want bar‐dragging for EQ, calculate barIdx here…
-          // const barArea = rect.width;
-          // const gapLocal = barCount > 1 ? (barArea - barCount * 1) / (barCount - 1) : 0;
-          // const barWidth = 1;
-          // const perBar = barWidth + gapLocal;
-          // const barIdx = Math.floor(x / perBar);
-          // if (barIdx >= 0 && barIdx < barCount) {
-          //   setDraggingBar(barIdx);
-          // }
+          // …you can keep (or remove) your bar-dragging logic below…
         }}
+
 
 
 
