@@ -22,6 +22,7 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
   const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const rafIdRef = useRef<number | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
 
   const [eqValues, setEqValues] = useState<number[]>(() => new Array(barCount).fill(1));
   const [draggingBar, setDraggingBar] = useState<number | null>(null);
@@ -60,6 +61,12 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
     }
     const analyser = analyserRef.current;
 
+    // Create GainNode if not exists
+    if (!gainNodeRef.current) {
+      gainNodeRef.current = audioCtx.createGain();
+      gainNodeRef.current.gain.value = 1;
+    }
+
     // Handle audio source changes
     if (audioSrc) {
       audio.pause();
@@ -87,7 +94,9 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
       }
 
       sourceNodeRef.current.connect(analyser);
-      analyser.connect(audioCtx.destination); // Connect analyser to output
+      analyser.connect(gainNodeRef.current);
+      gainNodeRef.current.connect(audioCtx.destination);
+      // analyser.connect(audioCtx.destination); // Removed direct connection
 
     } else {
       // If audioSrc is removed, disconnect the source
@@ -122,6 +131,43 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
         // 時間ラベルの更新（前述と同様）
         setTimeLabel(`${formatTime(current)} / ${formatTime(total)}`);
         setProgress(total > 0 ? current / total : 0);
+
+        // Fading logic: fade out when less than 5 seconds left, only once
+        if (
+          gainNodeRef.current &&
+          audio &&
+          audio.duration &&
+          audio.duration - audio.currentTime < 8 &&
+          !(audio as any)._fadingOut
+        ) {
+          (audio as any)._fadingOut = true;
+          const startVolume = gainNodeRef.current.gain.value;
+          const steps = 30;
+          const stepTime = (8 * 1000) / steps;
+          let currentStep = 0;
+          function fade() {
+            currentStep++;
+            const newVolume = startVolume * (1 - currentStep / steps);
+            gainNodeRef.current!.gain.value = Math.max(newVolume, 0);
+            if (
+              currentStep < steps &&
+              audio &&
+              audio.currentTime < audio.duration
+            ) {
+              setTimeout(fade, stepTime);
+            }
+          }
+          fade();
+        }
+        // Reset fading flag and gain when song restarts (if at beginning)
+        if (
+  gainNodeRef.current &&
+  audio &&
+  audio.currentTime < 0.1
+) {
+  (audio as any)._fadingOut = false;
+  gainNodeRef.current.gain.value = 1;
+}
       }
 
       if (labelX !== null) {

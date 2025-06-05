@@ -27,7 +27,6 @@ export default function FullScreenMusicPlayer({
   showUI,
 }: Props) {
 
-
   const handleSkipBack = () => {
     if (currentIndex > 0) {
       setCurrentIndex((i) => i - 1);
@@ -87,4 +86,27 @@ export default function FullScreenMusicPlayer({
       </div>
     </>
   );
+}
+
+function fadeOutAndPause(audio: HTMLAudioElement, duration = 1.5) {
+  if (!audio) return;
+  const startVolume = audio.volume;
+  const steps = 30;
+  const stepTime = (duration * 1000) / steps;
+  let currentStep = 0;
+
+  function fade() {
+    currentStep++;
+    const newVolume = startVolume * (1 - currentStep / steps);
+    audio.volume = Math.max(newVolume, 0);
+    if (currentStep < steps) {
+      setTimeout(fade, stepTime);
+    } else {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = startVolume;
+    }
+  }
+
+  fade();
 }

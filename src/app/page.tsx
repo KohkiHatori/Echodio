@@ -31,6 +31,38 @@ interface Song {
 }
 
 export default function Home() {
+  const isFadingOut = useRef(false);
+
+  function fadeOut(audio: HTMLAudioElement, duration = 5) {
+    if (!audio) return;
+    const startVolume = audio.volume;
+    const steps = 50;
+    const stepTime = (duration * 1000) / steps;
+    let currentStep = 0;
+
+    function fade() {
+      currentStep++;
+      const newVolume = startVolume * (1 - currentStep / steps);
+      audio.volume = Math.max(newVolume, 0);
+      console.log('FADE STEP:', currentStep, 'volume:', audio.volume, 'currentTime:', audio.currentTime);
+      if (currentStep < steps) {
+        setTimeout(fade, stepTime);
+      }
+    }
+    fade();
+  }
+
+  // TEMP: Instantly drop volume for testing
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      (window as any).testInstantDrop = () => {
+  audio.volume = 0.1;
+  console.log("Instant drop! Volume now:", audio.volume);
+};
+    }
+  }, []);
+
   // Splash loader state
   const [appLoading, setAppLoading] = useState(true);
   // Player/UI states
@@ -130,9 +162,31 @@ export default function Home() {
           preload="auto"
           crossOrigin="anonymous"
           className="hidden"
-          // Not strictly necessary, but it's a good practice to set isPlaying to true when the audio starts playing
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
+          onTimeUpdate={() => {
+            const audio = audioRef.current;
+            if (
+              audio &&
+              audio.duration &&
+              audio.duration - audio.currentTime < 5 &&
+              !(audio as any)._fadingOut
+            ) {
+              (audio as any)._fadingOut = true;
+              fadeOut(audio, 5); // fade for the full last 5 seconds
+            }
+          }}
+          onPause={() => {
+            const audio = audioRef.current;
+            if (audio) {
+              (audio as any)._fadingOut = false;
+              audio.volume = 1; // restore volume when playback resumes
+            }
+            setIsPlaying(false);
+          }}
+          onPlay={() => {
+            const audio = audioRef.current;
+            if (audio) audio.volume = 1; // always start at full volume
+            setIsPlaying(true);
+          }}
         />
 
         {/* Background Images */}
