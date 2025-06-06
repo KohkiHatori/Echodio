@@ -32,6 +32,77 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
 
   useEffect(() => {
     const audio = audioRef.current;
+    if (!audio) return;
+    const fadeIn = () => {
+      if (gainNodeRef.current && audioCtxRef.current) {
+        gainNodeRef.current.gain.cancelScheduledValues(audioCtxRef.current.currentTime);
+        gainNodeRef.current.gain.setValueAtTime(0, audioCtxRef.current.currentTime);
+        gainNodeRef.current.gain.linearRampToValueAtTime(1, audioCtxRef.current.currentTime + 2);
+      }
+    };
+    audio.addEventListener('play', fadeIn);
+    return () => {
+      audio.removeEventListener('play', fadeIn);
+    };
+  }, [audioRef]);
+
+  // Reset gain node and _fadingOut flag if user seeks away from end
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const handleSeek = () => {
+      if (gainNodeRef.current && audioCtxRef.current) {
+        if (audio.duration && audio.duration - audio.currentTime > 9) {
+          gainNodeRef.current.gain.cancelScheduledValues(audioCtxRef.current.currentTime);
+          gainNodeRef.current.gain.setValueAtTime(1, audioCtxRef.current.currentTime);
+          (audio as any)._fadingOut = false;
+        }
+      }
+    };
+    audio.addEventListener('seeked', handleSeek);
+    return () => {
+      audio.removeEventListener('seeked', handleSeek);
+    };
+  }, [audioRef]);
+
+  // Fade out using timeupdate event when <8s left
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const handleTimeUpdate = () => {
+      if (
+        gainNodeRef.current &&
+        audio &&
+        audio.duration &&
+        audio.duration - audio.currentTime < 8 &&
+        !(audio as any)._fadingOut
+      ) {
+        (audio as any)._fadingOut = true;
+        const ctx = audioCtxRef.current!;
+        gainNodeRef.current.gain.cancelScheduledValues(ctx.currentTime);
+        gainNodeRef.current.gain.setValueAtTime(gainNodeRef.current.gain.value, ctx.currentTime);
+        gainNodeRef.current.gain.linearRampToValueAtTime(0, ctx.currentTime + (audio.duration - audio.currentTime));
+      }
+    };
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+    };
+  }, [audioRef]);
+
+  // Reset gain node and _fadingOut flag when audioSrc changes
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (gainNodeRef.current && audioCtxRef.current) {
+      gainNodeRef.current.gain.cancelScheduledValues(audioCtxRef.current.currentTime);
+      gainNodeRef.current.gain.setValueAtTime(1, audioCtxRef.current.currentTime);
+      (audio as any)._fadingOut = false;
+    }
+  }, [audioSrc]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
     const canvas = canvasRef.current;
 
     if (!audio || !canvas) {
@@ -131,43 +202,6 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
         // 時間ラベルの更新（前述と同様）
         setTimeLabel(`${formatTime(current)} / ${formatTime(total)}`);
         setProgress(total > 0 ? current / total : 0);
-
-        // Fading logic: fade out when less than 5 seconds left, only once
-        if (
-          gainNodeRef.current &&
-          audio &&
-          audio.duration &&
-          audio.duration - audio.currentTime < 8 &&
-          !(audio as any)._fadingOut
-        ) {
-          (audio as any)._fadingOut = true;
-          const startVolume = gainNodeRef.current.gain.value;
-          const steps = 30;
-          const stepTime = (8 * 1000) / steps;
-          let currentStep = 0;
-          function fade() {
-            currentStep++;
-            const newVolume = startVolume * (1 - currentStep / steps);
-            gainNodeRef.current!.gain.value = Math.max(newVolume, 0);
-            if (
-              currentStep < steps &&
-              audio &&
-              audio.currentTime < audio.duration
-            ) {
-              setTimeout(fade, stepTime);
-            }
-          }
-          fade();
-        }
-        // Reset fading flag and gain when song restarts (if at beginning)
-        if (
-  gainNodeRef.current &&
-  audio &&
-  audio.currentTime < 0.1
-) {
-  (audio as any)._fadingOut = false;
-  gainNodeRef.current.gain.value = 1;
-}
       }
 
       if (labelX !== null) {
