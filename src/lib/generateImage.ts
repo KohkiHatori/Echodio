@@ -10,6 +10,12 @@ const task_ids = [
   "686ac26c-dd3f-4e21-88f5-9117a8cf1944"
 ]
 
+const colors = [
+  "yellow",
+  "orange",
+  "green",
+]
+
 const GENERATION_MODE = "fast";
 
 /**
@@ -31,8 +37,9 @@ export async function generateImage(timeLabel: string, weatherDescription: strin
   //   "Content-Type": "application/json"
   // };
 
+  // const color = colors[counter++ % colors.length];
   // const prompt = `
-  //   a young beautiful school teenager using a laptop on a desk lofi, chill, pop, painting, ${timeLabel}, with ${weatherDescription}.`;
+  //   a young beautiful school teenager using a laptop on a desk, painting, lofi, chill, pop, ${color} color grading, monochromatic, ${timeLabel}, with ${weatherDescription}.`;
 
   // const payload = {
   //   model: "midjourney",
