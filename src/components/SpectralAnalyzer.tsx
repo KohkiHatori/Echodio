@@ -65,7 +65,6 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
     };
   }, [audioRef]);
 
-  // Fade out using timeupdate event when <8s left
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
