@@ -46,7 +46,6 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
     };
   }, [audioRef]);
 
-  // Reset gain node and _fadingOut flag if user seeks away from end
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
