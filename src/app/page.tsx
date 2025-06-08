@@ -256,6 +256,7 @@ export default function Home() {
           <div className="fixed transition-[left] duration-500"
             style={{
               left: isSidebarOpen ? "388px" : "180px", // adjust if your sidebar is not 72 (288px)
+              mixBlendMode: "difference",
             }}>
 
             <VolumeControl audioRef={audioRef} isSidebarOpen={isSidebarOpen} />

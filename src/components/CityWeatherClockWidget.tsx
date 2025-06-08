@@ -224,7 +224,8 @@ export default function SmallCityWeatherClockWidget({ onPinChange, pinned }: { o
                     alt=""
                     width={40 * scale}
                     height={40 * scale}
-                    style={{ filter: "drop-shadow(0 0 2px #fff6)" }}
+                    style={{ filter: "drop-shadow(0 0 2px #fff6)", userSelect: 'none' }}
+                    draggable={false}
                   />
                 )}
               </div>
