@@ -6,14 +6,20 @@
 
 let counter = 0;
 const task_ids = [
-  "f6fbe897-a093-489f-9c75-021da61ba425",
-  "686ac26c-dd3f-4e21-88f5-9117a8cf1944"
+  "deb025f2-8a92-4fa7-bcf8-49535a6b28da",
+  "7604d820-574c-4786-8085-9302fdf2c251",
+  "feab6fc3-5021-4198-a59a-dd1ebfed800e",
+  "86c24ad4-0bca-4cf6-94ee-4c09a7563dbc",
+  "32c75438-9e3f-4741-8b2f-dd24b1c73584",
+  "82c98499-5155-4c98-88be-0b2f355551b1",
 ]
 
 const colors = [
   "yellow",
+  "light green",
   "orange",
-  "green",
+  // "light blue",
+  "wood brown"
 ]
 
 const GENERATION_MODE = "fast";
@@ -26,7 +32,6 @@ const GENERATION_MODE = "fast";
  * @throws Error if API key is missing or the request fails.
  */
 export async function generateImage(timeLabel: string, weatherDescription: string): Promise<string> {
-  // Uncomment below to use real API
   // const apiKey = process.env.GO_API_KEY;
   // if (!apiKey) {
   //   throw new Error('Missing API key');
@@ -77,6 +82,6 @@ export async function generateImage(timeLabel: string, weatherDescription: strin
   // }
   // return task_id;
 
-  // TEMPORARILY using hardcoded task ids to prevent external API calls
-  return task_ids[counter++];
+  // // TEMPORARILY using hardcoded task ids to prevent external API calls
+  return task_ids[counter++ % task_ids.length];
 }

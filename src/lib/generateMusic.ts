@@ -2,8 +2,12 @@ import { error } from "console";
 
 let counter = 0;
 const task_ids = [
-  "e2534c82-9a85-4183-89df-3219b609f996",
-  "e33241d0-81dc-463d-96a5-2c9d263c3dbd"
+  "ef5deaa3-98d1-489f-a7b8-2a889816b46d",
+  "840590c2-abca-4deb-8bc2-7d889e5d57c9",
+  "6a93c8dc-73d1-492f-99ed-c9a0d18c8459",
+  "7e2209f7-443c-4db7-82bd-247c3c42f87f",
+  "aacd5856-a7d7-4a29-83b1-4180b5633c8a",
+  "175e5059-55e4-48ba-91db-e8cb9fdbd57f",
 ]
 
 /**
@@ -23,7 +27,7 @@ export async function generateMusic(
   negativeTags: string,
   selectedGenre: string
 ): Promise<string> {
-  // const prompt = `${selectedGenre}, chil, pop, ${timeLabel}, with ${weatherDescription}`;
+  // const prompt = `${selectedGenre}, chill, ${timeLabel}, with ${weatherDescription}`;
   // console.log("🎵 prompt:", prompt);
 
   // const payload = {
@@ -73,8 +77,8 @@ export async function generateMusic(
 
   // return result.data.task_id;
 
-  // // temporalilly using hardcoded task ids to prevent external api calls
-  return task_ids[counter++];
+  // temporalilly using hardcoded task ids to prevent external api calls
+  return task_ids[counter++ % task_ids.length];
 
 
 }

@@ -78,6 +78,7 @@ export default function Sidebar({
               closeSidebar();
             }}
             className="p-2 cursor-pointer"
+            style={{ mixBlendMode: "exclusion" }}
           >
             <Bars3Icon className="w-6 h-6 text-white" />
           </button>
@@ -90,6 +91,7 @@ export default function Sidebar({
                 handleLogout();
               }}
               className="text-white underline text-sm cursor-pointer"
+              style={{ mixBlendMode: "exclusion" }}
             >
               Logout
             </button>
@@ -105,7 +107,7 @@ export default function Sidebar({
         </div>
 
         <div className="mt-14 px-4">
-          <label htmlFor="genre-select" className="block text-white text-sm mb-1">ジャンル選択</label>
+          <label htmlFor="genre-select" className="block text-white text-sm mb-1" style={{ mixBlendMode: "exclusion" }}>ジャンル選択</label>
           <select
             id="genre-select"
             value={selectedGenre}
@@ -124,11 +126,11 @@ export default function Sidebar({
         {/* Favorites List */}
         {user && (
           <div className="mt-6 px-4">
-            <h2 className="text-lg font-semibold mb-2">Favorites</h2>
+            <h2 className="text-lg font-semibold mb-2" style={{ mixBlendMode: "exclusion" }}>Favorites</h2>
             {loadingFavorites && <div className="text-sm text-gray-300">Loading...</div>}
             {favoritesError && <div className="text-sm text-red-400">{favoritesError}</div>}
             {!loadingFavorites && !favoritesError && favorites.length === 0 && (
-              <div className="text-sm text-gray-300">No favorites yet.</div>
+              <div className="text-sm text-gray-300" style={{ mixBlendMode: "exclusion" }}>No favorites yet.</div>
             )}
             <ul className="space-y-1">
               {[...favorites]
@@ -141,6 +143,7 @@ export default function Sidebar({
                   <li
                     key={fav.musicTaskId}
                     className="truncate text-sm text-white/90 cursor-pointer hover:underline"
+                    style={{ mixBlendMode: "exclusion" }}
                     onClick={async () => {
                       const task = await getMusicTask(fav.musicTaskId) as { url?: string } | null;
                       const url = task?.url || '';

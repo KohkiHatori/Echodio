@@ -1,4 +1,5 @@
 'use client';
+import { reverseColor } from "@/lib/reverseColor";
 import { useEffect, useRef, useState } from "react";
 
 interface Props {
@@ -6,6 +7,7 @@ interface Props {
   audioSrc?: string;
   isSidebarOpen?: boolean;
   showProgressTime?: boolean;
+  themeColor?: string;
 }
 
 function formatTime(seconds: number): string {
@@ -14,7 +16,7 @@ function formatTime(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, showProgressTime }: Props) {
+export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, showProgressTime, themeColor }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const barCount = 128;
   const lastBarValuesRef = useRef<number[]>(new Array(barCount).fill(0));
@@ -29,6 +31,14 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
   const [timeLabel, setTimeLabel] = useState<string>("0:00 / 0:00");
   const [progress, setProgress] = useState<number>(0);
   const [labelX, setLabelX] = useState<number | null>(null);
+  // const [barColor, setBarColor] = useState<string>("#ffffff");
+
+  // useEffect(() => {
+  //   if (themeColor) {
+  //     setBarColor(reverseColor(themeColor));
+  //     console.log("barColor", barColor);
+  //   }
+  // }, [themeColor]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -231,8 +241,7 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
         // Smoothing
         const blended = lastBarValues[i] * smoothingFactor + barHeight * (1 - smoothingFactor);
         lastBarValues[i] = blended;
-
-        ctx.fillStyle = (i / barCount) < progress ? "#FFA500" : "#ffffff";
+        ctx.fillStyle = (i / barCount) < progress ? "#777777" : "#ffffff";
         ctx.fillRect(x, canvas.height - blended, barWidth, blended);
       }
 
@@ -281,36 +290,36 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
         }}
         height={200}
       />
- {showProgressTime && (
-  <div
-    style={{
-      position: 'fixed',
-      left: labelX !== null
-        ? `${labelX - 44}px`
-        : `calc(${progress * 100}vw - 44px)`,
-      bottom: '0px',
-      zIndex: 21,
-      width: '88px',
-      height: '28px',
-      background: 'rgba(30,30,40,0.85)',
-      color: 'white',
-      borderRadius: '10px 10px 0 0',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontFamily: "'Space Grotesk', sans-serif",
-      fontSize: '15px',
-      fontWeight: 500,
-      boxShadow: '0 0 12px #000a',
-      border: '1px solid #fff2',
-      pointerEvents: 'none',
-      transition: 'left 0.1s linear',
-      userSelect: 'none'
-    }}
-  >
-    {timeLabel}
-  </div>
-)}
+      {showProgressTime && (
+        <div
+          style={{
+            position: 'fixed',
+            left: labelX !== null
+              ? `${labelX - 44}px`
+              : `calc(${progress * 100}vw - 44px)`,
+            bottom: '0px',
+            zIndex: 21,
+            width: '88px',
+            height: '28px',
+            background: 'rgba(30,30,40,0.85)',
+            color: 'white',
+            borderRadius: '10px 10px 0 0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontSize: '15px',
+            fontWeight: 500,
+            boxShadow: '0 0 12px #000a',
+            border: '1px solid #fff2',
+            pointerEvents: 'none',
+            transition: 'left 0.1s linear',
+            userSelect: 'none'
+          }}
+        >
+          {timeLabel}
+        </div>
+      )}
 
 
       <div
@@ -328,7 +337,7 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
         }}
 
 
-        
+
         onMouseDown={(e) => {
           const audio = audioRef.current;
           if (!audio) return;
@@ -367,24 +376,24 @@ export default function SpectralAnalyzer({ audioRef, audioSrc, isSidebarOpen, sh
 
 
 
-        // onMouseMove={e => {
-        //   if (draggingBar === null) return;
-        //   const rect = e.currentTarget.getBoundingClientRect();
-        //   const y = e.clientY - rect.top;
-        //   const norm = 1 - Math.max(0, Math.min(1, y / rect.height));
-        //   const influenceRadius = 4; // how wide the "mountain" spreads
-        //   setEqValues(vals => {
-        //     const next = [...vals];
-        //     for (let i = 0; i < next.length; i++) {
-        //       const dist = Math.abs(i - draggingBar);
-        //       const weight = Math.exp(-0.5 * (dist / influenceRadius) ** 2);
-        //       next[i] = norm * weight + next[i] * (1 - weight);
-        //     }
-        //     return next;
-        //   });
-        // }}
-        // onMouseUp={() => setDraggingBar(null)}
-        // onMouseLeave={() => setDraggingBar(null)}
+      // onMouseMove={e => {
+      //   if (draggingBar === null) return;
+      //   const rect = e.currentTarget.getBoundingClientRect();
+      //   const y = e.clientY - rect.top;
+      //   const norm = 1 - Math.max(0, Math.min(1, y / rect.height));
+      //   const influenceRadius = 4; // how wide the "mountain" spreads
+      //   setEqValues(vals => {
+      //     const next = [...vals];
+      //     for (let i = 0; i < next.length; i++) {
+      //       const dist = Math.abs(i - draggingBar);
+      //       const weight = Math.exp(-0.5 * (dist / influenceRadius) ** 2);
+      //       next[i] = norm * weight + next[i] * (1 - weight);
+      //     }
+      //     return next;
+      //   });
+      // }}
+      // onMouseUp={() => setDraggingBar(null)}
+      // onMouseLeave={() => setDraggingBar(null)}
       />
     </>
   );

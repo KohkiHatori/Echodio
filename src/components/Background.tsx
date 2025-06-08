@@ -50,13 +50,6 @@ export default function Background({ imageTaskId, setThemeColor, currentIndex }:
           priority
           onLoad={async () => {
             console.log("currentBg loaded");
-            try {
-              const rgb = await getDominantColorKMeans(currentBg);
-              const cssColor = rgbToCss(rgb);
-              setThemeColor(cssColor);
-            } catch (e) {
-              console.error("Failed to extract color", e);
-            }
           }}
           className="absolute inset-0 z-0 object-cover transition-opacity duration-500 opacity-100"
         />
@@ -68,8 +61,16 @@ export default function Background({ imageTaskId, setThemeColor, currentIndex }:
             alt="Next Background"
             fill
             priority
-            onLoad={() => {
+            onLoad={async () => {
               setIsNextLoaded(true)
+              try {
+                const rgb = await getDominantColorKMeans(nextBg);
+                const cssColor = rgbToCss(rgb);
+                console.log("cssColor", cssColor);
+                setTimeout(() => setThemeColor(cssColor), 2000);
+              } catch (e) {
+                console.error("Failed to extract color", e);
+              }
             }}
             className={
               `absolute inset-0 z-0 object-cover transition-opacity duration-[2000ms] ${isNextLoaded ? "opacity-100" : "opacity-0"

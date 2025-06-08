@@ -57,9 +57,9 @@ export default function Home() {
     const audio = audioRef.current;
     if (audio) {
       (window as any).testInstantDrop = () => {
-  audio.volume = 0.1;
-  console.log("Instant drop! Volume now:", audio.volume);
-};
+        audio.volume = 0.1;
+        console.log("Instant drop! Volume now:", audio.volume);
+      };
     }
   }, []);
 
@@ -81,7 +81,7 @@ export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showProgressTime, setShowProgressTime] = useState(true);
   const [widgetPinned, setWidgetPinned] = useState(false);
-  const [selectedGenre, setSelectedGenre] = useState('Jazz');
+  const [selectedGenre, setSelectedGenre] = useState('Ambient');
 
   useGenerate({ setImageTaskId, setMusicTaskId, time, location, locationChecked, musicQueue, refreshLocationAndTime, selectedGenre });
 
@@ -282,6 +282,7 @@ export default function Home() {
           }
           isSidebarOpen={isSidebarOpen}
           showProgressTime={showProgressTime}
+          themeColor={themeColor}
 
         />
       </div>
