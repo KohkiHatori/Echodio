@@ -252,7 +252,7 @@ export default function SmallCityWeatherClockWidget({ onPinChange, pinned }: { o
             <div className="flex-1 flex items-end">
               <span
                 className="text-white font-bold leading-tight"
-                style={{ fontSize: `${2 * scale}rem` }}
+                style={{ fontSize: `${1.8 * scale}rem` }}
               >
                 {timeStr}
               </span>
