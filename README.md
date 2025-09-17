@@ -1,4 +1,4 @@
-# Echodio 🎵
+# Echodio 
 
 > **AI-Powered Ambient Work Environment** - A responsive web application that creates dynamic, personalized study/work environments by generating contextual music and background imagery using artificial intelligence.
 
@@ -12,11 +12,11 @@
 
 Echodio is an innovative web application inspired by the popular "Lofi Girl" concept, designed to enhance productivity and focus through AI-generated ambient experiences. The application dynamically adapts its musical atmosphere and visual aesthetics based on real-time environmental factors including weather conditions, time of day, and geographical location.
 
-**🎯 Live Demo:** [Watch Demo Video](https://www.youtube.com/watch?v=1h2ezTZUQog)
+** Live Demo:** [Watch Demo Video](https://www.youtube.com/watch?v=1h2ezTZUQog)
 
 [![Echodio Demo](https://img.youtube.com/vi/1h2ezTZUQog/maxresdefault.jpg)](https://www.youtube.com/watch?v=1h2ezTZUQog)
 
-## ✨ Key Features
+##  Key Features
 
 ### 🤖 AI-Driven Content Generation
 - **Dynamic Music Generation**: Leverages Suno AI (via GoAPI) to create instrumental tracks tailored to current weather, time, and location
